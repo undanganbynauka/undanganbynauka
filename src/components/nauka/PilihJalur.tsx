@@ -71,30 +71,14 @@ export function PilihJalur({ visible: forceVisible }: PilihJalurProps) {
 
           {/* Title */}
           <h3
-            className="mb-4 font-serif text-xl tracking-wider text-nauka-warm-700 md:text-2xl"
+            className="mb-6 font-serif text-xl tracking-wider text-nauka-warm-700 md:text-2xl"
             style={{ fontFamily: "var(--font-cormorant)" }}
           >
             Universal
           </h3>
 
-          {/* Description */}
-          <div className="mb-6 space-y-2.5">
-            <p
-              className="font-serif text-sm font-light leading-relaxed tracking-wide text-nauka-warm-500 md:text-base"
-              style={{ fontFamily: "var(--font-cormorant)" }}
-            >
-              Faceless · Jilbab optional
-            </p>
-            <p
-              className="font-serif text-sm font-light leading-relaxed tracking-wide text-nauka-warm-500 md:text-base"
-              style={{ fontFamily: "var(--font-cormorant)" }}
-            >
-              Outfit fleksibel · Tetap sopan
-            </p>
-          </div>
-
           {/* Visual character */}
-          <div className="mb-6 space-y-1.5">
+          <div className="space-y-1.5">
             <span
               className="block font-serif text-xs tracking-widest uppercase text-nauka-warm-400"
               style={{ fontFamily: "var(--font-cormorant)" }}
@@ -107,23 +91,11 @@ export function PilihJalur({ visible: forceVisible }: PilihJalurProps) {
               <span className="h-px w-4 bg-nauka-gold/20" />
             </div>
             <p
-              className="font-serif text-xs font-light tracking-wide text-nauka-warm-400 md:text-sm"
+              className="font-serif text-sm font-light tracking-wide text-nauka-warm-400 md:text-base"
               style={{ fontFamily: "var(--font-cormorant)" }}
             >
               Hangat · Fleksibel · Ekspresif
             </p>
-          </div>
-
-          {/* Template pesan */}
-          <div
-            className="rounded-full border border-nauka-warm-300/20 bg-nauka-warm-100/50 px-5 py-2"
-          >
-            <span
-              className="font-serif text-xs tracking-wider text-nauka-warm-500 md:text-sm"
-              style={{ fontFamily: "var(--font-cormorant)" }}
-            >
-              Sapaan: &ldquo;Halo&rdquo;
-            </span>
           </div>
         </div>
 
@@ -147,30 +119,14 @@ export function PilihJalur({ visible: forceVisible }: PilihJalurProps) {
 
           {/* Title */}
           <h3
-            className="mb-4 font-serif text-xl tracking-wider text-nauka-warm-700 md:text-2xl"
+            className="mb-6 font-serif text-xl tracking-wider text-nauka-warm-700 md:text-2xl"
             style={{ fontFamily: "var(--font-cormorant)" }}
           >
             Syar&apos;i
           </h3>
 
-          {/* Description */}
-          <div className="mb-6 space-y-2.5">
-            <p
-              className="font-serif text-sm font-light leading-relaxed tracking-wide text-nauka-warm-500 md:text-base"
-              style={{ fontFamily: "var(--font-cormorant)" }}
-            >
-              Faceless · Jilbab panjang wajib
-            </p>
-            <p
-              className="font-serif text-sm font-light leading-relaxed tracking-wide text-nauka-warm-500 md:text-base"
-              style={{ fontFamily: "var(--font-cormorant)" }}
-            >
-              Gamis longgar wajib
-            </p>
-          </div>
-
           {/* Visual character */}
-          <div className="mb-6 space-y-1.5">
+          <div className="space-y-1.5">
             <span
               className="block font-serif text-xs tracking-widest uppercase text-nauka-warm-400"
               style={{ fontFamily: "var(--font-cormorant)" }}
@@ -183,23 +139,11 @@ export function PilihJalur({ visible: forceVisible }: PilihJalurProps) {
               <span className="h-px w-4 bg-nauka-gold/20" />
             </div>
             <p
-              className="font-serif text-xs font-light tracking-wide text-nauka-warm-400 md:text-sm"
+              className="font-serif text-sm font-light tracking-wide text-nauka-warm-400 md:text-base"
               style={{ fontFamily: "var(--font-cormorant)" }}
             >
               Tenang · Minimal · Terjaga
             </p>
-          </div>
-
-          {/* Template pesan */}
-          <div
-            className="rounded-full border border-nauka-warm-300/20 bg-nauka-warm-100/50 px-5 py-2"
-          >
-            <span
-              className="font-serif text-xs tracking-wider text-nauka-warm-500 md:text-sm"
-              style={{ fontFamily: "var(--font-cormorant)" }}
-            >
-              Sapaan: &ldquo;Assalamu&apos;alaikum&rdquo;
-            </span>
           </div>
         </div>
       </div>

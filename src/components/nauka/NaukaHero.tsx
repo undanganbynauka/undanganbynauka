@@ -10,7 +10,7 @@ interface NaukaHeroProps {
 
 export function NaukaHero({ onEnter }: NaukaHeroProps) {
   return (
-    <section className="nauka-canvas relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6">
+    <section className="nauka-canvas relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 pb-32 pt-20">
       {/* Floating blur shapes */}
       <div className="nauka-blob-1 animate-nauka-float-slow -top-20 -right-20 md:-top-10 md:-right-10" />
       <div className="nauka-blob-2 animate-nauka-float -bottom-10 -left-10 md:bottom-20 md:left-20" />

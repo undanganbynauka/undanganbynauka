@@ -45,7 +45,7 @@ export function KenapaNauka({ visible: forceVisible }: KenapaNaukaProps) {
         }`}
         style={{ fontFamily: "var(--font-cormorant)" }}
       >
-        Kenapa Nauka
+        Kenapa Nauka?
       </span>
 
       {/* Quotes with ornaments */}
@@ -107,23 +107,12 @@ export function KenapaNauka({ visible: forceVisible }: KenapaNaukaProps) {
             className="font-serif text-base font-light leading-loose tracking-wide text-nauka-warm-500 md:text-lg lg:text-xl"
             style={{ fontFamily: "var(--font-cormorant)" }}
           >
-            Karena setiap momen tidak selalu perlu
-            banyak kata—cukup dijaga dengan perlahan.
+            Karena setiap momen tidak selalu perlu banyak kata, cukup dijaga dengan perlahan.
           </p>
         </div>
       </div>
 
-      {/* Bottom decorative line */}
-      <div
-        className={`mt-20 flex items-center gap-3 transition-all duration-1000 ${
-          visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
-        }`}
-        style={{ transitionDelay: "1.1s" }}
-      >
-        <span className="h-px w-12 bg-nauka-gold/20 md:w-16" />
-        <span className="h-1 w-1 rounded-full bg-nauka-gold/30" />
-        <span className="h-px w-12 bg-nauka-gold/20 md:w-16" />
-      </div>
+
     </section>
   );
 }

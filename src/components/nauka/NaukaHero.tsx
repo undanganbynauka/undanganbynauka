@@ -21,12 +21,12 @@ export function NaukaHero() {
       {/* Main content */}
       <div className="relative z-10 flex flex-col items-center text-center">
         {/* Logo */}
-        <div className="animate-nauka-fade-in relative h-24 w-64 md:h-36 md:w-96 lg:h-44 lg:w-[520px]">
+        <div className="animate-nauka-fade-in relative h-16 w-48 md:h-24 md:w-72 lg:h-28 lg:w-80">
           <Image
             src="/nauka-logo.png"
             alt="Nauka Logo"
             fill
-            sizes="(max-width: 768px) 256px, (max-width: 1024px) 384px, 520px"
+            sizes="(max-width: 768px) 192px, (max-width: 1024px) 288px, 320px"
             priority
             className="object-contain"
           />
@@ -34,7 +34,7 @@ export function NaukaHero() {
 
         {/* Tagline */}
         <h1
-          className="animate-nauka-fade-in-delay-1 mt-2 font-serif text-2xl font-light leading-relaxed tracking-wide text-nauka-warm-700 md:text-3xl lg:text-4xl"
+          className="animate-nauka-fade-in-delay-1 mt-8 font-serif text-2xl font-light leading-relaxed tracking-wide text-nauka-warm-700 md:text-3xl lg:text-4xl"
           style={{ fontFamily: "var(--font-cormorant)" }}
         >
           Sebuah ruang kecil
@@ -43,7 +43,7 @@ export function NaukaHero() {
         </h1>
 
         {/* Decorative line */}
-        <div className="animate-nauka-fade-in-delay-2 mt-6 flex items-center gap-3">
+        <div className="animate-nauka-fade-in-delay-2 mt-8 flex items-center gap-3">
           <span className="h-px w-8 bg-nauka-gold/30 md:w-12" />
           <span className="h-1.5 w-1.5 rounded-full bg-nauka-gold/40" />
           <span className="h-px w-8 bg-nauka-gold/30 md:w-12" />
@@ -51,7 +51,7 @@ export function NaukaHero() {
 
         {/* CTA Button */}
         <button
-          className="animate-nauka-fade-in-delay-3 group relative mt-6 cursor-pointer overflow-hidden rounded-full border border-nauka-warm-400/40 bg-nauka-warm-50/60 px-10 py-3.5 font-serif text-base tracking-widest text-nauka-warm-700 backdrop-blur-sm transition-all duration-500 hover:border-nauka-gold/50 hover:bg-nauka-warm-100/60 hover:tracking-[0.25em] md:text-lg"
+          className="animate-nauka-fade-in-delay-3 group relative mt-8 cursor-pointer overflow-hidden rounded-full border border-nauka-warm-400/40 bg-nauka-warm-50/60 px-10 py-3.5 font-serif text-base tracking-widest text-nauka-warm-700 backdrop-blur-sm transition-all duration-500 hover:border-nauka-gold/50 hover:bg-nauka-warm-100/60 hover:tracking-[0.25em] md:text-lg"
           style={{ fontFamily: "var(--font-cormorant)" }}
         >
           <span className="relative z-10">Mulai</span>

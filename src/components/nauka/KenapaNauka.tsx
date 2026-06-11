@@ -25,7 +25,6 @@ export function KenapaNauka() {
 
   return (
     <section
-      id="kenapa-nauka"
       ref={sectionRef}
       className="nauka-canvas relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 py-24 md:py-32"
     >
@@ -35,7 +34,7 @@ export function KenapaNauka() {
 
       {/* Section label */}
       <span
-        className={`mb-20 font-serif text-2xl tracking-[0.2em] text-nauka-warm-400 transition-all duration-1000 md:text-3xl ${
+        className={`mb-16 font-serif text-2xl tracking-[0.2em] text-nauka-warm-400 transition-all duration-1000 md:text-3xl lg:text-4xl ${
           visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
         }`}
         style={{ fontFamily: "var(--font-cormorant)" }}
@@ -43,39 +42,81 @@ export function KenapaNauka() {
         Kenapa Nauka
       </span>
 
-      {/* Quotes */}
-      <div className="relative z-10 flex max-w-xl flex-col items-center gap-14 text-center">
-        <p
-          className={`font-serif text-base font-light leading-loose tracking-wide text-nauka-warm-500 transition-all duration-1000 md:text-lg lg:text-xl ${
-            visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
-          }`}
-          style={{ fontFamily: "var(--font-cormorant)", transitionDelay: "0.3s" }}
-        >
-          Nauka lahir dari ruang kecil yang ingin
-          menjaga setiap momen tetap sederhana,
-          tenang, dan bermakna.
-        </p>
+      {/* Decorative line under label */}
+      <div
+        className={`mb-16 flex items-center gap-2 transition-all duration-1000 md:mb-20 ${
+          visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+        }`}
+        style={{ transitionDelay: "0.1s" }}
+      >
+        <span className="h-px w-8 bg-nauka-gold/25 md:w-12" />
+        <span className="h-1 w-1 rounded-full bg-nauka-gold/35" />
+        <span className="h-px w-8 bg-nauka-gold/25 md:w-12" />
+      </div>
 
-        <p
-          className={`font-serif text-base font-light leading-loose tracking-wide text-nauka-warm-500 transition-all duration-1000 md:text-lg lg:text-xl ${
+      {/* Quotes with ornaments */}
+      <div className="relative z-10 flex max-w-lg flex-col items-center gap-0 text-center">
+        {/* Paragraph 1 */}
+        <div
+          className={`flex flex-col items-center gap-5 transition-all duration-1000 ${
             visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
           }`}
-          style={{ fontFamily: "var(--font-cormorant)", transitionDelay: "0.6s" }}
+          style={{ transitionDelay: "0.3s" }}
         >
-          Bukan untuk membuat undangan yang ramai,
-          tapi untuk menghadirkan ruang yang cukup
-          bagi sebuah pertemuan.
-        </p>
+          <p
+            className="font-serif text-base font-light leading-loose tracking-wide text-nauka-warm-500 md:text-lg lg:text-xl"
+            style={{ fontFamily: "var(--font-cormorant)" }}
+          >
+            Nauka lahir dari ruang kecil yang ingin
+            menjaga setiap momen tetap sederhana,
+            tenang, dan bermakna.
+          </p>
+          {/* Ornament line */}
+          <div className="flex items-center gap-2 py-4">
+            <span className="h-px w-6 bg-nauka-gold/15 md:w-8" />
+            <span className="h-0.5 w-0.5 rounded-full bg-nauka-gold/25" />
+            <span className="h-px w-6 bg-nauka-gold/15 md:w-8" />
+          </div>
+        </div>
 
-        <p
-          className={`font-serif text-base font-light leading-loose tracking-wide text-nauka-warm-500 transition-all duration-1000 md:text-lg lg:text-xl ${
+        {/* Paragraph 2 */}
+        <div
+          className={`flex flex-col items-center gap-5 transition-all duration-1000 ${
             visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
           }`}
-          style={{ fontFamily: "var(--font-cormorant)", transitionDelay: "0.9s" }}
+          style={{ transitionDelay: "0.6s" }}
         >
-          Karena setiap momen tidak selalu perlu
-          banyak kata—cukup dijaga dengan perlahan.
-        </p>
+          <p
+            className="font-serif text-base font-light leading-loose tracking-wide text-nauka-warm-500 md:text-lg lg:text-xl"
+            style={{ fontFamily: "var(--font-cormorant)" }}
+          >
+            Bukan untuk membuat undangan yang ramai,
+            tapi untuk menghadirkan ruang yang cukup
+            bagi sebuah pertemuan.
+          </p>
+          {/* Ornament line */}
+          <div className="flex items-center gap-2 py-4">
+            <span className="h-px w-6 bg-nauka-gold/15 md:w-8" />
+            <span className="h-0.5 w-0.5 rounded-full bg-nauka-gold/25" />
+            <span className="h-px w-6 bg-nauka-gold/15 md:w-8" />
+          </div>
+        </div>
+
+        {/* Paragraph 3 */}
+        <div
+          className={`flex flex-col items-center gap-5 transition-all duration-1000 ${
+            visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+          }`}
+          style={{ transitionDelay: "0.9s" }}
+        >
+          <p
+            className="font-serif text-base font-light leading-loose tracking-wide text-nauka-warm-500 md:text-lg lg:text-xl"
+            style={{ fontFamily: "var(--font-cormorant)" }}
+          >
+            Karena setiap momen tidak selalu perlu
+            banyak kata—cukup dijaga dengan perlahan.
+          </p>
+        </div>
       </div>
 
       {/* Bottom decorative line */}

@@ -50,13 +50,14 @@ export function NaukaHero() {
         </div>
 
         {/* CTA Button */}
-        <button
-          className="animate-nauka-fade-in-delay-3 group relative mt-8 cursor-pointer overflow-hidden rounded-full border border-nauka-warm-400/40 bg-nauka-warm-50/60 px-10 py-3.5 font-serif text-base tracking-widest text-nauka-warm-700 backdrop-blur-sm transition-all duration-500 hover:border-nauka-gold/50 hover:bg-nauka-warm-100/60 hover:tracking-[0.25em] md:text-lg"
+        <a
+          href="#kenapa-nauka"
+          className="animate-nauka-fade-in-delay-3 group relative mt-8 inline-block cursor-pointer overflow-hidden rounded-full border border-nauka-warm-400/40 bg-nauka-warm-50/60 px-10 py-3.5 font-serif text-base tracking-widest text-nauka-warm-700 backdrop-blur-sm transition-all duration-500 hover:border-nauka-gold/50 hover:bg-nauka-warm-100/60 hover:tracking-[0.25em] md:text-lg"
           style={{ fontFamily: "var(--font-cormorant)" }}
         >
           <span className="relative z-10">Mulai</span>
           <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-nauka-gold/10 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
-        </button>
+        </a>
       </div>
 
       {/* Bottom scroll hint */}

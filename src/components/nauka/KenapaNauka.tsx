@@ -13,7 +13,7 @@ export function KenapaNauka() {
           setVisible(true);
         }
       },
-      { threshold: 0.2 }
+      { threshold: 0.15 }
     );
 
     if (sectionRef.current) {
@@ -25,6 +25,7 @@ export function KenapaNauka() {
 
   return (
     <section
+      id="kenapa-nauka"
       ref={sectionRef}
       className="nauka-canvas relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 py-24 md:py-32"
     >
@@ -34,7 +35,7 @@ export function KenapaNauka() {
 
       {/* Section label */}
       <span
-        className={`mb-16 font-serif text-sm tracking-[0.3em] uppercase text-nauka-warm-400 transition-all duration-1000 md:text-base ${
+        className={`mb-20 font-serif text-2xl tracking-[0.2em] text-nauka-warm-400 transition-all duration-1000 md:text-3xl ${
           visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
         }`}
         style={{ fontFamily: "var(--font-cormorant)" }}
@@ -43,41 +44,36 @@ export function KenapaNauka() {
       </span>
 
       {/* Quotes */}
-      <div className="relative z-10 flex max-w-2xl flex-col items-center gap-16 text-center">
+      <div className="relative z-10 flex max-w-xl flex-col items-center gap-14 text-center">
         <p
-          className={`font-serif text-xl font-light leading-loose tracking-wide text-nauka-warm-600 transition-all duration-1000 md:text-2xl lg:text-3xl ${
-            visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
+          className={`font-serif text-base font-light leading-loose tracking-wide text-nauka-warm-500 transition-all duration-1000 md:text-lg lg:text-xl ${
+            visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
           }`}
-          style={{ fontFamily: "var(--font-cormorant)", transitionDelay: "0.2s" }}
+          style={{ fontFamily: "var(--font-cormorant)", transitionDelay: "0.3s" }}
         >
           Nauka lahir dari ruang kecil yang ingin
-          <br />
           menjaga setiap momen tetap sederhana,
-          <br />
           tenang, dan bermakna.
         </p>
 
         <p
-          className={`font-serif text-xl font-light leading-loose tracking-wide text-nauka-warm-600 transition-all duration-1000 md:text-2xl lg:text-3xl ${
-            visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
+          className={`font-serif text-base font-light leading-loose tracking-wide text-nauka-warm-500 transition-all duration-1000 md:text-lg lg:text-xl ${
+            visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
           }`}
-          style={{ fontFamily: "var(--font-cormorant)", transitionDelay: "0.5s" }}
+          style={{ fontFamily: "var(--font-cormorant)", transitionDelay: "0.6s" }}
         >
           Bukan untuk membuat undangan yang ramai,
-          <br />
           tapi untuk menghadirkan ruang yang cukup
-          <br />
           bagi sebuah pertemuan.
         </p>
 
         <p
-          className={`font-serif text-xl font-light leading-loose tracking-wide text-nauka-warm-600 transition-all duration-1000 md:text-2xl lg:text-3xl ${
-            visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
+          className={`font-serif text-base font-light leading-loose tracking-wide text-nauka-warm-500 transition-all duration-1000 md:text-lg lg:text-xl ${
+            visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
           }`}
-          style={{ fontFamily: "var(--font-cormorant)", transitionDelay: "0.8s" }}
+          style={{ fontFamily: "var(--font-cormorant)", transitionDelay: "0.9s" }}
         >
           Karena setiap momen tidak selalu perlu
-          <br />
           banyak kata—cukup dijaga dengan perlahan.
         </p>
       </div>
@@ -87,7 +83,7 @@ export function KenapaNauka() {
         className={`mt-20 flex items-center gap-3 transition-all duration-1000 ${
           visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
         }`}
-        style={{ transitionDelay: "1.1s" }}
+        style={{ transitionDelay: "1.2s" }}
       >
         <span className="h-px w-12 bg-nauka-gold/20 md:w-16" />
         <span className="h-1 w-1 rounded-full bg-nauka-gold/30" />

@@ -33,8 +33,6 @@ export function PilihJalur({ visible: forceVisible }: PilihJalurProps) {
   const visible = forceVisible ?? scrolledVisible;
 
   const handleSelectJalur = (jalur: "universal" | "syari") => {
-    // Navigate to template page based on jalur
-    // For now, placeholder route — will be built later
     router.push(`/template?jalur=${jalur}`);
   };
 
@@ -60,11 +58,11 @@ export function PilihJalur({ visible: forceVisible }: PilihJalurProps) {
       {/* Cards */}
       <div className="relative z-10 flex w-full max-w-3xl flex-col items-center gap-8 md:flex-row md:gap-10">
         {/* Universal Card */}
-        <button
+        <div
           onClick={() => handleSelectJalur("universal")}
           onMouseEnter={() => setHoveredCard("universal")}
           onMouseLeave={() => setHoveredCard(null)}
-          className={`group flex flex-1 flex-col items-center rounded-2xl border border-nauka-warm-300/30 bg-nauka-warm-50/40 px-8 py-12 text-center backdrop-blur-sm transition-all duration-500 md:px-10 md:py-14 ${
+          className={`group flex flex-1 cursor-pointer flex-col items-center rounded-2xl border border-nauka-warm-300/30 bg-nauka-warm-50/40 px-8 py-12 text-center backdrop-blur-sm transition-all duration-500 md:px-10 md:py-14 ${
             hoveredCard === "universal"
               ? "scale-[1.02] border-nauka-gold/30 shadow-lg shadow-nauka-gold/5"
               : hoveredCard === "syari"
@@ -77,21 +75,21 @@ export function PilihJalur({ visible: forceVisible }: PilihJalurProps) {
         >
           {/* Title */}
           <h3
-            className="mb-6 font-serif text-2xl tracking-wider text-nauka-warm-700 md:text-3xl"
+            className="mb-5 font-serif text-2xl tracking-wider text-nauka-warm-700 md:text-3xl"
             style={{ fontFamily: "var(--font-cormorant)" }}
           >
             Universal
           </h3>
 
           {/* Ornament line */}
-          <div className="mb-6 flex items-center gap-2">
+          <div className="mb-5 flex items-center gap-2">
             <span className="h-px w-6 bg-nauka-gold/20 md:w-8" />
             <span className="h-0.5 w-0.5 rounded-full bg-nauka-gold/30" />
             <span className="h-px w-6 bg-nauka-gold/20 md:w-8" />
           </div>
 
           {/* Visual character */}
-          <div className="space-y-1.5">
+          <div className="mb-8 space-y-1.5">
             <span
               className="block font-serif text-xs tracking-widest uppercase text-nauka-warm-400"
               style={{ fontFamily: "var(--font-cormorant)" }}
@@ -105,14 +103,22 @@ export function PilihJalur({ visible: forceVisible }: PilihJalurProps) {
               Hangat · Fleksibel · Ekspresif
             </p>
           </div>
-        </button>
+
+          {/* Masuk button */}
+          <span
+            className="rounded-full border border-nauka-warm-400/30 bg-nauka-warm-50/60 px-8 py-2.5 font-serif text-sm tracking-widest text-nauka-warm-600 backdrop-blur-sm transition-all duration-500 group-hover:border-nauka-gold/40 group-hover:bg-nauka-warm-100/60 group-hover:text-nauka-warm-700 group-hover:tracking-[0.2em]"
+            style={{ fontFamily: "var(--font-cormorant)" }}
+          >
+            Masuk
+          </span>
+        </div>
 
         {/* Syar'i Card */}
-        <button
+        <div
           onClick={() => handleSelectJalur("syari")}
           onMouseEnter={() => setHoveredCard("syari")}
           onMouseLeave={() => setHoveredCard(null)}
-          className={`group flex flex-1 flex-col flex-col items-center rounded-2xl border border-nauka-warm-300/30 bg-nauka-warm-50/40 px-8 py-12 text-center backdrop-blur-sm transition-all duration-500 md:px-10 md:py-14 ${
+          className={`group flex flex-1 cursor-pointer flex-col items-center rounded-2xl border border-nauka-warm-300/30 bg-nauka-warm-50/40 px-8 py-12 text-center backdrop-blur-sm transition-all duration-500 md:px-10 md:py-14 ${
             hoveredCard === "syari"
               ? "scale-[1.02] border-nauka-gold/30 shadow-lg shadow-nauka-gold/5"
               : hoveredCard === "universal"
@@ -125,21 +131,21 @@ export function PilihJalur({ visible: forceVisible }: PilihJalurProps) {
         >
           {/* Title */}
           <h3
-            className="mb-6 font-serif text-2xl tracking-wider text-nauka-warm-700 md:text-3xl"
+            className="mb-5 font-serif text-2xl tracking-wider text-nauka-warm-700 md:text-3xl"
             style={{ fontFamily: "var(--font-cormorant)" }}
           >
             Syar&apos;i
           </h3>
 
           {/* Ornament line */}
-          <div className="mb-6 flex items-center gap-2">
+          <div className="mb-5 flex items-center gap-2">
             <span className="h-px w-6 bg-nauka-gold/20 md:w-8" />
             <span className="h-0.5 w-0.5 rounded-full bg-nauka-gold/30" />
             <span className="h-px w-6 bg-nauka-gold/20 md:w-8" />
           </div>
 
           {/* Visual character */}
-          <div className="space-y-1.5">
+          <div className="mb-8 space-y-1.5">
             <span
               className="block font-serif text-xs tracking-widest uppercase text-nauka-warm-400"
               style={{ fontFamily: "var(--font-cormorant)" }}
@@ -153,7 +159,15 @@ export function PilihJalur({ visible: forceVisible }: PilihJalurProps) {
               Tenang · Minimal · Terjaga
             </p>
           </div>
-        </button>
+
+          {/* Masuk button */}
+          <span
+            className="rounded-full border border-nauka-warm-400/30 bg-nauka-warm-50/60 px-8 py-2.5 font-serif text-sm tracking-widest text-nauka-warm-600 backdrop-blur-sm transition-all duration-500 group-hover:border-nauka-gold/40 group-hover:bg-nauka-warm-100/60 group-hover:text-nauka-warm-700 group-hover:tracking-[0.2em]"
+            style={{ fontFamily: "var(--font-cormorant)" }}
+          >
+            Masuk
+          </span>
+        </div>
       </div>
     </section>
   );

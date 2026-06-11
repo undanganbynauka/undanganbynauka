@@ -21,12 +21,12 @@ export function NaukaHero() {
       {/* Main content */}
       <div className="relative z-10 flex flex-col items-center text-center">
         {/* Logo */}
-        <div className="animate-nauka-fade-in relative h-40 w-40 md:h-52 md:w-52">
+        <div className="animate-nauka-fade-in relative h-24 w-64 md:h-36 md:w-96 lg:h-44 lg:w-[520px]">
           <Image
             src="/nauka-logo.png"
             alt="Nauka Logo"
             fill
-            sizes="(max-width: 768px) 160px, 208px"
+            sizes="(max-width: 768px) 256px, (max-width: 1024px) 384px, 520px"
             priority
             className="object-contain"
           />
@@ -34,7 +34,7 @@ export function NaukaHero() {
 
         {/* Tagline */}
         <h1
-          className="animate-nauka-fade-in-delay-1 mt-4 font-serif text-2xl font-light leading-relaxed tracking-wide text-nauka-warm-700 md:text-3xl lg:text-4xl"
+          className="animate-nauka-fade-in-delay-1 mt-2 font-serif text-2xl font-light leading-relaxed tracking-wide text-nauka-warm-700 md:text-3xl lg:text-4xl"
           style={{ fontFamily: "var(--font-cormorant)" }}
         >
           Sebuah ruang kecil

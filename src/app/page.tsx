@@ -18,14 +18,31 @@ export default function Home() {
   const isGateVisible = phase === "gate" || phase === "opening";
 
   return (
-    <main className="relative">
+    <main className="nauka-page-bg relative min-h-screen">
+      {/* Paper grain overlay for entire page */}
+      <div className="nauka-page-grain pointer-events-none fixed inset-0 z-0" />
+
+      {/* Floating ambient shapes for entire page */}
+      <div className="nauka-blob-1 animate-nauka-float-slow fixed -top-20 -right-20 z-0" />
+      <div className="nauka-blob-2 animate-nauka-float-slow fixed -bottom-20 -left-20 z-0" />
+      <div className="nauka-blob-3 animate-nauka-float fixed top-1/3 right-1/4 z-0" />
+
       {/* KENAPA NAUKA — Revealed when gate opens */}
-      <div className="nauka-canvas min-h-screen">
+      <div className="relative z-10 min-h-screen">
         <KenapaNauka visible={phase === "inside"} />
       </div>
 
+      {/* Section divider ornament */}
+      <div className="nauka-section-divider relative z-10">
+        <span className="h-px w-10 bg-nauka-gold/10 md:w-14" />
+        <span className="h-0.5 w-0.5 rounded-full bg-nauka-gold/15" />
+        <span className="h-px w-10 bg-nauka-gold/10 md:w-14" />
+      </div>
+
       {/* PILIH JALUR — Next section */}
-      <PilihJalur />
+      <div className="relative z-10 min-h-screen">
+        <PilihJalur />
+      </div>
 
       {/* HERO — The Gate */}
       {isGateVisible && (

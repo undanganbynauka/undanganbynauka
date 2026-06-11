@@ -94,30 +94,28 @@
 
 /* ===== NAUKA GLOBAL CANVAS ===== */
 
-/* Paper grain texture overlay */
-.nauka-canvas {
-  position: relative;
+/* Page-level background — ONE continuous color, no section breaks */
+.nauka-page-bg {
   background: #FAF7F2;
-  min-height: 100vh;
 }
 
-/* Hero keeps the gradient */
-.nauka-canvas-hero {
-  position: relative;
-  background: #FAF7F2;
-  min-height: 100vh;
-}
-
-.nauka-canvas::before,
-.nauka-canvas-hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  opacity: 0.03;
+/* Paper grain texture overlay — page level */
+.nauka-page-grain {
+  opacity: 0.025;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
   background-size: 256px 256px;
-  pointer-events: none;
-  z-index: 0;
+}
+
+/* Sections — no background, transparent to page bg */
+.nauka-canvas {
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Hero — also transparent, page bg shows through */
+.nauka-canvas-hero {
+  position: relative;
+  min-height: 100vh;
 }
 
 /* Floating blur shapes */
@@ -160,6 +158,16 @@
   pointer-events: none;
   z-index: 0;
   opacity: 0.15;
+}
+
+/* Section divider — subtle ornament between sections */
+.nauka-section-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0;
+  height: 40px;
 }
 
 /* Smooth scroll */

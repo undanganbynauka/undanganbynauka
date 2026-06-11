@@ -34,7 +34,7 @@ export function NaukaHero() {
 
         {/* Tagline */}
         <h1
-          className="animate-nauka-fade-in-delay-1 mt-3 font-serif text-2xl font-light leading-relaxed tracking-wide text-nauka-warm-700 md:text-3xl lg:text-4xl"
+          className="animate-nauka-fade-in-delay-1 mt-0 font-serif text-2xl font-light leading-relaxed tracking-wide text-nauka-warm-700 md:text-3xl lg:text-4xl"
           style={{ fontFamily: "var(--font-cormorant)" }}
         >
           Sebuah ruang kecil

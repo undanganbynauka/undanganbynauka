@@ -2,15 +2,19 @@
 
 import React, { useEffect, useRef, useState } from "react";
 
-export function KenapaNauka() {
-  const [visible, setVisible] = useState(false);
+interface KenapaNaukaProps {
+  visible?: boolean;
+}
+
+export function KenapaNauka({ visible: forceVisible }: KenapaNaukaProps) {
+  const [scrolledVisible, setScrolledVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setVisible(true);
+          setScrolledVisible(true);
         }
       },
       { threshold: 0.15 }
@@ -23,6 +27,8 @@ export function KenapaNauka() {
     return () => observer.disconnect();
   }, []);
 
+  const visible = forceVisible ?? scrolledVisible;
+
   return (
     <section
       ref={sectionRef}
@@ -34,25 +40,13 @@ export function KenapaNauka() {
 
       {/* Section label */}
       <span
-        className={`mb-16 font-serif text-2xl tracking-[0.2em] text-nauka-warm-400 transition-all duration-1000 md:text-3xl lg:text-4xl ${
+        className={`mb-10 font-serif text-2xl tracking-[0.2em] text-nauka-warm-400 transition-all duration-1000 md:mb-12 md:text-3xl lg:text-4xl ${
           visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
         }`}
         style={{ fontFamily: "var(--font-cormorant)" }}
       >
         Kenapa Nauka
       </span>
-
-      {/* Decorative line under label */}
-      <div
-        className={`mb-16 flex items-center gap-2 transition-all duration-1000 md:mb-20 ${
-          visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
-        }`}
-        style={{ transitionDelay: "0.1s" }}
-      >
-        <span className="h-px w-8 bg-nauka-gold/25 md:w-12" />
-        <span className="h-1 w-1 rounded-full bg-nauka-gold/35" />
-        <span className="h-px w-8 bg-nauka-gold/25 md:w-12" />
-      </div>
 
       {/* Quotes with ornaments */}
       <div className="relative z-10 flex max-w-lg flex-col items-center gap-0 text-center">
@@ -61,7 +55,7 @@ export function KenapaNauka() {
           className={`flex flex-col items-center gap-5 transition-all duration-1000 ${
             visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
           }`}
-          style={{ transitionDelay: "0.3s" }}
+          style={{ transitionDelay: "0.2s" }}
         >
           <p
             className="font-serif text-base font-light leading-loose tracking-wide text-nauka-warm-500 md:text-lg lg:text-xl"
@@ -84,7 +78,7 @@ export function KenapaNauka() {
           className={`flex flex-col items-center gap-5 transition-all duration-1000 ${
             visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
           }`}
-          style={{ transitionDelay: "0.6s" }}
+          style={{ transitionDelay: "0.5s" }}
         >
           <p
             className="font-serif text-base font-light leading-loose tracking-wide text-nauka-warm-500 md:text-lg lg:text-xl"
@@ -107,7 +101,7 @@ export function KenapaNauka() {
           className={`flex flex-col items-center gap-5 transition-all duration-1000 ${
             visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
           }`}
-          style={{ transitionDelay: "0.9s" }}
+          style={{ transitionDelay: "0.8s" }}
         >
           <p
             className="font-serif text-base font-light leading-loose tracking-wide text-nauka-warm-500 md:text-lg lg:text-xl"
@@ -124,7 +118,7 @@ export function KenapaNauka() {
         className={`mt-20 flex items-center gap-3 transition-all duration-1000 ${
           visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
         }`}
-        style={{ transitionDelay: "1.2s" }}
+        style={{ transitionDelay: "1.1s" }}
       >
         <span className="h-px w-12 bg-nauka-gold/20 md:w-16" />
         <span className="h-1 w-1 rounded-full bg-nauka-gold/30" />

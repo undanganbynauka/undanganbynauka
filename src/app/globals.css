@@ -221,3 +221,24 @@ html {
 .animate-nauka-float-slow {
   animation: nauka-float 8s ease-in-out infinite;
 }
+
+/* ===== GATE OPEN ANIMATION ===== */
+@keyframes gate-open {
+  0% {
+    opacity: 1;
+    transform: perspective(1200px) translateZ(0) rotateX(0deg);
+    transform-origin: top center;
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: perspective(1200px) translateZ(-80px) rotateX(-8deg);
+    transform-origin: top center;
+  }
+}
+
+.animate-gate-open {
+  animation: gate-open 1.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { SectionEdgeOrnament } from "./SectionEdgeOrnament";
 
 interface PilihJalurProps {
   visible?: boolean;
@@ -41,6 +42,12 @@ export function PilihJalur({ visible: forceVisible }: PilihJalurProps) {
       ref={sectionRef}
       className="nauka-canvas relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 py-24 md:py-32"
     >
+      {/* Edge ornaments */}
+      <SectionEdgeOrnament position="top-left" />
+      <SectionEdgeOrnament position="top-right" />
+      <SectionEdgeOrnament position="bottom-left" />
+      <SectionEdgeOrnament position="bottom-right" />
+
       {/* Section label */}
       <span
         className={`mb-10 font-serif text-2xl tracking-[0.2em] text-nauka-warm-400 transition-all duration-1000 md:mb-14 md:text-3xl lg:text-4xl ${

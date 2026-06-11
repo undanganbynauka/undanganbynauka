@@ -27,27 +27,16 @@ export default function Home() {
       <div className="nauka-blob-2 animate-nauka-float-slow fixed -bottom-20 -left-20 z-0" />
       <div className="nauka-blob-3 animate-nauka-float fixed top-1/3 right-1/4 z-0" />
 
-      {/* KENAPA NAUKA — Revealed when gate opens */}
-      <div className="relative z-10 min-h-screen">
+      {/* Content sections — no gap, no divider, continuous flow */}
+      <div className="relative z-10">
         <KenapaNauka visible={phase === "inside"} />
-      </div>
-
-      {/* Section divider ornament */}
-      <div className="nauka-section-divider relative z-10">
-        <span className="h-px w-10 bg-nauka-gold/10 md:w-14" />
-        <span className="h-0.5 w-0.5 rounded-full bg-nauka-gold/15" />
-        <span className="h-px w-10 bg-nauka-gold/10 md:w-14" />
-      </div>
-
-      {/* PILIH JALUR — Next section */}
-      <div className="relative z-10 min-h-screen">
         <PilihJalur />
       </div>
 
-      {/* HERO — The Gate */}
+      {/* HERO — The Gate (opaque, covers content behind) */}
       {isGateVisible && (
         <div
-          className={`fixed inset-0 z-50 ${
+          className={`fixed inset-0 z-50 bg-[#FAF7F2] ${
             phase === "opening" ? "animate-gate-open" : ""
           }`}
         >

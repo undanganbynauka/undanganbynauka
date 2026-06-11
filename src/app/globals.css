@@ -112,9 +112,10 @@
   min-height: 100vh;
 }
 
-/* Hero — also transparent, page bg shows through */
+/* Hero — solid opaque background so it covers content behind (the gate) */
 .nauka-canvas-hero {
   position: relative;
+  background: #FAF7F2;
   min-height: 100vh;
 }
 
@@ -167,7 +168,15 @@
   justify-content: center;
   gap: 6px;
   padding: 0;
-  height: 40px;
+  height: 24px;
+}
+
+/* Section edge ornament — small decorative marks at section corners */
+.nauka-edge-ornament {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.12;
 }
 
 /* Smooth scroll */

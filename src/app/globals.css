@@ -104,7 +104,7 @@
 /* Hero keeps the gradient */
 .nauka-canvas-hero {
   position: relative;
-  background: linear-gradient(180deg, #FAF7F2 0%, #E8DDCF 100%);
+  background: #FAF7F2;
   min-height: 100vh;
 }
 

@@ -63,14 +63,6 @@ export function NaukaHero({ onEnter }: NaukaHeroProps) {
           <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-nauka-gold/10 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
         </button>
       </div>
-
-      {/* Bottom scroll hint */}
-      <div className="animate-nauka-fade-in-delay-3 absolute bottom-10 left-1/2 z-10 -translate-x-1/2">
-        <div className="flex flex-col items-center gap-2">
-          <span className="h-8 w-px bg-nauka-warm-400/30" />
-          <div className="h-2 w-2 rotate-45 border-b border-r border-nauka-warm-400/30" />
-        </div>
-      </div>
     </section>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface PilihJalurProps {
   visible?: boolean;
@@ -10,6 +11,7 @@ export function PilihJalur({ visible: forceVisible }: PilihJalurProps) {
   const [scrolledVisible, setScrolledVisible] = useState(false);
   const [hoveredCard, setHoveredCard] = useState<"universal" | "syari" | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -29,6 +31,12 @@ export function PilihJalur({ visible: forceVisible }: PilihJalurProps) {
   }, []);
 
   const visible = forceVisible ?? scrolledVisible;
+
+  const handleSelectJalur = (jalur: "universal" | "syari") => {
+    // Navigate to template page based on jalur
+    // For now, placeholder route — will be built later
+    router.push(`/template?jalur=${jalur}`);
+  };
 
   return (
     <section
@@ -52,10 +60,11 @@ export function PilihJalur({ visible: forceVisible }: PilihJalurProps) {
       {/* Cards */}
       <div className="relative z-10 flex w-full max-w-3xl flex-col items-center gap-8 md:flex-row md:gap-10">
         {/* Universal Card */}
-        <div
+        <button
+          onClick={() => handleSelectJalur("universal")}
           onMouseEnter={() => setHoveredCard("universal")}
           onMouseLeave={() => setHoveredCard(null)}
-          className={`group flex flex-1 cursor-pointer flex-col items-center rounded-2xl border border-nauka-warm-300/30 bg-nauka-warm-50/40 px-8 py-12 text-center backdrop-blur-sm transition-all duration-500 md:px-10 md:py-14 ${
+          className={`group flex flex-1 flex-col items-center rounded-2xl border border-nauka-warm-300/30 bg-nauka-warm-50/40 px-8 py-12 text-center backdrop-blur-sm transition-all duration-500 md:px-10 md:py-14 ${
             hoveredCard === "universal"
               ? "scale-[1.02] border-nauka-gold/30 shadow-lg shadow-nauka-gold/5"
               : hoveredCard === "syari"
@@ -66,16 +75,20 @@ export function PilihJalur({ visible: forceVisible }: PilihJalurProps) {
           }`}
           style={{ transitionDelay: "0.2s" }}
         >
-          {/* Icon */}
-          <span className="mb-6 text-4xl md:text-5xl">🌿</span>
-
           {/* Title */}
           <h3
-            className="mb-6 font-serif text-xl tracking-wider text-nauka-warm-700 md:text-2xl"
+            className="mb-6 font-serif text-2xl tracking-wider text-nauka-warm-700 md:text-3xl"
             style={{ fontFamily: "var(--font-cormorant)" }}
           >
             Universal
           </h3>
+
+          {/* Ornament line */}
+          <div className="mb-6 flex items-center gap-2">
+            <span className="h-px w-6 bg-nauka-gold/20 md:w-8" />
+            <span className="h-0.5 w-0.5 rounded-full bg-nauka-gold/30" />
+            <span className="h-px w-6 bg-nauka-gold/20 md:w-8" />
+          </div>
 
           {/* Visual character */}
           <div className="space-y-1.5">
@@ -85,25 +98,21 @@ export function PilihJalur({ visible: forceVisible }: PilihJalurProps) {
             >
               Visual
             </span>
-            <div className="flex items-center justify-center gap-2">
-              <span className="h-px w-4 bg-nauka-gold/20" />
-              <span className="h-0.5 w-0.5 rounded-full bg-nauka-gold/30" />
-              <span className="h-px w-4 bg-nauka-gold/20" />
-            </div>
             <p
-              className="font-serif text-sm font-light tracking-wide text-nauka-warm-400 md:text-base"
+              className="font-serif text-sm font-light tracking-wide text-nauka-warm-500 md:text-base"
               style={{ fontFamily: "var(--font-cormorant)" }}
             >
               Hangat · Fleksibel · Ekspresif
             </p>
           </div>
-        </div>
+        </button>
 
         {/* Syar'i Card */}
-        <div
+        <button
+          onClick={() => handleSelectJalur("syari")}
           onMouseEnter={() => setHoveredCard("syari")}
           onMouseLeave={() => setHoveredCard(null)}
-          className={`group flex flex-1 cursor-pointer flex-col items-center rounded-2xl border border-nauka-warm-300/30 bg-nauka-warm-50/40 px-8 py-12 text-center backdrop-blur-sm transition-all duration-500 md:px-10 md:py-14 ${
+          className={`group flex flex-1 flex-col flex-col items-center rounded-2xl border border-nauka-warm-300/30 bg-nauka-warm-50/40 px-8 py-12 text-center backdrop-blur-sm transition-all duration-500 md:px-10 md:py-14 ${
             hoveredCard === "syari"
               ? "scale-[1.02] border-nauka-gold/30 shadow-lg shadow-nauka-gold/5"
               : hoveredCard === "universal"
@@ -114,16 +123,20 @@ export function PilihJalur({ visible: forceVisible }: PilihJalurProps) {
           }`}
           style={{ transitionDelay: "0.4s" }}
         >
-          {/* Icon */}
-          <span className="mb-6 text-4xl md:text-5xl">🕌</span>
-
           {/* Title */}
           <h3
-            className="mb-6 font-serif text-xl tracking-wider text-nauka-warm-700 md:text-2xl"
+            className="mb-6 font-serif text-2xl tracking-wider text-nauka-warm-700 md:text-3xl"
             style={{ fontFamily: "var(--font-cormorant)" }}
           >
             Syar&apos;i
           </h3>
+
+          {/* Ornament line */}
+          <div className="mb-6 flex items-center gap-2">
+            <span className="h-px w-6 bg-nauka-gold/20 md:w-8" />
+            <span className="h-0.5 w-0.5 rounded-full bg-nauka-gold/30" />
+            <span className="h-px w-6 bg-nauka-gold/20 md:w-8" />
+          </div>
 
           {/* Visual character */}
           <div className="space-y-1.5">
@@ -133,30 +146,15 @@ export function PilihJalur({ visible: forceVisible }: PilihJalurProps) {
             >
               Visual
             </span>
-            <div className="flex items-center justify-center gap-2">
-              <span className="h-px w-4 bg-nauka-gold/20" />
-              <span className="h-0.5 w-0.5 rounded-full bg-nauka-gold/30" />
-              <span className="h-px w-4 bg-nauka-gold/20" />
-            </div>
             <p
-              className="font-serif text-sm font-light tracking-wide text-nauka-warm-400 md:text-base"
+              className="font-serif text-sm font-light tracking-wide text-nauka-warm-500 md:text-base"
               style={{ fontFamily: "var(--font-cormorant)" }}
             >
               Tenang · Minimal · Terjaga
             </p>
           </div>
-        </div>
+        </button>
       </div>
-
-      {/* Note */}
-      <p
-        className={`relative z-10 mt-12 font-serif text-xs font-light tracking-wider text-nauka-warm-400/60 md:text-sm ${
-          visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
-        }`}
-        style={{ fontFamily: "var(--font-cormorant)", transitionDelay: "0.6s" }}
-      >
-        Mode mengatur visual, karakter, adab, dan template pesan
-      </p>
     </section>
   );
 }

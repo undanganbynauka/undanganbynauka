@@ -267,3 +267,455 @@ html {
 .animate-gate-open {
   animation: gate-open 1.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
+
+/* ===== HERITAGE WEDDING TEMPLATE ===== */
+
+/* Heritage color tokens */
+:root {
+  --color-heritage-gold: #D8C3A5;
+  --color-heritage-gold-bright: #C9A96E;
+  --color-heritage-cream: #FAF6EE;
+  --color-heritage-dark: #2C2420;
+  --color-heritage-text: #4A3F37;
+  --color-heritage-muted: #8A7D72;
+}
+
+/* Heritage page background */
+.heritage-page {
+  background: #1A1614;
+  color: #FAF6EE;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Heritage section base */
+.heritage-section {
+  position: relative;
+  padding: 5rem 1.5rem;
+  min-height: auto;
+  overflow: hidden;
+}
+
+/* Heritage entrance animation */
+.heritage-entrance {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 1s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.heritage-entrance.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Heritage card — shared card style */
+.heritage-card {
+  background: rgba(250, 246, 238, 0.06);
+  border-radius: 16px;
+  border: 1px solid rgba(209, 197, 184, 0.12);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+}
+
+/* Heritage divider */
+.heritage-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.heritage-divider-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-heritage-gold);
+  opacity: 0.5;
+}
+
+.heritage-divider-line {
+  width: 40px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-heritage-gold),
+    transparent
+  );
+  opacity: 0.4;
+}
+
+/* ===== HERO SECTION ===== */
+.heritage-hero-section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+}
+
+.heritage-hero-bg {
+  background: linear-gradient(
+    180deg,
+    rgba(28, 22, 18, 0.7) 0%,
+    rgba(28, 22, 18, 0.5) 50%,
+    rgba(28, 22, 18, 0.8) 100%
+  );
+  background-size: cover;
+  background-position: center;
+}
+
+.heritage-hero-bismillah {
+  font-size: 1.75rem;
+  color: var(--color-heritage-gold);
+  opacity: 0.85;
+  line-height: 1.6;
+}
+
+.heritage-hero-intro {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--color-heritage-cream);
+  opacity: 0.6;
+}
+
+.heritage-hero-names {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.heritage-hero-name-bride,
+.heritage-hero-name-groom {
+  font-size: 2.5rem;
+  font-weight: 300;
+  color: var(--color-heritage-cream);
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+}
+
+.heritage-hero-amp {
+  font-size: 1.25rem;
+  color: var(--color-heritage-gold);
+  opacity: 0.7;
+  margin: 0.25rem 0;
+}
+
+.heritage-hero-parents {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.heritage-hero-parent {
+  font-size: 0.8125rem;
+  color: var(--color-heritage-cream);
+  opacity: 0.55;
+  line-height: 1.5;
+}
+
+.heritage-hero-parent-amp {
+  font-size: 0.75rem;
+  color: var(--color-heritage-gold);
+  opacity: 0.5;
+  margin: 0 0.25rem;
+}
+
+.heritage-hero-open-btn {
+  display: inline-block;
+  padding: 0.75rem 2.5rem;
+  border: 1px solid var(--color-heritage-gold);
+  border-radius: 9999px;
+  color: var(--color-heritage-cream);
+  font-size: 0.875rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.heritage-hero-open-btn:hover {
+  background: rgba(216, 195, 165, 0.1);
+  border-color: var(--color-heritage-gold-bright);
+}
+
+/* ===== AYAT SECTION ===== */
+.heritage-ayat-section {
+  padding: 5rem 1.5rem;
+}
+
+.heritage-ayat-frame {
+  /* Container for ayat card */
+}
+
+.heritage-ayat-arabic {
+  font-size: 1.5rem;
+  text-align: right;
+  direction: rtl;
+  line-height: 2.2;
+  color: var(--color-heritage-cream);
+  opacity: 0.9;
+}
+
+.heritage-ayat-translation {
+  font-size: 0.875rem;
+  line-height: 1.8;
+  color: var(--color-heritage-cream);
+  opacity: 0.65;
+  text-align: center;
+}
+
+.heritage-ayat-source {
+  font-size: 0.75rem;
+  color: var(--color-heritage-gold);
+  opacity: 0.6;
+  text-align: center;
+  font-style: italic;
+}
+
+/* ===== COUNTDOWN SECTION ===== */
+.heritage-countdown-section {
+  min-height: auto;
+  padding: 5rem 1.5rem;
+}
+
+.heritage-countdown-card {
+  background: rgba(250, 246, 238, 0.06);
+  border-radius: 16px;
+  border: 1px solid rgba(209, 197, 184, 0.12);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+  padding: 2.5rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.heritage-countdown-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-heritage-cream);
+  letter-spacing: 0.04em;
+  margin-bottom: 0.5rem;
+}
+
+.heritage-countdown-quote {
+  font-size: 0.8125rem;
+  font-style: italic;
+  font-weight: 300;
+  color: var(--color-heritage-cream);
+  opacity: 0.55;
+  max-width: 20rem;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.heritage-countdown-grid {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+}
+
+.heritage-countdown-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 3.5rem;
+}
+
+.heritage-countdown-number {
+  font-size: 2.25rem;
+  font-weight: 500;
+  color: var(--color-heritage-gold);
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+@media (min-width: 640px) {
+  .heritage-countdown-number {
+    font-size: 3.25rem;
+  }
+  .heritage-countdown-unit {
+    min-width: 4.5rem;
+  }
+}
+
+.heritage-countdown-label {
+  font-size: 0.5625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--color-heritage-cream);
+  opacity: 0.55;
+  margin-top: 0.5rem;
+}
+
+.heritage-countdown-separator {
+  font-size: 1.75rem;
+  font-weight: 300;
+  color: var(--color-heritage-gold);
+  opacity: 0.4;
+  line-height: 1;
+  margin: 0 0.25rem;
+  padding-top: 0.25rem;
+}
+
+@media (min-width: 640px) {
+  .heritage-countdown-separator {
+    font-size: 2.5rem;
+    margin: 0 0.5rem;
+  }
+}
+
+.heritage-countdown-expired {
+  padding: 1rem 0;
+}
+
+.heritage-countdown-expired-text {
+  font-size: 1.125rem;
+  font-weight: 400;
+  color: var(--color-heritage-gold);
+  opacity: 0.85;
+}
+
+/* ===== EVENT DETAILS SECTION ===== */
+.heritage-event-section {
+  padding: 5rem 1.5rem;
+}
+
+.heritage-section-title {
+  font-size: 1.75rem;
+  font-weight: 400;
+  color: var(--color-heritage-cream);
+  text-align: center;
+  letter-spacing: 0.04em;
+}
+
+.heritage-section-subtitle {
+  font-size: 0.8125rem;
+  color: var(--color-heritage-cream);
+  opacity: 0.55;
+  text-align: center;
+  max-width: 20rem;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.heritage-event-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.heritage-event-card {
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+
+.heritage-event-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--color-heritage-gold);
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.04em;
+}
+
+.heritage-event-date {
+  font-size: 0.875rem;
+  color: var(--color-heritage-cream);
+  opacity: 0.75;
+  margin-bottom: 0.25rem;
+}
+
+.heritage-event-time {
+  font-size: 0.8125rem;
+  color: var(--color-heritage-cream);
+  opacity: 0.55;
+  margin-bottom: 0;
+}
+
+.heritage-event-venue {
+  font-size: 0.9375rem;
+  color: var(--color-heritage-cream);
+  opacity: 0.8;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.heritage-event-address {
+  font-size: 0.75rem;
+  color: var(--color-heritage-cream);
+  opacity: 0.5;
+  line-height: 1.5;
+}
+
+.heritage-event-map-btn {
+  display: inline-block;
+  padding: 0.5rem 1.5rem;
+  border: 1px solid var(--color-heritage-gold);
+  border-radius: 9999px;
+  color: var(--color-heritage-cream);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.heritage-event-map-btn:hover {
+  background: rgba(216, 195, 165, 0.1);
+  border-color: var(--color-heritage-gold-bright);
+}
+
+/* ===== FOOTER SECTION ===== */
+.heritage-footer-section {
+  padding: 4rem 1.5rem 3rem;
+}
+
+.heritage-footer-thanks {
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: var(--color-heritage-cream);
+  letter-spacing: 0.06em;
+}
+
+.heritage-footer-message {
+  font-size: 0.8125rem;
+  color: var(--color-heritage-cream);
+  opacity: 0.55;
+}
+
+.heritage-footer-names {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.heritage-footer-name {
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: var(--color-heritage-gold);
+  letter-spacing: 0.04em;
+}
+
+.heritage-footer-amp {
+  font-size: 1rem;
+  color: var(--color-heritage-gold);
+  opacity: 0.6;
+}
+
+.heritage-footer-credit {
+  font-size: 0.625rem;
+  color: var(--color-heritage-cream);
+  opacity: 0.3;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}

@@ -2,7 +2,6 @@
 
 import React, { useState, useCallback } from "react";
 import { NaukaHero } from "@/components/nauka/NaukaHero";
-import { DaftarIsi } from "@/components/nauka/DaftarIsi";
 import { KenapaNauka } from "@/components/nauka/KenapaNauka";
 import { PilihJalur } from "@/components/nauka/PilihJalur";
 
@@ -30,8 +29,7 @@ export default function Home() {
 
       {/* Content sections — no gap, no divider, continuous flow */}
       <div className="relative z-10">
-        <DaftarIsi visible={phase === "inside"} />
-        <KenapaNauka />
+        <KenapaNauka visible={phase === "inside"} />
         <PilihJalur />
       </div>
 

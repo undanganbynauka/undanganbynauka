@@ -70,10 +70,10 @@ function TemplatePageContent() {
           }`}
         >
           <HeritageHero
-            bride="Nadia"
-            groom="Rizky"
-            parentBride="Putri dari Bapak Ahmad & Ibu Fatimah"
-            parentGroom="Putra dari Bapak Mahmud & Ibu Aisyah"
+            groom="Ali"
+            bride="Lyla"
+            date="Ahad • 05 Juli 2026"
+            guestName="Nama Tamu"
             onOpen={handleOpen}
           />
         </div>

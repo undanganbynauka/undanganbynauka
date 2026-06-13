@@ -345,7 +345,18 @@ html {
   opacity: 0.4;
 }
 
-/* ===== HERO SECTION ===== */
+/* ===== HERO SECTION (Original Ivory) ===== */
+.heritage-hero-section-original {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  background: #F8F3E9;
+}
+
+/* Legacy hero (dark) — kept for reference */
 .heritage-hero-section {
   min-height: 100vh;
   display: flex;
@@ -364,85 +375,6 @@ html {
   );
   background-size: cover;
   background-position: center;
-}
-
-.heritage-hero-bismillah {
-  font-size: 1.75rem;
-  color: var(--color-heritage-gold);
-  opacity: 0.85;
-  line-height: 1.6;
-}
-
-.heritage-hero-intro {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.25em;
-  color: var(--color-heritage-cream);
-  opacity: 0.6;
-}
-
-.heritage-hero-names {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.heritage-hero-name-bride,
-.heritage-hero-name-groom {
-  font-size: 2.5rem;
-  font-weight: 300;
-  color: var(--color-heritage-cream);
-  line-height: 1.2;
-  letter-spacing: 0.02em;
-}
-
-.heritage-hero-amp {
-  font-size: 1.25rem;
-  color: var(--color-heritage-gold);
-  opacity: 0.7;
-  margin: 0.25rem 0;
-}
-
-.heritage-hero-parents {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0;
-}
-
-.heritage-hero-parent {
-  font-size: 0.8125rem;
-  color: var(--color-heritage-cream);
-  opacity: 0.55;
-  line-height: 1.5;
-}
-
-.heritage-hero-parent-amp {
-  font-size: 0.75rem;
-  color: var(--color-heritage-gold);
-  opacity: 0.5;
-  margin: 0 0.25rem;
-}
-
-.heritage-hero-open-btn {
-  display: inline-block;
-  padding: 0.75rem 2.5rem;
-  border: 1px solid var(--color-heritage-gold);
-  border-radius: 9999px;
-  color: var(--color-heritage-cream);
-  font-size: 0.875rem;
-  font-weight: 400;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  background: transparent;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.heritage-hero-open-btn:hover {
-  background: rgba(216, 195, 165, 0.1);
-  border-color: var(--color-heritage-gold-bright);
 }
 
 /* ===== AYAT SECTION ===== */

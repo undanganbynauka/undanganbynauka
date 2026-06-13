@@ -11,21 +11,21 @@ export default function TemplatePage() {
 
   const handleOpen = useCallback(() => {
     setPhase("opening");
-    setTimeout(() => setPhase("inside"), 1600);
+    setTimeout(() => setPhase("inside"), 1400);
   }, []);
 
   const isGateVisible = phase === "gate" || phase === "opening";
 
   return (
     <main>
-      {/* Content — visible after gate opens */}
+      {/* Content — starts fading in during "opening" phase for cross-fade */}
       <div
         style={{
-          opacity: phase === "inside" ? 1 : 0,
-          transition: "opacity 0.8s ease",
+          opacity: phase === "gate" ? 0 : 1,
+          transition: "opacity 1.2s ease",
         }}
       >
-        <ChooseYourJourney visible={phase === "inside"} />
+        <ChooseYourJourney visible={phase !== "gate"} />
 
         {/* Placeholder sections for navigation targets */}
         <section
@@ -75,7 +75,7 @@ export default function TemplatePage() {
         </section>
       </div>
 
-      {/* HERO GATE — covers everything until opened */}
+      {/* HERO GATE — smooth fade out */}
       {isGateVisible && (
         <div
           style={{
@@ -83,7 +83,7 @@ export default function TemplatePage() {
             inset: 0,
             zIndex: 50,
             opacity: phase === "opening" ? 0 : 1,
-            transition: phase === "opening" ? "opacity 1.2s ease" : "none",
+            transition: phase === "opening" ? "opacity 1.4s ease" : "none",
           }}
         >
           <HeroSection onOpen={handleOpen} />

@@ -57,36 +57,46 @@ export function BismillahSection() {
           بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ
         </p>
 
-        {/* Ayat — Cormorant Garamond Italic */}
-        <p
+        {/* Verse Card — subtle highlight */}
+        <div
           style={{
-            fontFamily: "var(--font-cormorant)",
-            fontStyle: "italic",
-            fontSize: "1rem",
-            fontWeight: 400,
-            color: "#7D6E63",
-            lineHeight: 1.8,
-            marginBottom: "0.5rem",
-            maxWidth: "20rem",
-          }}
-        >
-          &ldquo;Dan Dia menjadikan di antaramu rasa kasih dan sayang.&rdquo;
-        </p>
-
-        {/* Referensi Ayat — Plus Jakarta Sans Medium */}
-        <p
-          style={{
-            fontFamily: "var(--font-jakarta)",
-            fontSize: "0.6875rem",
-            fontWeight: 500,
-            color: "#7D6E63",
-            opacity: 0.7,
-            letterSpacing: "0.05em",
+            background: "rgba(125, 110, 99, 0.04)",
+            border: "1px solid rgba(125, 110, 99, 0.12)",
+            borderRadius: "20px",
+            padding: "1.75rem 1.5rem",
             marginBottom: "2rem",
+            textAlign: "center",
           }}
         >
-          QS. Ar-Rum: 21
-        </p>
+          {/* Ayat — Cormorant Garamond Italic */}
+          <p
+            style={{
+              fontFamily: "var(--font-cormorant)",
+              fontStyle: "italic",
+              fontSize: "1rem",
+              fontWeight: 400,
+              color: "#7D6E63",
+              lineHeight: 1.8,
+              marginBottom: "0.75rem",
+            }}
+          >
+            &ldquo;Dan Dia menjadikan di antaramu rasa kasih dan sayang.&rdquo;
+          </p>
+
+          {/* Referensi Ayat — Plus Jakarta Sans Medium */}
+          <p
+            style={{
+              fontFamily: "var(--font-jakarta)",
+              fontSize: "0.6875rem",
+              fontWeight: 500,
+              color: "#7D6E63",
+              opacity: 0.7,
+              letterSpacing: "0.05em",
+            }}
+          >
+            QS. Ar-Rum: 21
+          </p>
+        </div>
 
         {/* Paragraf 1 — Plus Jakarta Sans Regular */}
         <p

@@ -27,9 +27,9 @@ export function HeroSection() {
           position: "absolute",
           left: 0,
           bottom: 0,
-          width: 280,
-          height: "auto",
-          maxWidth: 280,
+          width: "auto",
+          height: 400,
+          maxHeight: 400,
           objectFit: "contain",
           objectPosition: "bottom",
         }}
@@ -40,11 +40,11 @@ export function HeroSection() {
       <Image
         src="/bride.png"
         alt="Bride"
-        width={240}
+        width={280}
         height={400}
         style={{
           position: "absolute",
-          right: 10,
+          right: 0,
           bottom: 0,
           width: "auto",
           height: 400,

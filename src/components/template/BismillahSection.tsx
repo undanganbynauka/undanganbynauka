@@ -97,33 +97,6 @@ export function BismillahSection() {
             QS. Ar-Rum: 21
           </p>
         </div>
-
-        {/* Paragraf 1 — Plus Jakarta Sans Regular */}
-        <p
-          style={{
-            fontFamily: "var(--font-jakarta)",
-            fontSize: "0.75rem",
-            fontWeight: 400,
-            color: "#7D6E63",
-            lineHeight: 1.9,
-            marginBottom: "1.25rem",
-          }}
-        >
-          Setiap pertemuan memiliki waktu terbaik yang telah Allah tetapkan. Melalui jalan yang mungkin tidak selalu kami pahami, Dia mempertemukan, menjaga, dan menuntun langkah hingga tiba pada hari yang penuh syukur ini.
-        </p>
-
-        {/* Paragraf 2 — Plus Jakarta Sans Regular */}
-        <p
-          style={{
-            fontFamily: "var(--font-jakarta)",
-            fontSize: "0.75rem",
-            fontWeight: 400,
-            color: "#7D6E63",
-            lineHeight: 1.9,
-          }}
-        >
-          Dengan memohon rahmat dan ridha Allah SWT, kami mengundang Bapak/Ibu/Saudara/i untuk menjadi bagian dari momen yang insyaAllah menjadi awal perjalanan kami dalam ikatan yang diberkahi, dipenuhi kasih sayang, serta senantiasa berada dalam tuntunan-Nya.
-        </p>
       </div>
     </section>
   );

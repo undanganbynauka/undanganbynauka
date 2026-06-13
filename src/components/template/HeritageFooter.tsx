@@ -9,8 +9,8 @@ interface HeritageFooterProps {
 }
 
 export function HeritageFooter({
-  bride = "Nadia",
-  groom = "Rizky",
+  bride = "Lyla",
+  groom = "Ali",
 }: HeritageFooterProps) {
   const { ref, visible } = useHeritageEntrance();
 

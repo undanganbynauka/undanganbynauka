@@ -60,7 +60,8 @@ export function HeroSection() {
         style={{
           position: "relative",
           zIndex: 2,
-          width: "40%",
+          width: "50%",
+          maxWidth: "480px",
           textAlign: "center",
           display: "flex",
           flexDirection: "column",
@@ -72,9 +73,9 @@ export function HeroSection() {
         <p
           style={{
             fontFamily: "var(--font-cormorant)",
-            fontSize: "0.875rem",
+            fontSize: "0.6875rem",
             fontWeight: 400,
-            letterSpacing: "0.2em",
+            letterSpacing: "0.25em",
             textTransform: "uppercase",
             color: "#7D6E63",
             marginBottom: "2rem",
@@ -87,14 +88,14 @@ export function HeroSection() {
         <h1
           style={{
             fontFamily: "var(--font-playfair)",
-            fontSize: "2rem",
+            fontSize: "1.5rem",
             fontWeight: 400,
             color: "#7D6E63",
             marginBottom: "1.5rem",
             lineHeight: 1.2,
           }}
         >
-          Ali dan Lyla
+          Ali & Lyla
         </h1>
 
         {/* Date */}
@@ -155,17 +156,17 @@ export function HeroSection() {
         <button
           style={{
             fontFamily: "var(--font-cormorant)",
-            fontSize: "0.5625rem",
+            fontSize: "0.5rem",
             fontWeight: 400,
             letterSpacing: "0.3em",
             textTransform: "uppercase",
             color: "#7D6E63",
             background: "transparent",
-            border: "1px solid rgba(125, 110, 99, 0.35)",
+            border: "1px solid rgba(125, 110, 99, 0.3)",
             borderRadius: "2px",
-            padding: "0.35rem 0.85rem",
+            padding: "0.25rem 0.6rem",
             cursor: "pointer",
-            boxShadow: "0 1px 2px rgba(125, 110, 99, 0.06)",
+            boxShadow: "0 1px 2px rgba(125, 110, 99, 0.05)",
             transition: "all 0.3s ease",
           }}
         >

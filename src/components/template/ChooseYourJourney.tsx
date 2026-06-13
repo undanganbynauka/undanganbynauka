@@ -46,7 +46,7 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
           flexDirection: "column",
           alignItems: "center",
           width: "100%",
-          maxWidth: "28rem",
+          maxWidth: "18rem",
           padding: "0 1rem",
         }}
       >
@@ -57,10 +57,10 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
           width={1026}
           height={555}
           style={{
-            width: "100%",
+            width: "80%",
             height: "auto",
             display: "block",
-            marginBottom: "1.5rem",
+            marginBottom: "1rem",
           }}
           priority
         />
@@ -104,7 +104,6 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
             flexDirection: "column",
             gap: "0.75rem",
             width: "100%",
-            maxWidth: "18rem",
           }}
         >
           {/* Card 1: The Wedding Details */}

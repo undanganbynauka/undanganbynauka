@@ -97,6 +97,20 @@ export function BismillahSection() {
             QS. Ar-Rum: 21
           </p>
         </div>
+
+        {/* Paragraf — Plus Jakarta Sans Regular */}
+        <p
+          style={{
+            fontFamily: "var(--font-jakarta)",
+            fontSize: "0.75rem",
+            fontWeight: 400,
+            color: "#7D6E63",
+            lineHeight: 1.9,
+            textAlign: "center",
+          }}
+        >
+          Setiap pertemuan memiliki waktu terbaik yang telah Allah tetapkan. Melalui jalan yang mungkin tidak selalu kami pahami, Dia mempertemukan, menjaga, dan menuntun langkah hingga tiba pada hari yang penuh syukur ini.
+        </p>
       </div>
     </section>
   );

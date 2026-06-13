@@ -57,7 +57,7 @@ export function HeroSection() {
         priority
       />
 
-      {/* Top ornament — stretched full width edge to edge */}
+      {/* Top ornament — stretched full width, slight crop is ok */}
       <div
         style={{
           position: "absolute",
@@ -65,6 +65,8 @@ export function HeroSection() {
           left: 0,
           right: 0,
           width: "100%",
+          height: "180px",
+          overflow: "hidden",
           zIndex: 3,
           pointerEvents: "none",
           lineHeight: 0,
@@ -77,7 +79,9 @@ export function HeroSection() {
           height={200}
           style={{
             width: "100%",
-            height: "auto",
+            height: "180px",
+            objectFit: "cover",
+            objectPosition: "top center",
             display: "block",
           }}
           priority

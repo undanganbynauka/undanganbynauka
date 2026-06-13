@@ -4,6 +4,7 @@ import React, { useState, useCallback } from "react";
 import { HeroSection } from "@/components/template/HeroSection";
 import { ChooseYourJourney } from "@/components/template/ChooseYourJourney";
 import { BismillahSection } from "@/components/template/BismillahSection";
+import { BrideGroomSection } from "@/components/template/BrideGroomSection";
 
 type Phase = "gate" | "opening" | "inside";
 
@@ -28,6 +29,7 @@ export default function TemplatePage() {
       >
         <ChooseYourJourney visible={phase !== "gate"} />
         <BismillahSection />
+        <BrideGroomSection />
       </div>
 
       {/* HERO GATE — smooth fade out */}

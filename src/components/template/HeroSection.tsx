@@ -15,6 +15,8 @@ export function HeroSection() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        margin: 0,
+        padding: 0,
       }}
     >
       {/* Groom — left side */}
@@ -55,7 +57,7 @@ export function HeroSection() {
         priority
       />
 
-      {/* Top ornament — full width */}
+      {/* Top ornament — full width edge to edge */}
       <Image
         src="/hero-ornament-top.png"
         alt="Ornament"
@@ -65,8 +67,10 @@ export function HeroSection() {
           position: "absolute",
           top: 0,
           left: 0,
+          right: 0,
           width: "100%",
           height: "auto",
+          display: "block",
           zIndex: 3,
           pointerEvents: "none",
         }}

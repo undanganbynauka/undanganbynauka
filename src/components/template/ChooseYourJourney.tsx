@@ -44,7 +44,7 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
           top: "50%",
           left: 0,
           right: 0,
-          transform: "translateY(-70%)",
+          transform: "translateY(-30%)",
           lineHeight: 0,
           pointerEvents: "none",
           zIndex: 1,

@@ -27,16 +27,15 @@ export function HeroSection() {
           position: "absolute",
           left: 0,
           bottom: 0,
-          width: "auto",
+          width: 280,
           height: 400,
-          maxHeight: 400,
-          objectFit: "contain",
-          objectPosition: "bottom",
+          objectFit: "cover",
+          objectPosition: "bottom center",
         }}
         priority
       />
 
-      {/* Bride — right side, same height as groom */}
+      {/* Bride — right side, same size as groom */}
       <Image
         src="/bride.png"
         alt="Bride"
@@ -46,11 +45,10 @@ export function HeroSection() {
           position: "absolute",
           right: 0,
           bottom: 0,
-          width: "auto",
+          width: 280,
           height: 400,
-          maxHeight: 400,
-          objectFit: "contain",
-          objectPosition: "bottom",
+          objectFit: "cover",
+          objectPosition: "bottom center",
         }}
         priority
       />

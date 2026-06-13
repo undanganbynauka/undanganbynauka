@@ -73,7 +73,7 @@ export function HeroSection() {
         <p
           style={{
             fontFamily: "var(--font-cormorant)",
-            fontSize: "0.5625rem",
+            fontSize: "0.75rem",
             fontWeight: 400,
             letterSpacing: "0.2em",
             textTransform: "uppercase",
@@ -156,9 +156,9 @@ export function HeroSection() {
         <button
           style={{
             fontFamily: "var(--font-cormorant)",
-            fontSize: "0.5rem",
+            fontSize: "0.75rem",
             fontWeight: 400,
-            letterSpacing: "0.3em",
+            letterSpacing: "0.2em",
             textTransform: "uppercase",
             color: "#7D6E63",
             background: "transparent",

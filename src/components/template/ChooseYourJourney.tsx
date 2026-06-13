@@ -57,7 +57,7 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
           width={1026}
           height={555}
           style={{
-            width: "80%",
+            width: "90%",
             height: "auto",
             display: "block",
             marginBottom: "1rem",

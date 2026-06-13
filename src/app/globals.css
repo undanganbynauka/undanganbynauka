@@ -356,7 +356,12 @@ html {
 }
 
 .heritage-hero-bg {
-  background: #1A1614;
+  background: linear-gradient(
+    180deg,
+    rgba(28, 22, 18, 0.7) 0%,
+    rgba(28, 22, 18, 0.5) 50%,
+    rgba(28, 22, 18, 0.8) 100%
+  );
   background-size: cover;
   background-position: center;
 }

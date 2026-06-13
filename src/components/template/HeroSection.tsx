@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 
-export function HeroSection() {
+export function HeroSection({ onOpen }: { onOpen: () => void }) {
   return (
     <section
       style={{
@@ -188,6 +188,7 @@ export function HeroSection() {
 
         {/* Open Invitation Button */}
         <button
+          onClick={onOpen}
           style={{
             fontFamily: "var(--font-cormorant)",
             fontSize: "0.75rem",

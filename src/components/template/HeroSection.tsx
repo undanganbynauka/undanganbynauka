@@ -163,7 +163,7 @@ export function HeroSection() {
             background: "transparent",
             border: "1px solid rgba(125, 110, 99, 0.35)",
             borderRadius: "2px",
-            padding: "0.4rem 1.25rem",
+            padding: "0.35rem 0.85rem",
             cursor: "pointer",
             boxShadow: "0 1px 2px rgba(125, 110, 99, 0.06)",
             transition: "all 0.3s ease",

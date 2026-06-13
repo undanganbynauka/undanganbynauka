@@ -60,7 +60,7 @@ export function HeroSection() {
         style={{
           position: "relative",
           zIndex: 2,
-          width: "50%",
+          width: "40%",
           textAlign: "center",
           display: "flex",
           flexDirection: "column",
@@ -155,24 +155,20 @@ export function HeroSection() {
         <button
           style={{
             fontFamily: "var(--font-cormorant)",
-            fontSize: "0.625rem",
+            fontSize: "0.5625rem",
             fontWeight: 400,
-            letterSpacing: "0.25em",
+            letterSpacing: "0.3em",
             textTransform: "uppercase",
             color: "#7D6E63",
             background: "transparent",
-            border: "1px solid rgba(125, 110, 99, 0.4)",
+            border: "1px solid rgba(125, 110, 99, 0.35)",
             borderRadius: "2px",
-            padding: "0.5rem 1.75rem",
+            padding: "0.4rem 1.25rem",
             cursor: "pointer",
-            boxShadow: "0 1px 2px rgba(125, 110, 99, 0.08)",
+            boxShadow: "0 1px 2px rgba(125, 110, 99, 0.06)",
             transition: "all 0.3s ease",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "0.4rem",
           }}
         >
-          <span style={{ fontSize: "0.625rem", lineHeight: 1, opacity: 0.6 }}>✉</span>
           Open Invitation
         </button>
       </div>

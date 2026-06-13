@@ -57,14 +57,14 @@ export function HeroSection() {
         priority
       />
 
-      {/* Top ornament — stretched full width, slight crop is ok */}
+      {/* Top ornament — over-stretched to hide transparent edges */}
       <div
         style={{
           position: "absolute",
           top: 0,
-          left: 0,
-          right: 0,
-          width: "100%",
+          left: "-5%",
+          right: "-5%",
+          width: "110%",
           height: "180px",
           overflow: "hidden",
           zIndex: 3,
@@ -75,7 +75,7 @@ export function HeroSection() {
         <Image
           src="/hero-ornament-top.png"
           alt="Ornament"
-          width={1200}
+          width={1400}
           height={200}
           style={{
             width: "100%",

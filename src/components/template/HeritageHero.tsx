@@ -32,10 +32,10 @@ export function HeritageHero({
         className={`relative w-full max-w-xs md:max-w-sm transition-all duration-1000 ${
           visible ? "translate-y-0 opacity-100" : "-translate-y-6 opacity-0"
         }`}
-        style={{ height: "18vh", minHeight: "120px", maxHeight: "220px" }}
+        style={{ height: "20vh", minHeight: "120px", maxHeight: "240px" }}
       >
         <Image
-          src="/daftar-isi-arch.png"
+          src="/hero-arch-ornament.png"
           alt="Ornamental Arch"
           fill
           sizes="(max-width: 768px) 320px, 384px"
@@ -46,7 +46,7 @@ export function HeritageHero({
 
       {/* "The Wedding Invitation Of" */}
       <p
-        className={`mt-4 md:mt-6 transition-all duration-1000 delay-100 ${
+        className={`mt-3 md:mt-5 transition-all duration-1000 delay-100 ${
           visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
         }`}
         style={{
@@ -60,16 +60,16 @@ export function HeritageHero({
         The Wedding Invitation Of
       </p>
 
-      {/* Names: Ali & Lyla */}
+      {/* Names: Ali & Lyla — single line */}
       <div
-        className={`mt-4 md:mt-6 flex flex-col items-center gap-1 transition-all duration-1000 delay-200 ${
+        className={`mt-3 md:mt-5 flex items-baseline justify-center gap-3 transition-all duration-1000 delay-200 ${
           visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
         }`}
       >
         <h1
           style={{
             fontFamily: "var(--font-cormorant)",
-            fontSize: "2.75rem",
+            fontSize: "2.5rem",
             fontWeight: 300,
             color: "#5D4E37",
             lineHeight: 1.2,
@@ -81,10 +81,9 @@ export function HeritageHero({
         <span
           style={{
             fontFamily: "var(--font-cormorant)",
-            fontSize: "1.75rem",
+            fontSize: "2rem",
             color: "#8B7D6B",
-            opacity: 0.7,
-            margin: "0.125rem 0",
+            opacity: 0.6,
           }}
         >
           &
@@ -92,7 +91,7 @@ export function HeritageHero({
         <h1
           style={{
             fontFamily: "var(--font-cormorant)",
-            fontSize: "2.75rem",
+            fontSize: "2.5rem",
             fontWeight: 300,
             color: "#5D4E37",
             lineHeight: 1.2,
@@ -105,7 +104,7 @@ export function HeritageHero({
 
       {/* Date */}
       <p
-        className={`mt-4 md:mt-5 transition-all duration-1000 delay-300 ${
+        className={`mt-3 md:mt-4 transition-all duration-1000 delay-300 ${
           visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
         }`}
         style={{
@@ -120,26 +119,14 @@ export function HeritageHero({
 
       {/* Kepada Yth. */}
       <div
-        className={`mt-6 md:mt-8 flex flex-col items-center gap-1 transition-all duration-1000 delay-400 ${
+        className={`mt-5 md:mt-7 flex flex-col items-center gap-0.5 transition-all duration-1000 delay-400 ${
           visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
         }`}
       >
-        <p
-          style={{
-            fontSize: "0.75rem",
-            color: "#8B7D6B",
-            letterSpacing: "0.08em",
-          }}
-        >
+        <p style={{ fontSize: "0.75rem", color: "#8B7D6B", letterSpacing: "0.06em" }}>
           Kepada Yth.
         </p>
-        <p
-          style={{
-            fontSize: "0.75rem",
-            color: "#8B7D6B",
-            letterSpacing: "0.08em",
-          }}
-        >
+        <p style={{ fontSize: "0.75rem", color: "#8B7D6B", letterSpacing: "0.06em" }}>
           Bapak/Ibu/Saudara/i
         </p>
         <p
@@ -156,37 +143,26 @@ export function HeritageHero({
         </p>
       </div>
 
-      {/* Couple illustrations */}
+      {/* Couple illustration */}
       <div
-        className={`mt-6 md:mt-8 flex items-end justify-center gap-4 md:gap-8 transition-all duration-1000 delay-500 ${
+        className={`mt-5 md:mt-7 relative w-full max-w-xs md:max-w-sm transition-all duration-1000 delay-500 ${
           visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
         }`}
-        style={{ height: "22vh", minHeight: "120px", maxHeight: "240px" }}
+        style={{ height: "25vh", minHeight: "140px", maxHeight: "260px" }}
       >
-        <div className="relative h-full" style={{ width: "30%", maxWidth: "140px" }}>
-          <Image
-            src="/groom-illustration.png"
-            alt=""
-            fill
-            className="object-contain object-bottom"
-            sizes="140px"
-          />
-        </div>
-        <div className="relative h-full" style={{ width: "30%", maxWidth: "140px" }}>
-          <Image
-            src="/bride-illustration.png"
-            alt=""
-            fill
-            className="object-contain object-bottom"
-            sizes="140px"
-          />
-        </div>
+        <Image
+          src="/couple-illustration.png"
+          alt=""
+          fill
+          className="object-contain object-center"
+          sizes="(max-width: 768px) 320px, 384px"
+        />
       </div>
 
       {/* Open Invitation button */}
       <button
         onClick={onOpen}
-        className={`mt-6 md:mt-8 transition-all duration-500 delay-600 ${
+        className={`mt-5 md:mt-7 transition-all duration-500 delay-600 ${
           visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
         }`}
         style={{

@@ -31,11 +31,12 @@ export function HeroSection() {
           height: 400,
           objectFit: "cover",
           objectPosition: "bottom center",
+          zIndex: 1,
         }}
         priority
       />
 
-      {/* Bride — right side, same size as groom */}
+      {/* Bride — right side */}
       <Image
         src="/bride.png"
         alt="Bride"
@@ -49,9 +50,143 @@ export function HeroSection() {
           height: 400,
           objectFit: "cover",
           objectPosition: "bottom center",
+          zIndex: 1,
         }}
         priority
       />
+
+      {/* Center content */}
+      <div
+        style={{
+          position: "relative",
+          zIndex: 2,
+          width: "50%",
+          textAlign: "center",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 0,
+        }}
+      >
+        {/* The Wedding Invitation Of */}
+        <p
+          style={{
+            fontFamily: "var(--font-cormorant)",
+            fontSize: "0.875rem",
+            fontWeight: 400,
+            letterSpacing: "0.2em",
+            textTransform: "uppercase",
+            color: "#7D6E63",
+            marginBottom: "2rem",
+          }}
+        >
+          The Wedding Invitation Of
+        </p>
+
+        {/* Ali & Lyla */}
+        <h1
+          style={{
+            fontFamily: "var(--font-playfair)",
+            fontSize: "3rem",
+            fontWeight: 500,
+            color: "#7D6E63",
+            marginBottom: "1.5rem",
+            lineHeight: 1.2,
+          }}
+        >
+          Ali & Lyla
+        </h1>
+
+        {/* Date */}
+        <p
+          style={{
+            fontFamily: "var(--font-lora)",
+            fontSize: "0.875rem",
+            fontWeight: 400,
+            color: "#7D6E63",
+            opacity: 0.85,
+            marginBottom: "3rem",
+            letterSpacing: "0.05em",
+          }}
+        >
+          Ahad • 05 Juli 2026
+        </p>
+
+        {/* Divider */}
+        <div
+          style={{
+            width: "1px",
+            height: "40px",
+            background: "linear-gradient(to bottom, transparent, #7D6E63, transparent)",
+            opacity: 0.3,
+            marginBottom: "2.5rem",
+          }}
+        />
+
+        {/* Kepada Yth. */}
+        <p
+          style={{
+            fontFamily: "var(--font-lora)",
+            fontSize: "0.75rem",
+            fontWeight: 400,
+            color: "#7D6E63",
+            opacity: 0.7,
+            letterSpacing: "0.1em",
+            marginBottom: "0.5rem",
+          }}
+        >
+          Kepada Yth.
+        </p>
+        <p
+          style={{
+            fontFamily: "var(--font-lora)",
+            fontSize: "0.75rem",
+            fontWeight: 400,
+            color: "#7D6E63",
+            opacity: 0.7,
+            letterSpacing: "0.1em",
+            marginBottom: "0.5rem",
+          }}
+        >
+          Bapak/Ibu/Saudara/i
+        </p>
+        <p
+          style={{
+            fontFamily: "var(--font-playfair)",
+            fontSize: "1rem",
+            fontWeight: 500,
+            color: "#7D6E63",
+            marginBottom: "3rem",
+          }}
+        >
+          Nama Tamu
+        </p>
+
+        {/* Open Invitation Button */}
+        <button
+          style={{
+            fontFamily: "var(--font-lora)",
+            fontSize: "0.75rem",
+            fontWeight: 500,
+            letterSpacing: "0.15em",
+            textTransform: "uppercase",
+            color: "#7D6E63",
+            background: "#F8F4EE",
+            border: "1px solid #7D6E63",
+            padding: "0.75rem 2.5rem",
+            cursor: "pointer",
+            position: "relative",
+            boxShadow: "0 1px 3px rgba(125, 110, 99, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.5)",
+            transition: "all 0.3s ease",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.5rem",
+          }}
+        >
+          <span style={{ fontSize: "0.875rem", lineHeight: 1 }}>✉</span>
+          Open Invitation
+        </button>
+      </div>
     </section>
   );
 }

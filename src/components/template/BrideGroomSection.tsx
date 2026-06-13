@@ -109,7 +109,7 @@ export function BrideGroomSection() {
                 lineHeight: 1.6,
               }}
             >
-              Putri dari Bapak & Ibu
+              Putri kedua dari Bapak Ihsan & Ibu Ratna
             </p>
           </div>
 
@@ -155,7 +155,7 @@ export function BrideGroomSection() {
                 lineHeight: 1.6,
               }}
             >
-              Putra dari Bapak & Ibu
+              Putra pertama dari Bapak Hendri & Ibu Sarah
             </p>
           </div>
         </div>

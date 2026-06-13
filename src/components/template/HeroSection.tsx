@@ -21,15 +21,15 @@ export function HeroSection() {
       <Image
         src="/groom.png"
         alt="Groom"
-        width={420}
-        height={600}
+        width={280}
+        height={400}
         style={{
           position: "absolute",
-          left: -80,
+          left: 0,
           bottom: 0,
-          width: 420,
+          width: 280,
           height: "auto",
-          maxWidth: 420,
+          maxWidth: 280,
           objectFit: "contain",
           objectPosition: "bottom",
         }}
@@ -40,15 +40,15 @@ export function HeroSection() {
       <Image
         src="/bride.png"
         alt="Bride"
-        width={420}
-        height={600}
+        width={280}
+        height={400}
         style={{
           position: "absolute",
-          right: -80,
+          right: 0,
           bottom: 0,
-          width: 420,
+          width: 280,
           height: "auto",
-          maxWidth: 420,
+          maxWidth: 280,
           objectFit: "contain",
           objectPosition: "bottom",
         }}

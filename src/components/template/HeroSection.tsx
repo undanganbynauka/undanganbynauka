@@ -77,6 +77,7 @@ export function HeroSection() {
             fontWeight: 400,
             letterSpacing: "0.2em",
             textTransform: "uppercase",
+            whiteSpace: "nowrap",
             color: "#7D6E63",
             marginBottom: "2rem",
           }}

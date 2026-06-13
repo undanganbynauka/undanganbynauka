@@ -37,19 +37,20 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
         }}
       />
 
-      {/* Arch ornament — absolute, sits above and around the content */}
+      {/* Content wrapper — normal flow, arch above text */}
       <div
         style={{
-          position: "absolute",
-          top: "50%",
-          left: 0,
-          right: 0,
-          transform: "translateY(-80%)",
-          lineHeight: 0,
-          pointerEvents: "none",
-          zIndex: 1,
+          position: "relative",
+          zIndex: 2,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          width: "100%",
+          maxWidth: "28rem",
+          padding: "0 1rem",
         }}
       >
+        {/* Arch ornament — normal flow, sits above the text */}
         <Image
           src="/journey-arch.png"
           alt="Arch Ornament"
@@ -59,23 +60,11 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
             width: "100%",
             height: "auto",
             display: "block",
+            marginBottom: "1.5rem",
           }}
           priority
         />
-      </div>
 
-      {/* Content — centered in viewport */}
-      <div
-        style={{
-          position: "relative",
-          zIndex: 2,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          width: "100%",
-          maxWidth: "18rem",
-        }}
-      >
         {/* Title */}
         <h2
           style={{
@@ -115,6 +104,7 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
             flexDirection: "column",
             gap: "0.75rem",
             width: "100%",
+            maxWidth: "18rem",
           }}
         >
           {/* Card 1: The Wedding Details */}

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Cormorant_Garamond, Playfair_Display, Lora, Plus_Jakarta_Sans } from "next/font/google";
+import { Inter, Cormorant_Garamond, Playfair_Display, Lora, Plus_Jakarta_Sans, Amiri } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
@@ -36,6 +36,13 @@ const jakarta = Plus_Jakarta_Sans({
   display: "swap",
 });
 
+const amiri = Amiri({
+  variable: "--font-amiri",
+  subsets: ["arabic", "latin"],
+  weight: ["400", "700"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "NAUKA — Sebuah ruang kecil untuk mengantar momen",
   description:
@@ -67,7 +74,7 @@ export default function RootLayout({
   return (
     <html lang="id" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${cormorant.variable} ${playfair.variable} ${lora.variable} ${jakarta.variable} antialiased`}
+        className={`${inter.variable} ${cormorant.variable} ${playfair.variable} ${lora.variable} ${jakarta.variable} ${amiri.variable} antialiased`}
       >
         {children}
       </body>

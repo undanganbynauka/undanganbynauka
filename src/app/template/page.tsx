@@ -3,6 +3,7 @@
 import React, { useState, useCallback } from "react";
 import { HeroSection } from "@/components/template/HeroSection";
 import { ChooseYourJourney } from "@/components/template/ChooseYourJourney";
+import { BismillahSection } from "@/components/template/BismillahSection";
 
 type Phase = "gate" | "opening" | "inside";
 
@@ -26,6 +27,7 @@ export default function TemplatePage() {
         }}
       >
         <ChooseYourJourney visible={phase !== "gate"} />
+        <BismillahSection />
       </div>
 
       {/* HERO GATE — smooth fade out */}

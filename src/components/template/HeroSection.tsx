@@ -55,6 +55,24 @@ export function HeroSection() {
         priority
       />
 
+      {/* Top ornament — full width */}
+      <Image
+        src="/hero-ornament-top.png"
+        alt="Ornament"
+        width={1200}
+        height={200}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "auto",
+          zIndex: 3,
+          pointerEvents: "none",
+        }}
+        priority
+      />
+
       {/* Center content */}
       <div
         style={{

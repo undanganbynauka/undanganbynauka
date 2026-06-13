@@ -106,18 +106,18 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
             width: "100%",
           }}
         >
-          {/* Card 1: The Wedding Details */}
-          <a
-            href="#wedding-details"
+          {/* Card 1: The Wedding Details — disabled until sections are ready */}
+          <div
             style={{
               display: "block",
               border: "1px solid rgba(125, 110, 99, 0.25)",
               borderRadius: "4px",
               padding: "0.875rem 1rem",
               textAlign: "center",
-              textDecoration: "none",
               transition: "all 0.4s ease",
               background: "rgba(248, 244, 238, 0.6)",
+              pointerEvents: "none",
+              cursor: "default",
             }}
           >
             <h3
@@ -131,20 +131,20 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
             >
               The Wedding Details
             </h3>
-          </a>
+          </div>
 
-          {/* Card 2: Our Story */}
-          <a
-            href="#our-story"
+          {/* Card 2: Our Story — disabled until sections are ready */}
+          <div
             style={{
               display: "block",
               border: "1px solid rgba(125, 110, 99, 0.25)",
               borderRadius: "4px",
               padding: "0.875rem 1rem",
               textAlign: "center",
-              textDecoration: "none",
               transition: "all 0.4s ease",
               background: "rgba(248, 244, 238, 0.6)",
+              pointerEvents: "none",
+              cursor: "default",
             }}
           >
             <h3
@@ -158,7 +158,7 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
             >
               Our Story
             </h3>
-          </a>
+          </div>
         </div>
       </div>
     </section>

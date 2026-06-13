@@ -97,20 +97,6 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
             background: "transparent",
           }}
         >
-          <p
-            style={{
-              fontFamily: "var(--font-cormorant)",
-              fontSize: "0.6875rem",
-              fontWeight: 400,
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              color: "#7D6E63",
-              opacity: 0.5,
-              marginBottom: "0.75rem",
-            }}
-          >
-            01
-          </p>
           <h3
             style={{
               fontFamily: "var(--font-playfair)",
@@ -118,23 +104,10 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
               fontWeight: 400,
               color: "#7D6E63",
               letterSpacing: "0.04em",
-              marginBottom: "0.75rem",
             }}
           >
             The Wedding Details
           </h3>
-          <p
-            style={{
-              fontFamily: "var(--font-lora)",
-              fontSize: "0.75rem",
-              fontWeight: 400,
-              color: "#7D6E63",
-              opacity: 0.55,
-              lineHeight: 1.7,
-            }}
-          >
-            Informasi acara, profil mempelai, lokasi, jadwal, dan countdown.
-          </p>
         </a>
 
         {/* Card 2: Our Story */}
@@ -151,20 +124,6 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
             background: "transparent",
           }}
         >
-          <p
-            style={{
-              fontFamily: "var(--font-cormorant)",
-              fontSize: "0.6875rem",
-              fontWeight: 400,
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              color: "#7D6E63",
-              opacity: 0.5,
-              marginBottom: "0.75rem",
-            }}
-          >
-            02
-          </p>
           <h3
             style={{
               fontFamily: "var(--font-playfair)",
@@ -172,23 +131,10 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
               fontWeight: 400,
               color: "#7D6E63",
               letterSpacing: "0.04em",
-              marginBottom: "0.75rem",
             }}
           >
             Our Story
           </h3>
-          <p
-            style={{
-              fontFamily: "var(--font-lora)",
-              fontSize: "0.75rem",
-              fontWeight: 400,
-              color: "#7D6E63",
-              opacity: 0.55,
-              lineHeight: 1.7,
-            }}
-          >
-            Kisah perjalanan, RSVP, amplop digital, dan ucapan untuk pengantin.
-          </p>
         </a>
       </div>
     </section>

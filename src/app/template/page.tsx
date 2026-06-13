@@ -78,11 +78,12 @@ export default function TemplatePage() {
       {/* HERO GATE — covers everything until opened */}
       {isGateVisible && (
         <div
-          className={phase === "opening" ? "animate-gate-open" : ""}
           style={{
             position: "fixed",
             inset: 0,
             zIndex: 50,
+            opacity: phase === "opening" ? 0 : 1,
+            transition: phase === "opening" ? "opacity 1.2s ease" : "none",
           }}
         >
           <HeroSection onOpen={handleOpen} />

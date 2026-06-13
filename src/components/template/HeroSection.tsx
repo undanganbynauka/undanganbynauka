@@ -44,7 +44,7 @@ export function HeroSection() {
         height={400}
         style={{
           position: "absolute",
-          right: -40,
+          right: -15,
           bottom: 0,
           width: 280,
           height: 400,
@@ -60,8 +60,8 @@ export function HeroSection() {
         style={{
           position: "relative",
           zIndex: 2,
-          width: "50%",
-          maxWidth: "520px",
+          width: "60%",
+          maxWidth: "600px",
           textAlign: "center",
           display: "flex",
           flexDirection: "column",

@@ -37,19 +37,12 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
         }}
       />
 
-      {/* Arch ornament — 70% of section height */}
+      {/* Arch ornament — normal flow, so text sits right below it */}
       <div
         style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: "70%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "flex-start",
-          pointerEvents: "none",
+          position: "relative",
           zIndex: 1,
+          width: "100%",
           lineHeight: 0,
         }}
       >
@@ -61,15 +54,13 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
           style={{
             width: "100%",
             height: "auto",
-            objectFit: "contain",
-            objectPosition: "top center",
             display: "block",
           }}
           priority
         />
       </div>
 
-      {/* Content — positioned within arch, close to it */}
+      {/* Content — flows right below the arch */}
       <div
         style={{
           position: "relative",
@@ -79,7 +70,7 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
           alignItems: "center",
           width: "100%",
           maxWidth: "18rem",
-          paddingTop: "30vh",
+          paddingTop: "1rem",
         }}
       >
         {/* Title */}

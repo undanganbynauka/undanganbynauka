@@ -37,139 +37,139 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
         }}
       />
 
-      {/* Group: arch + content — centered as one block */}
+      {/* Arch ornament — absolute, sits above and around the content */}
+      <div
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: 0,
+          right: 0,
+          transform: "translateY(-70%)",
+          lineHeight: 0,
+          pointerEvents: "none",
+          zIndex: 1,
+        }}
+      >
+        <Image
+          src="/journey-arch.png"
+          alt="Arch Ornament"
+          width={1026}
+          height={555}
+          style={{
+            width: "100%",
+            height: "auto",
+            display: "block",
+          }}
+          priority
+        />
+      </div>
+
+      {/* Content — centered in viewport */}
       <div
         style={{
           position: "relative",
-          zIndex: 1,
-          width: "100%",
+          zIndex: 2,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          width: "100%",
+          maxWidth: "18rem",
         }}
       >
-        {/* Arch ornament — normal flow, full width */}
-        <div style={{ width: "100%", lineHeight: 0 }}>
-          <Image
-            src="/journey-arch.png"
-            alt="Arch Ornament"
-            width={1026}
-            height={555}
-            style={{
-              width: "100%",
-              height: "auto",
-              display: "block",
-            }}
-            priority
-          />
-        </div>
+        {/* Title */}
+        <h2
+          style={{
+            fontFamily: "var(--font-playfair)",
+            fontSize: "1rem",
+            fontWeight: 400,
+            color: "#7D6E63",
+            letterSpacing: "0.04em",
+            marginBottom: "0.5rem",
+            textAlign: "center",
+          }}
+        >
+          Choose Your Journey
+        </h2>
 
-        {/* Content — right below arch */}
+        {/* Subtitle */}
+        <p
+          style={{
+            fontFamily: "var(--font-lora)",
+            fontSize: "0.6875rem",
+            fontWeight: 400,
+            color: "#7D6E63",
+            opacity: 0.6,
+            lineHeight: 1.7,
+            textAlign: "center",
+            maxWidth: "16rem",
+            marginBottom: "1.5rem",
+          }}
+        >
+          Setiap perjalanan memiliki cerita. Pilih bagian yang ingin Anda jelajahi terlebih dahulu.
+        </p>
+
+        {/* Cards */}
         <div
           style={{
             display: "flex",
             flexDirection: "column",
-            alignItems: "center",
+            gap: "0.75rem",
             width: "100%",
-            maxWidth: "18rem",
-            paddingTop: "0.75rem",
           }}
         >
-          {/* Title */}
-          <h2
+          {/* Card 1: The Wedding Details */}
+          <a
+            href="#wedding-details"
             style={{
-              fontFamily: "var(--font-playfair)",
-              fontSize: "1rem",
-              fontWeight: 400,
-              color: "#7D6E63",
-              letterSpacing: "0.04em",
-              marginBottom: "0.5rem",
+              display: "block",
+              border: "1px solid rgba(125, 110, 99, 0.25)",
+              borderRadius: "4px",
+              padding: "0.875rem 1rem",
               textAlign: "center",
+              textDecoration: "none",
+              transition: "all 0.4s ease",
+              background: "rgba(248, 244, 238, 0.6)",
             }}
           >
-            Choose Your Journey
-          </h2>
-
-          {/* Subtitle */}
-          <p
-            style={{
-              fontFamily: "var(--font-lora)",
-              fontSize: "0.6875rem",
-              fontWeight: 400,
-              color: "#7D6E63",
-              opacity: 0.6,
-              lineHeight: 1.7,
-              textAlign: "center",
-              maxWidth: "16rem",
-              marginBottom: "1.5rem",
-            }}
-          >
-            Setiap perjalanan memiliki cerita. Pilih bagian yang ingin Anda jelajahi terlebih dahulu.
-          </p>
-
-          {/* Cards */}
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "0.75rem",
-              width: "100%",
-            }}
-          >
-            {/* Card 1: The Wedding Details */}
-            <a
-              href="#wedding-details"
+            <h3
               style={{
-                display: "block",
-                border: "1px solid rgba(125, 110, 99, 0.25)",
-                borderRadius: "4px",
-                padding: "0.875rem 1rem",
-                textAlign: "center",
-                textDecoration: "none",
-                transition: "all 0.4s ease",
-                background: "rgba(248, 244, 238, 0.6)",
+                fontFamily: "var(--font-playfair)",
+                fontSize: "0.8125rem",
+                fontWeight: 400,
+                color: "#7D6E63",
+                letterSpacing: "0.04em",
               }}
             >
-              <h3
-                style={{
-                  fontFamily: "var(--font-playfair)",
-                  fontSize: "0.8125rem",
-                  fontWeight: 400,
-                  color: "#7D6E63",
-                  letterSpacing: "0.04em",
-                }}
-              >
-                The Wedding Details
-              </h3>
-            </a>
+              The Wedding Details
+            </h3>
+          </a>
 
-            {/* Card 2: Our Story */}
-            <a
-              href="#our-story"
+          {/* Card 2: Our Story */}
+          <a
+            href="#our-story"
+            style={{
+              display: "block",
+              border: "1px solid rgba(125, 110, 99, 0.25)",
+              borderRadius: "4px",
+              padding: "0.875rem 1rem",
+              textAlign: "center",
+              textDecoration: "none",
+              transition: "all 0.4s ease",
+              background: "rgba(248, 244, 238, 0.6)",
+            }}
+          >
+            <h3
               style={{
-                display: "block",
-                border: "1px solid rgba(125, 110, 99, 0.25)",
-                borderRadius: "4px",
-                padding: "0.875rem 1rem",
-                textAlign: "center",
-                textDecoration: "none",
-                transition: "all 0.4s ease",
-                background: "rgba(248, 244, 238, 0.6)",
+                fontFamily: "var(--font-playfair)",
+                fontSize: "0.8125rem",
+                fontWeight: 400,
+                color: "#7D6E63",
+                letterSpacing: "0.04em",
               }}
             >
-              <h3
-                style={{
-                  fontFamily: "var(--font-playfair)",
-                  fontSize: "0.8125rem",
-                  fontWeight: 400,
-                  color: "#7D6E63",
-                  letterSpacing: "0.04em",
-                }}
-              >
-                Our Story
-              </h3>
-            </a>
-          </div>
+              Our Story
+            </h3>
+          </a>
         </div>
       </div>
     </section>

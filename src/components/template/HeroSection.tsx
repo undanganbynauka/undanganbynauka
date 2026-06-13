@@ -36,19 +36,19 @@ export function HeroSection() {
         priority
       />
 
-      {/* Bride — right side, slightly smaller for balance */}
+      {/* Bride — right side, same height as groom */}
       <Image
         src="/bride.png"
         alt="Bride"
         width={240}
-        height={340}
+        height={400}
         style={{
           position: "absolute",
           right: 10,
           bottom: 0,
-          width: 240,
-          height: "auto",
-          maxWidth: 240,
+          width: "auto",
+          height: 400,
+          maxHeight: 400,
           objectFit: "contain",
           objectPosition: "bottom",
         }}

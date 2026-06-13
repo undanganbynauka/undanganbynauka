@@ -44,7 +44,7 @@ export function HeroSection() {
         height={400}
         style={{
           position: "absolute",
-          right: 0,
+          right: -40,
           bottom: 0,
           width: 280,
           height: 400,
@@ -61,7 +61,7 @@ export function HeroSection() {
           position: "relative",
           zIndex: 2,
           width: "50%",
-          maxWidth: "480px",
+          maxWidth: "520px",
           textAlign: "center",
           display: "flex",
           flexDirection: "column",
@@ -73,9 +73,9 @@ export function HeroSection() {
         <p
           style={{
             fontFamily: "var(--font-cormorant)",
-            fontSize: "0.6875rem",
+            fontSize: "0.5625rem",
             fontWeight: 400,
-            letterSpacing: "0.25em",
+            letterSpacing: "0.2em",
             textTransform: "uppercase",
             color: "#7D6E63",
             marginBottom: "2rem",

@@ -37,14 +37,14 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
         }}
       />
 
-      {/* Arch ornament — 80% of section height, positioned at top */}
+      {/* Arch ornament — 70% of section height */}
       <div
         style={{
           position: "absolute",
           top: 0,
           left: 0,
           right: 0,
-          height: "80%",
+          height: "70%",
           display: "flex",
           justifyContent: "center",
           alignItems: "flex-start",
@@ -69,7 +69,7 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
         />
       </div>
 
-      {/* Content — positioned just below the arch */}
+      {/* Content — positioned within arch, close to it */}
       <div
         style={{
           position: "relative",
@@ -78,31 +78,48 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
           flexDirection: "column",
           alignItems: "center",
           width: "100%",
-          maxWidth: "22rem",
-          paddingTop: "38vh",
+          maxWidth: "18rem",
+          paddingTop: "30vh",
         }}
       >
         {/* Title */}
         <h2
           style={{
             fontFamily: "var(--font-playfair)",
-            fontSize: "1.25rem",
+            fontSize: "1rem",
             fontWeight: 400,
             color: "#7D6E63",
             letterSpacing: "0.04em",
-            marginBottom: "1.25rem",
+            marginBottom: "0.5rem",
             textAlign: "center",
           }}
         >
           Choose Your Journey
         </h2>
 
+        {/* Subtitle */}
+        <p
+          style={{
+            fontFamily: "var(--font-lora)",
+            fontSize: "0.6875rem",
+            fontWeight: 400,
+            color: "#7D6E63",
+            opacity: 0.6,
+            lineHeight: 1.7,
+            textAlign: "center",
+            maxWidth: "16rem",
+            marginBottom: "1.5rem",
+          }}
+        >
+          Setiap perjalanan memiliki cerita. Pilih bagian yang ingin Anda jelajahi terlebih dahulu.
+        </p>
+
         {/* Cards */}
         <div
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: "1rem",
+            gap: "0.75rem",
             width: "100%",
           }}
         >
@@ -113,7 +130,7 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
               display: "block",
               border: "1px solid rgba(125, 110, 99, 0.25)",
               borderRadius: "4px",
-              padding: "1.25rem 1rem",
+              padding: "0.875rem 1rem",
               textAlign: "center",
               textDecoration: "none",
               transition: "all 0.4s ease",
@@ -123,7 +140,7 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
             <h3
               style={{
                 fontFamily: "var(--font-playfair)",
-                fontSize: "1rem",
+                fontSize: "0.8125rem",
                 fontWeight: 400,
                 color: "#7D6E63",
                 letterSpacing: "0.04em",
@@ -140,7 +157,7 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
               display: "block",
               border: "1px solid rgba(125, 110, 99, 0.25)",
               borderRadius: "4px",
-              padding: "1.25rem 1rem",
+              padding: "0.875rem 1rem",
               textAlign: "center",
               textDecoration: "none",
               transition: "all 0.4s ease",
@@ -150,7 +167,7 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
             <h3
               style={{
                 fontFamily: "var(--font-playfair)",
-                fontSize: "1rem",
+                fontSize: "0.8125rem",
                 fontWeight: 400,
                 color: "#7D6E63",
                 letterSpacing: "0.04em",

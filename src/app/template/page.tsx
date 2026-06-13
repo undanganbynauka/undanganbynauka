@@ -26,53 +26,6 @@ export default function TemplatePage() {
         }}
       >
         <ChooseYourJourney visible={phase !== "gate"} />
-
-        {/* Placeholder sections for navigation targets */}
-        <section
-          id="wedding-details"
-          style={{
-            minHeight: "100vh",
-            background: "#F8F4EE",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "4rem 1.5rem",
-          }}
-        >
-          <p
-            style={{
-              fontFamily: "var(--font-playfair)",
-              fontSize: "1.25rem",
-              color: "#7D6E63",
-              opacity: 0.5,
-            }}
-          >
-            Wedding Details
-          </p>
-        </section>
-
-        <section
-          id="our-story"
-          style={{
-            minHeight: "100vh",
-            background: "#F8F4EE",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "4rem 1.5rem",
-          }}
-        >
-          <p
-            style={{
-              fontFamily: "var(--font-playfair)",
-              fontSize: "1.25rem",
-              color: "#7D6E63",
-              opacity: 0.5,
-            }}
-          >
-            Our Story
-          </p>
-        </section>
       </div>
 
       {/* HERO GATE — smooth fade out */}

@@ -118,10 +118,10 @@ export function HeroSection({ onOpen }: { onOpen: () => void }) {
           The Wedding Invitation Of
         </p>
 
-        {/* Ali dan Lyla */}
+        {/* Ali dan Lyla — Cormorant Garamond */}
         <h1
           style={{
-            fontFamily: "var(--font-playfair)",
+            fontFamily: "var(--font-cormorant)",
             fontSize: "1.5rem",
             fontWeight: 400,
             color: "#7D6E63",
@@ -135,7 +135,7 @@ export function HeroSection({ onOpen }: { onOpen: () => void }) {
         {/* Date */}
         <p
           style={{
-            fontFamily: "var(--font-lora)",
+            fontFamily: "var(--font-jakarta)",
             fontSize: "0.875rem",
             fontWeight: 400,
             color: "#7D6E63",
@@ -150,7 +150,7 @@ export function HeroSection({ onOpen }: { onOpen: () => void }) {
         {/* Kepada Yth. */}
         <p
           style={{
-            fontFamily: "var(--font-lora)",
+            fontFamily: "var(--font-jakarta)",
             fontSize: "0.75rem",
             fontWeight: 400,
             color: "#7D6E63",
@@ -163,7 +163,7 @@ export function HeroSection({ onOpen }: { onOpen: () => void }) {
         </p>
         <p
           style={{
-            fontFamily: "var(--font-lora)",
+            fontFamily: "var(--font-jakarta)",
             fontSize: "0.75rem",
             fontWeight: 400,
             color: "#7D6E63",
@@ -176,7 +176,7 @@ export function HeroSection({ onOpen }: { onOpen: () => void }) {
         </p>
         <p
           style={{
-            fontFamily: "var(--font-playfair)",
+            fontFamily: "var(--font-jakarta)",
             fontSize: "1rem",
             fontWeight: 500,
             color: "#7D6E63",

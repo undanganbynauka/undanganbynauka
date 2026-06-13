@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Cormorant_Garamond, Playfair_Display, Lora } from "next/font/google";
+import { Inter, Cormorant_Garamond, Playfair_Display, Lora, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
@@ -26,6 +26,13 @@ const lora = Lora({
   variable: "--font-lora",
   subsets: ["latin"],
   weight: ["400", "500", "600"],
+  display: "swap",
+});
+
+const jakarta = Plus_Jakarta_Sans({
+  variable: "--font-jakarta",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -60,7 +67,7 @@ export default function RootLayout({
   return (
     <html lang="id" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${cormorant.variable} ${playfair.variable} ${lora.variable} antialiased`}
+        className={`${inter.variable} ${cormorant.variable} ${playfair.variable} ${lora.variable} ${jakarta.variable} antialiased`}
       >
         {children}
       </body>

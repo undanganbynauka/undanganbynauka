@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { useHeritageEntrance } from "./useHeritageEntrance";
 
 interface HeritageHeroProps {
@@ -26,10 +27,36 @@ export function HeritageHero({
       className="heritage-section heritage-hero-section relative flex min-h-screen flex-col items-center justify-center overflow-hidden"
     >
       {/* Background image */}
-      <div className="heritage-hero-bg absolute inset-0 z-0" />
+      <div className="heritage-hero-bg absolute inset-0 z-0">
+        <Image
+          src="/heritage-hero-bg.png"
+          alt=""
+          fill
+          className="object-cover object-center"
+          priority
+          sizes="100vw"
+        />
+      </div>
 
-      {/* Overlay */}
-      <div className="absolute inset-0 z-[1] bg-gradient-to-b from-black/40 via-black/30 to-black/50" />
+      {/* Dark overlay for readability */}
+      <div className="absolute inset-0 z-[1] bg-gradient-to-b from-black/50 via-black/40 to-black/60" />
+
+      {/* Arch ornament at top */}
+      <div
+        className={`absolute top-0 left-1/2 z-[2] -translate-x-1/2 transition-all duration-1500 ${
+          visible ? "translate-y-0 opacity-100" : "-translate-y-8 opacity-0"
+        }`}
+        style={{ width: "60vw", maxWidth: "280px", height: "20vh", minHeight: "100px", maxHeight: "200px" }}
+      >
+        <Image
+          src="/daftar-isi-arch.png"
+          alt=""
+          fill
+          className="object-contain object-top"
+          sizes="60vw"
+          priority
+        />
+      </div>
 
       {/* Content */}
       <div

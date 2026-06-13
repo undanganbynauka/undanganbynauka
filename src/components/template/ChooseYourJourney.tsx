@@ -37,14 +37,14 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
         }}
       />
 
-      {/* Arch ornament — positioned at top, 85vh */}
+      {/* Arch ornament — 80% of section height, positioned at top */}
       <div
         style={{
           position: "absolute",
           top: 0,
           left: 0,
           right: 0,
-          height: "85vh",
+          height: "80%",
           display: "flex",
           justifyContent: "center",
           alignItems: "flex-start",
@@ -56,11 +56,11 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
         <Image
           src="/journey-arch.png"
           alt="Arch Ornament"
-          width={1500}
-          height={1920}
+          width={1026}
+          height={555}
           style={{
-            width: "auto",
-            height: "85vh",
+            width: "100%",
+            height: "auto",
             objectFit: "contain",
             objectPosition: "top center",
             display: "block",
@@ -69,7 +69,7 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
         />
       </div>
 
-      {/* Content — positioned within the arch area */}
+      {/* Content — positioned just below the arch */}
       <div
         style={{
           position: "relative",
@@ -78,48 +78,31 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
           flexDirection: "column",
           alignItems: "center",
           width: "100%",
-          maxWidth: "28rem",
-          paddingTop: "42vh",
+          maxWidth: "22rem",
+          paddingTop: "38vh",
         }}
       >
         {/* Title */}
         <h2
           style={{
             fontFamily: "var(--font-playfair)",
-            fontSize: "1.75rem",
+            fontSize: "1.25rem",
             fontWeight: 400,
             color: "#7D6E63",
             letterSpacing: "0.04em",
-            marginBottom: "0.75rem",
+            marginBottom: "1.25rem",
             textAlign: "center",
           }}
         >
           Choose Your Journey
         </h2>
 
-        {/* Subtitle */}
-        <p
-          style={{
-            fontFamily: "var(--font-lora)",
-            fontSize: "0.8125rem",
-            fontWeight: 400,
-            color: "#7D6E63",
-            opacity: 0.6,
-            lineHeight: 1.8,
-            textAlign: "center",
-            maxWidth: "24rem",
-            marginBottom: "2.5rem",
-          }}
-        >
-          Setiap perjalanan memiliki cerita. Pilih bagian yang ingin Anda jelajahi terlebih dahulu.
-        </p>
-
         {/* Cards */}
         <div
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: "1.25rem",
+            gap: "1rem",
             width: "100%",
           }}
         >
@@ -130,7 +113,7 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
               display: "block",
               border: "1px solid rgba(125, 110, 99, 0.25)",
               borderRadius: "4px",
-              padding: "2rem 1.5rem",
+              padding: "1.25rem 1rem",
               textAlign: "center",
               textDecoration: "none",
               transition: "all 0.4s ease",
@@ -140,7 +123,7 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
             <h3
               style={{
                 fontFamily: "var(--font-playfair)",
-                fontSize: "1.25rem",
+                fontSize: "1rem",
                 fontWeight: 400,
                 color: "#7D6E63",
                 letterSpacing: "0.04em",
@@ -157,7 +140,7 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
               display: "block",
               border: "1px solid rgba(125, 110, 99, 0.25)",
               borderRadius: "4px",
-              padding: "2rem 1.5rem",
+              padding: "1.25rem 1rem",
               textAlign: "center",
               textDecoration: "none",
               transition: "all 0.4s ease",
@@ -167,7 +150,7 @@ export function ChooseYourJourney({ visible = true }: ChooseYourJourneyProps) {
             <h3
               style={{
                 fontFamily: "var(--font-playfair)",
-                fontSize: "1.25rem",
+                fontSize: "1rem",
                 fontWeight: 400,
                 color: "#7D6E63",
                 letterSpacing: "0.04em",

@@ -83,7 +83,7 @@ export function HeroSection() {
           The Wedding Invitation Of
         </p>
 
-        {/* Ali & Lyla */}
+        {/* Ali dan Lyla */}
         <h1
           style={{
             fontFamily: "var(--font-playfair)",
@@ -94,7 +94,7 @@ export function HeroSection() {
             lineHeight: 1.2,
           }}
         >
-          Ali & Lyla
+          Ali dan Lyla
         </h1>
 
         {/* Date */}
@@ -111,17 +111,6 @@ export function HeroSection() {
         >
           Ahad • 05 Juli 2026
         </p>
-
-        {/* Divider */}
-        <div
-          style={{
-            width: "1px",
-            height: "40px",
-            background: "linear-gradient(to bottom, transparent, #7D6E63, transparent)",
-            opacity: 0.3,
-            marginBottom: "2.5rem",
-          }}
-        />
 
         {/* Kepada Yth. */}
         <p
@@ -156,7 +145,7 @@ export function HeroSection() {
             fontSize: "1rem",
             fontWeight: 500,
             color: "#7D6E63",
-            marginBottom: "3rem",
+            marginBottom: "1.5rem",
           }}
         >
           Nama Tamu

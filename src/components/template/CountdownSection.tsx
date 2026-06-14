@@ -139,7 +139,7 @@ export function CountdownSection() {
         style={{
           position: "absolute",
           inset: 0,
-          opacity: 0.3,
+          opacity: 0.09,
           backgroundImage: "url(/countdown-bg.png)",
           backgroundSize: "cover",
           backgroundPosition: "center",

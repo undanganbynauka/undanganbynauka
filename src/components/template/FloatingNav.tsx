@@ -132,9 +132,9 @@ export function FloatingNav() {
             borderRadius: "16px",
             padding: "0.5rem",
             boxShadow: "0 4px 20px rgba(125, 110, 99, 0.1)",
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            gap: "0.25rem",
+            display: "flex",
+            flexWrap: "nowrap",
+            gap: "0.125rem",
           }}
         >
           {NAV_ITEMS.map((item) => {
@@ -146,9 +146,9 @@ export function FloatingNav() {
                 onClick={() => scrollTo(item.id)}
                 aria-label={item.id}
                 style={{
-                  width: "36px",
-                  height: "36px",
-                  borderRadius: "10px",
+                  width: "32px",
+                  height: "32px",
+                  borderRadius: "8px",
                   border: "none",
                   background: isActive
                     ? "rgba(125, 110, 99, 0.08)"
@@ -157,7 +157,7 @@ export function FloatingNav() {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: "1rem",
+                  fontSize: "0.875rem",
                   lineHeight: 1,
                   padding: 0,
                   opacity: isActive ? 1 : 0.5,

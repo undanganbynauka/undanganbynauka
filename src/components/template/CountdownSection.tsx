@@ -132,6 +132,7 @@ export function CountdownSection() {
         alignItems: "center",
         justifyContent: "center",
         padding: "3rem 1.5rem",
+        minHeight: "100vh",
       }}
     >
       {/* Background image — 8-10% opacity */}
@@ -141,7 +142,7 @@ export function CountdownSection() {
           inset: 0,
           opacity: 0.1,
           backgroundImage: "url(/countdown-bg.png)",
-          backgroundSize: "contain",
+          backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
           pointerEvents: "none",

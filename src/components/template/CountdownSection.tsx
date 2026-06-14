@@ -141,7 +141,7 @@ export function CountdownSection() {
           inset: 0,
           opacity: 0.1,
           backgroundImage: "url(/countdown-bg.png)",
-          backgroundSize: "cover",
+          backgroundSize: "contain",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
           pointerEvents: "none",

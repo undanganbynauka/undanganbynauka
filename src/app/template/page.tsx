@@ -6,6 +6,7 @@ import { CountdownSection } from "@/components/template/CountdownSection";
 import { BismillahSection } from "@/components/template/BismillahSection";
 import { BrideGroomSection } from "@/components/template/BrideGroomSection";
 import { EventSection } from "@/components/template/EventSection";
+import { OurJourneySection } from "@/components/template/OurJourneySection";
 
 type Phase = "gate" | "opening" | "inside";
 
@@ -30,6 +31,7 @@ export default function TemplatePage() {
       >
         <CountdownSection />
         <BismillahSection />
+        <OurJourneySection />
         <BrideGroomSection />
         <EventSection />
       </div>

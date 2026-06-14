@@ -115,6 +115,7 @@ export function EventSection() {
               padding: "0.375rem 1rem",
               textDecoration: "none",
               letterSpacing: "0.03em",
+              boxShadow: "0 1px 3px rgba(125, 110, 99, 0.15), 0 1px 2px rgba(125, 110, 99, 0.08)",
             }}
           >
             Lihat Lokasi
@@ -193,6 +194,7 @@ export function EventSection() {
               padding: "0.375rem 1rem",
               textDecoration: "none",
               letterSpacing: "0.03em",
+              boxShadow: "0 1px 3px rgba(125, 110, 99, 0.15), 0 1px 2px rgba(125, 110, 99, 0.08)",
             }}
           >
             Lihat Lokasi

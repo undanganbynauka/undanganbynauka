@@ -227,7 +227,7 @@ export function ClosingSection() {
             width: "2px",
             height: "2px",
             borderRadius: "50%",
-            background: "rgba(125, 110, 99, 0.25)
+            background: "rgba(125, 110, 99, 0.25)",
           }}
         />
 

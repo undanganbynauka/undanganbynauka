@@ -167,68 +167,79 @@ export function ClosingSection() {
         </p>
       </div>
 
-      {/* Nauka Logo — watermark above signature */}
-      <div
-        style={{
-          position: "relative",
-          zIndex: 2,
-          opacity: sectionVisible ? 0.45 : 0,
-          transition: "opacity 1s ease 1.5s",
-          marginBottom: "1rem",
-        }}
-      >
-        <Image
-          src="/nauka-logo.png"
-          alt="Nauka"
-          width={52}
-          height={52}
-          style={{
-            width: "52px",
-            height: "auto",
-            filter: "brightness(0.45) sepia(0.2)",
-          }}
-        />
-      </div>
-
-      {/* Signature Block — full width, at the very bottom, compact */}
+      {/* Signature Block — full width slim footer bar */}
       <div
         style={{
           position: "relative",
           zIndex: 2,
           width: "100%",
           borderTop: "0.75px solid rgba(125, 110, 99, 0.15)",
-          padding: "0.875rem 2rem",
+          padding: "0.625rem 1.5rem",
           display: "flex",
-          flexDirection: "column",
+          flexDirection: "row",
           alignItems: "center",
-          gap: "0.125rem",
+          justifyContent: "center",
+          gap: "0.5rem",
           opacity: sectionVisible ? 1 : 0,
           transition: "opacity 1s ease 1.7s",
-          background: "rgba(125, 110, 99, 0.015)",
         }}
       >
+        {/* Nauka Logo — small inside footer */}
+        <Image
+          src="/nauka-logo.png"
+          alt="Nauka"
+          width={20}
+          height={20}
+          style={{
+            width: "20px",
+            height: "auto",
+            filter: "brightness(0.4) sepia(0.15)",
+            opacity: 0.5,
+          }}
+        />
+
+        {/* Divider dot */}
+        <span
+          style={{
+            width: "2px",
+            height: "2px",
+            borderRadius: "50%",
+            background: "rgba(125, 110, 99, 0.25)",
+          }}
+        />
+
         {/* Names */}
         <p
           style={{
             fontFamily: "var(--font-cormorant)",
-            fontSize: "1rem",
+            fontSize: "0.8125rem",
             fontWeight: 400,
             color: "#2E2E2E",
-            letterSpacing: "0.06em",
+            letterSpacing: "0.04em",
           }}
         >
           Ali &amp; Lyla
         </p>
 
+        {/* Divider dot */}
+        <span
+          style={{
+            width: "2px",
+            height: "2px",
+            borderRadius: "50%",
+            background: "rgba(125, 110, 99, 0.25)
+          }}
+        />
+
         {/* Date */}
         <p
           style={{
             fontFamily: "var(--font-jakarta)",
-            fontSize: "0.625rem",
+            fontSize: "0.5625rem",
             fontWeight: 400,
             color: "#6F6F6F",
             opacity: 0.55,
-            letterSpacing: "0.06em",
+            letterSpacing: "0.04em",
           }}
         >
           5 Juli 2026

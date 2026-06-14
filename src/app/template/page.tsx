@@ -9,6 +9,7 @@ import { EventSection } from "@/components/template/EventSection";
 import { OurJourneySection } from "@/components/template/OurJourneySection";
 import { RsvpSection } from "@/components/template/RsvpSection";
 import { WishesSection } from "@/components/template/WishesSection";
+import { AmplopDigitalSection } from "@/components/template/AmplopDigitalSection";
 
 type Phase = "gate" | "opening" | "inside";
 
@@ -38,6 +39,7 @@ export default function TemplatePage() {
         <EventSection />
         <RsvpSection />
         <WishesSection />
+        <AmplopDigitalSection />
       </div>
 
       {/* HERO GATE — smooth fade out */}

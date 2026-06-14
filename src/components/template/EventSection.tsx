@@ -1,10 +1,48 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 export function EventSection() {
+  const [sectionVisible, setSectionVisible] = useState(false);
+  const [showTitle, setShowTitle] = useState(false);
+  const [showCard1, setShowCard1] = useState(false);
+  const [showCard2, setShowCard2] = useState(false);
+  const sectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !sectionVisible) {
+          setSectionVisible(true);
+        }
+      },
+      { threshold: 0.15 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [sectionVisible]);
+
+  useEffect(() => {
+    if (!sectionVisible) return;
+    const t1 = setTimeout(() => setShowTitle(true), 200);
+    const t2 = setTimeout(() => setShowCard1(true), 700);
+    const t3 = setTimeout(() => setShowCard2(true), 900);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
+  }, [sectionVisible]);
+
+  const ease = "cubic-bezier(0.25, 0.1, 0.25, 1)";
+
   return (
     <section
+      ref={sectionRef}
       style={{
         position: "relative",
         background: "#F8F4EE",
@@ -43,6 +81,23 @@ export function EventSection() {
           gap: "1.25rem",
         }}
       >
+        {/* Section Title */}
+        <h2
+          style={{
+            fontFamily: "var(--font-cormorant)",
+            fontSize: "1.125rem",
+            fontWeight: 400,
+            color: "#7D6E63",
+            letterSpacing: "0.15em",
+            marginBottom: "0.5rem",
+            opacity: showTitle ? 1 : 0,
+            transform: showTitle ? "translateY(0)" : "translateY(20px)",
+            transition: `opacity 1s ${ease}, transform 1s ${ease}`,
+          }}
+        >
+          Waktu & Tempat
+        </h2>
+
         {/* Card: Akad Nikah */}
         <div
           style={{
@@ -52,6 +107,9 @@ export function EventSection() {
             padding: "1.75rem 1.5rem",
             textAlign: "center",
             width: "100%",
+            opacity: showCard1 ? 1 : 0,
+            transform: showCard1 ? "translateY(0)" : "translateY(25px)",
+            transition: `opacity 1.1s ${ease}, transform 1.1s ${ease}`,
           }}
         >
           <h3
@@ -131,6 +189,9 @@ export function EventSection() {
             padding: "1.75rem 1.5rem",
             textAlign: "center",
             width: "100%",
+            opacity: showCard2 ? 1 : 0,
+            transform: showCard2 ? "translateY(0)" : "translateY(25px)",
+            transition: `opacity 1.1s ${ease}, transform 1.1s ${ease}`,
           }}
         >
           <h3

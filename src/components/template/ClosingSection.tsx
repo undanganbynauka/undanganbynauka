@@ -5,6 +5,12 @@ import Image from "next/image";
 
 export function ClosingSection() {
   const [sectionVisible, setSectionVisible] = useState(false);
+  const [showDoa, setShowDoa] = useState(false);
+  const [showTranslit, setShowTranslit] = useState(false);
+  const [showArti, setShowArti] = useState(false);
+  const [showDivider, setShowDivider] = useState(false);
+  const [showUcapan, setShowUcapan] = useState(false);
+  const [showFooter, setShowFooter] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -23,6 +29,22 @@ export function ClosingSection() {
     observer.observe(el);
     return () => observer.disconnect();
   }, [sectionVisible]);
+
+  // Sequential: doa → translit → arti → divider → ucapan → footer
+  useEffect(() => {
+    if (!sectionVisible) return;
+    const timers = [
+      setTimeout(() => setShowDoa(true), 300),
+      setTimeout(() => setShowTranslit(true), 1000),
+      setTimeout(() => setShowArti(true), 1600),
+      setTimeout(() => setShowDivider(true), 2200),
+      setTimeout(() => setShowUcapan(true), 2800),     // after 500ms from divider
+      setTimeout(() => setShowFooter(true), 3600),     // last, 1.2s fade
+    ];
+    return () => timers.forEach(clearTimeout);
+  }, [sectionVisible]);
+
+  const ease = "cubic-bezier(0.25, 0.1, 0.25, 1)";
 
   return (
     <section
@@ -51,7 +73,7 @@ export function ClosingSection() {
         }}
       />
 
-      {/* Main content wrapper — centered in available space */}
+      {/* Main content wrapper */}
       <div
         style={{
           position: "relative",
@@ -63,9 +85,6 @@ export function ClosingSection() {
           flexDirection: "column",
           alignItems: "center",
           padding: "2.5rem 1.5rem 0",
-          opacity: sectionVisible ? 1 : 0,
-          transform: sectionVisible ? "translateY(0)" : "translateY(20px)",
-          transition: "opacity 1s ease, transform 1s ease",
         }}
       >
         {/* Gold accent line — top */}
@@ -75,8 +94,9 @@ export function ClosingSection() {
             height: "0.75px",
             background: "#C8B28A",
             marginBottom: "3rem",
-            opacity: sectionVisible ? 1 : 0,
-            transition: "opacity 1.2s ease 0.3s",
+            opacity: showDoa ? 1 : 0,
+            transform: showDoa ? "scaleX(1)" : "scaleX(0)",
+            transition: `opacity 1s ${ease}, transform 1s ${ease}`,
           }}
         />
 
@@ -92,8 +112,9 @@ export function ClosingSection() {
             direction: "rtl",
             marginBottom: "2rem",
             maxWidth: "20rem",
-            opacity: sectionVisible ? 1 : 0,
-            transition: "opacity 1s ease 0.4s",
+            opacity: showDoa ? 1 : 0,
+            transform: showDoa ? "translateY(0)" : "translateY(25px)",
+            transition: `opacity 1.2s ${ease}, transform 1.2s ${ease}`,
             letterSpacing: "0.02em",
           }}
         >
@@ -112,8 +133,9 @@ export function ClosingSection() {
             textAlign: "center",
             marginBottom: "1.5rem",
             maxWidth: "19rem",
-            opacity: sectionVisible ? 1 : 0,
-            transition: "opacity 1s ease 0.7s",
+            opacity: showTranslit ? 1 : 0,
+            transform: showTranslit ? "translateY(0)" : "translateY(20px)",
+            transition: `opacity 1.1s ${ease}, transform 1.1s ${ease}`,
           }}
         >
           Baarakallahu lakuma wa baaraka &lsquo;alaikuma wa jama&lsquo;a bainakuma fii khair
@@ -130,8 +152,9 @@ export function ClosingSection() {
             textAlign: "center",
             marginBottom: "3rem",
             maxWidth: "17rem",
-            opacity: sectionVisible ? 1 : 0,
-            transition: "opacity 1s ease 1s",
+            opacity: showArti ? 1 : 0,
+            transform: showArti ? "translateY(0)" : "translateY(20px)",
+            transition: `opacity 1s ${ease}, transform 1s ${ease}`,
           }}
         >
           Semoga Allah memberkahimu berdua dan memberkai pernikahanmu, serta menghimpun kalian berdua dalam kebaikan.
@@ -144,8 +167,9 @@ export function ClosingSection() {
             height: "0.75px",
             background: "#C8B28A",
             marginBottom: "2.5rem",
-            opacity: sectionVisible ? 1 : 0,
-            transition: "opacity 1s ease 1.2s",
+            opacity: showDivider ? 1 : 0,
+            transform: showDivider ? "scaleX(1)" : "scaleX(0)",
+            transition: `opacity 1s ${ease}, transform 1s ${ease}`,
           }}
         />
 
@@ -160,8 +184,9 @@ export function ClosingSection() {
             textAlign: "center",
             marginBottom: "0",
             maxWidth: "18rem",
-            opacity: sectionVisible ? 0.75 : 0,
-            transition: "opacity 1s ease 1.4s",
+            opacity: showUcapan ? 0.75 : 0,
+            transform: showUcapan ? "translateY(0)" : "translateY(15px)",
+            transition: `opacity 1.2s ${ease}, transform 1.2s ${ease}`,
           }}
         >
           Terima kasih telah menjadi bagian dari perjalanan kecil kami menuju kisah baru.
@@ -179,8 +204,9 @@ export function ClosingSection() {
           alignItems: "center",
           gap: "0.5rem",
           paddingBottom: "0.75rem",
-          opacity: sectionVisible ? 1 : 0,
-          transition: "opacity 1s ease 1.7s",
+          opacity: showFooter ? 1 : 0,
+          transform: showFooter ? "translateY(0)" : "translateY(10px)",
+          transition: `opacity 1.2s ${ease}, transform 1.2s ${ease}`,
         }}
       >
         {/* Logo above the box */}

@@ -16,7 +16,7 @@ function getTimeLeft() {
   };
 }
 
-function FlipUnit({ value, label }: { value: string; label: string }) {
+function FlipUnit({ value, label, visible, delay }: { value: string; label: string; visible: boolean; delay: number }) {
   const [current, setCurrent] = useState(value);
   const [flipping, setFlipping] = useState(false);
   const prevRef = useRef(value);
@@ -33,8 +33,20 @@ function FlipUnit({ value, label }: { value: string; label: string }) {
     }
   }, [value]);
 
+  const ease = "cubic-bezier(0.25, 0.1, 0.25, 1)";
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.375rem" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: "0.375rem",
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(20px)",
+        transition: `opacity 1s ${ease} ${delay}ms, transform 1s ${ease} ${delay}ms`,
+      }}
+    >
       <div
         style={{
           position: "relative",
@@ -112,6 +124,11 @@ const GOOGLE_CALENDAR_URL =
 
 export function CountdownSection() {
   const [time, setTime] = useState(getTimeLeft);
+  const [sectionVisible, setSectionVisible] = useState(false);
+  const [showTitle, setShowTitle] = useState(false);
+  const [showCards, setShowCards] = useState(false);
+  const [showButton, setShowButton] = useState(false);
+  const sectionRef = useRef<HTMLDivElement>(null);
 
   const tick = useCallback(() => {
     setTime(getTimeLeft());
@@ -122,8 +139,41 @@ export function CountdownSection() {
     return () => clearInterval(id);
   }, [tick]);
 
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !sectionVisible) {
+          setSectionVisible(true);
+        }
+      },
+      { threshold: 0.15 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [sectionVisible]);
+
+  // Staggered reveal: title → cards → button
+  useEffect(() => {
+    if (!sectionVisible) return;
+    const t1 = setTimeout(() => setShowTitle(true), 200);
+    const t2 = setTimeout(() => setShowCards(true), 700);
+    const t3 = setTimeout(() => setShowButton(true), 1500);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
+  }, [sectionVisible]);
+
+  const ease = "cubic-bezier(0.25, 0.1, 0.25, 1)";
+
   return (
     <section
+      ref={sectionRef}
       style={{
         position: "relative",
         background: "#F8F4EE",
@@ -135,7 +185,7 @@ export function CountdownSection() {
         minHeight: "100vh",
       }}
     >
-      {/* Background image — 8-10% opacity */}
+      {/* Background image */}
       <div
         style={{
           position: "absolute",
@@ -182,6 +232,9 @@ export function CountdownSection() {
               textTransform: "uppercase",
               color: "#7D6E63",
               marginBottom: "0.5rem",
+              opacity: showTitle ? 1 : 0,
+              transform: showTitle ? "translateY(0)" : "translateY(15px)",
+              transition: `opacity 1s ${ease}, transform 1s ${ease}`,
             }}
           >
             Wedding Invitation
@@ -195,6 +248,9 @@ export function CountdownSection() {
               fontWeight: 400,
               color: "#7D6E63",
               marginBottom: "0.5rem",
+              opacity: showTitle ? 1 : 0,
+              transform: showTitle ? "translateY(0)" : "translateY(15px)",
+              transition: `opacity 1s ${ease} 0.15s, transform 1s ${ease} 0.15s`,
             }}
           >
             Ali & Lyla
@@ -207,9 +263,11 @@ export function CountdownSection() {
               fontSize: "0.75rem",
               fontWeight: 400,
               color: "#7D6E63",
-              opacity: 0.75,
+              opacity: showTitle ? 0.75 : 0,
+              transform: showTitle ? "translateY(0)" : "translateY(10px)",
               marginBottom: "1.5rem",
               letterSpacing: "0.03em",
+              transition: `opacity 1s ${ease} 0.3s, transform 1s ${ease} 0.3s`,
             }}
           >
             Ahad, 5 Juli 2026
@@ -222,6 +280,8 @@ export function CountdownSection() {
               height: "1px",
               background: "rgba(125, 110, 99, 0.2)",
               margin: "0 auto 1.5rem",
+              opacity: showTitle ? 1 : 0,
+              transition: `opacity 1s ${ease} 0.4s`,
             }}
           />
 
@@ -234,19 +294,20 @@ export function CountdownSection() {
               letterSpacing: "0.12em",
               textTransform: "uppercase",
               color: "#7D6E63",
-              opacity: 0.5,
+              opacity: showCards ? 0.5 : 0,
               marginBottom: "1rem",
+              transition: `opacity 0.8s ${ease}`,
             }}
           >
             Countdown Acara
           </p>
 
-          {/* Flip cards */}
+          {/* Flip cards — stagger 180ms each */}
           <div style={{ display: "flex", justifyContent: "center", gap: "0.625rem", marginBottom: "1.5rem" }}>
-            <FlipUnit value={String(time.d).padStart(2, "0")} label="Hari" />
-            <FlipUnit value={String(time.h).padStart(2, "0")} label="Jam" />
-            <FlipUnit value={String(time.m).padStart(2, "0")} label="Menit" />
-            <FlipUnit value={String(time.s).padStart(2, "0")} label="Detik" />
+            <FlipUnit value={String(time.d).padStart(2, "0")} label="Hari" visible={showCards} delay={0} />
+            <FlipUnit value={String(time.h).padStart(2, "0")} label="Jam" visible={showCards} delay={180} />
+            <FlipUnit value={String(time.m).padStart(2, "0")} label="Menit" visible={showCards} delay={360} />
+            <FlipUnit value={String(time.s).padStart(2, "0")} label="Detik" visible={showCards} delay={540} />
           </div>
 
           {/* Save The Date button */}
@@ -267,6 +328,8 @@ export function CountdownSection() {
               letterSpacing: "0.06em",
               boxShadow: "0 1px 3px rgba(125, 110, 99, 0.15), 0 1px 2px rgba(125, 110, 99, 0.08)",
               transition: "all 0.3s ease",
+              opacity: showButton ? 1 : 0,
+              transform: showButton ? "translateY(0)" : "translateY(10px)",
             }}
           >
             Save The Date

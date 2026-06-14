@@ -1,9 +1,44 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 
 export function HeroSection({ onOpen }: { onOpen: () => void }) {
+  const [mounted, setMounted] = useState(false);
+  const [showFrame, setShowFrame] = useState(false);
+  const [showSubtitle, setShowSubtitle] = useState(false);
+  const [showNames, setShowNames] = useState(false);
+  const [showDate, setShowDate] = useState(false);
+  const [showGuest, setShowGuest] = useState(false);
+  const [showCta, setShowCta] = useState(false);
+
+  useEffect(() => {
+    // Background appears first
+    setMounted(true);
+    // Frame after 400ms
+    const t1 = setTimeout(() => setShowFrame(true), 400);
+    // Subtitle after 600ms
+    const t2 = setTimeout(() => setShowSubtitle(true), 600);
+    // Names after 300ms more
+    const t3 = setTimeout(() => setShowNames(true), 900);
+    // Date after 300ms more
+    const t4 = setTimeout(() => setShowDate(true), 1200);
+    // Guest info after 300ms more
+    const t5 = setTimeout(() => setShowGuest(true), 1500);
+    // CTA after 300ms more
+    const t6 = setTimeout(() => setShowCta(true), 1800);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      clearTimeout(t4);
+      clearTimeout(t5);
+      clearTimeout(t6);
+    };
+  }, []);
+
+  const ease = "cubic-bezier(0.25, 0.1, 0.25, 1)";
+
   return (
     <section
       style={{
@@ -17,6 +52,8 @@ export function HeroSection({ onOpen }: { onOpen: () => void }) {
         justifyContent: "center",
         margin: 0,
         padding: 0,
+        opacity: mounted ? 1 : 0,
+        transition: `opacity 1s ${ease}`,
       }}
     >
       {/* Groom — left side */}
@@ -57,7 +94,7 @@ export function HeroSection({ onOpen }: { onOpen: () => void }) {
         priority
       />
 
-      {/* Top ornament — over-stretched to hide transparent edges */}
+      {/* Top ornament */}
       <div
         style={{
           position: "absolute",
@@ -113,12 +150,15 @@ export function HeroSection({ onOpen }: { onOpen: () => void }) {
             whiteSpace: "nowrap",
             color: "#7D6E63",
             marginBottom: "2rem",
+            opacity: showFrame ? 1 : 0,
+            transform: showFrame ? "translateY(0)" : "translateY(20px)",
+            transition: `opacity 1s ${ease} 0s, transform 1s ${ease} 0s`,
           }}
         >
           The Wedding Invitation Of
         </p>
 
-        {/* Ali dan Lyla — Cormorant Garamond */}
+        {/* Ali dan Lyla */}
         <h1
           style={{
             fontFamily: "var(--font-cormorant)",
@@ -127,6 +167,9 @@ export function HeroSection({ onOpen }: { onOpen: () => void }) {
             color: "#7D6E63",
             marginBottom: "1.5rem",
             lineHeight: 1.2,
+            opacity: showNames ? 1 : 0,
+            transform: showNames ? "translateY(0)" : "translateY(20px)",
+            transition: `opacity 1s ${ease} 0s, transform 1s ${ease} 0s`,
           }}
         >
           Ali & Lyla
@@ -139,9 +182,11 @@ export function HeroSection({ onOpen }: { onOpen: () => void }) {
             fontSize: "0.875rem",
             fontWeight: 400,
             color: "#7D6E63",
-            opacity: 0.85,
+            opacity: showDate ? 0.85 : 0,
+            transform: showDate ? "translateY(0)" : "translateY(15px)",
             marginBottom: "3rem",
             letterSpacing: "0.05em",
+            transition: `opacity 1s ${ease} 0s, transform 1s ${ease} 0s`,
           }}
         >
           Ahad • 05 Juli 2026
@@ -154,9 +199,11 @@ export function HeroSection({ onOpen }: { onOpen: () => void }) {
             fontSize: "0.75rem",
             fontWeight: 400,
             color: "#7D6E63",
-            opacity: 0.7,
+            opacity: showGuest ? 0.7 : 0,
+            transform: showGuest ? "translateY(0)" : "translateY(12px)",
             letterSpacing: "0.1em",
             marginBottom: "0.5rem",
+            transition: `opacity 0.9s ${ease} 0s, transform 0.9s ${ease} 0s`,
           }}
         >
           Kepada Yth.
@@ -167,9 +214,11 @@ export function HeroSection({ onOpen }: { onOpen: () => void }) {
             fontSize: "0.75rem",
             fontWeight: 400,
             color: "#7D6E63",
-            opacity: 0.7,
+            opacity: showGuest ? 0.7 : 0,
+            transform: showGuest ? "translateY(0)" : "translateY(12px)",
             letterSpacing: "0.1em",
             marginBottom: "0.5rem",
+            transition: `opacity 0.9s ${ease} 0.1s, transform 0.9s ${ease} 0.1s`,
           }}
         >
           Bapak/Ibu/Saudara/i
@@ -180,7 +229,10 @@ export function HeroSection({ onOpen }: { onOpen: () => void }) {
             fontSize: "1rem",
             fontWeight: 500,
             color: "#7D6E63",
+            opacity: showGuest ? 1 : 0,
+            transform: showGuest ? "translateY(0)" : "translateY(12px)",
             marginBottom: "1.5rem",
+            transition: `opacity 0.9s ${ease} 0.2s, transform 0.9s ${ease} 0.2s`,
           }}
         >
           Nama Tamu
@@ -202,7 +254,9 @@ export function HeroSection({ onOpen }: { onOpen: () => void }) {
             padding: "0.25rem 0.6rem",
             cursor: "pointer",
             boxShadow: "0 1px 2px rgba(125, 110, 99, 0.05)",
-            transition: "all 0.3s ease",
+            opacity: showCta ? 1 : 0,
+            transform: showCta ? "translateY(0)" : "translateY(12px)",
+            transition: `opacity 1s ${ease} 0s, transform 1s ${ease} 0s, all 0.3s ease`,
           }}
         >
           Open Invitation

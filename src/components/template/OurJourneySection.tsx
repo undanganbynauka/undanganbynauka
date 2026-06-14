@@ -1,41 +1,43 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 
 const PHASES = [
   {
     label: "Ta'aruf",
     text: "Kami memulai dari proses ta'aruf, perkenalan yang dijaga dengan adab dan niat yang baik.",
-    delay: 0,
   },
   {
     label: "Nadzor",
     text: "Dilanjutkan dengan nadzor, sebagai tahap saling mengenal secukupnya dalam batas yang Allah tetapkan.",
-    delay: 200,
   },
   {
     label: "Khitbah",
     text: "Keluarga dipertemukan dalam proses khitbah sebagai bentuk keseriusan menuju pernikahan.",
-    delay: 400,
   },
   {
     label: "Menikah",
     text: "Hingga akhirnya, dengan izin Allah dan restu keluarga, kami sampai pada akad pernikahan.",
-    delay: 600,
   },
 ];
 
+const TYPE_SPEED = 70; // ms per character
+const PAUSE_BETWEEN = 1800; // ms pause between phases
+const LABEL_REVEAL = 400; // ms for label to appear before typing starts
+
 export function OurJourneySection() {
   const [sectionVisible, setSectionVisible] = useState(false);
-  const [visibleSteps, setVisibleSteps] = useState<boolean[]>([
-    false,
-    false,
-    false,
-    false,
-  ]);
+  const [showHeading, setShowHeading] = useState(false);
+  const [showSubtitle, setShowSubtitle] = useState(false);
+  // Each phase tracks: label visible, typed text, typing complete
+  const [phaseStates, setPhaseStates] = useState<
+    { labelVisible: boolean; typedText: string; typingDone: boolean }[]
+  >(PHASES.map(() => ({ labelVisible: false, typedText: "", typingDone: false })));
+
   const sectionRef = useRef<HTMLDivElement>(null);
   const stepsContainerRef = useRef<HTMLDivElement>(null);
   const [lineHeight, setLineHeight] = useState(0);
+  const typingRef = useRef(false);
 
   useEffect(() => {
     const el = sectionRef.current;
@@ -54,52 +56,107 @@ export function OurJourneySection() {
     return () => observer.disconnect();
   }, [sectionVisible]);
 
-  // Stagger step appearance
+  // Staggered heading reveal
   useEffect(() => {
     if (!sectionVisible) return;
-
-    PHASES.forEach((phase, index) => {
-      setTimeout(() => {
-        setVisibleSteps((prev) => {
-          const next = [...prev];
-          next[index] = true;
-          return next;
-        });
-      }, 500 + phase.delay); // 500ms base for heading to appear first
-    });
+    const t1 = setTimeout(() => setShowHeading(true), 200);
+    const t2 = setTimeout(() => setShowSubtitle(true), 600);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
   }, [sectionVisible]);
 
-  // Calculate timeline line height based on visible steps
+  // Typewriter logic — sequential, one phase at a time
+  const startTyping = useCallback(
+    (phaseIndex: number) => {
+      if (phaseIndex >= PHASES.length) return;
+      if (typingRef.current) return;
+      typingRef.current = true;
+
+      const phase = PHASES[phaseIndex];
+
+      // Step 1: show label
+      setPhaseStates((prev) => {
+        const next = [...prev];
+        next[phaseIndex] = { ...next[phaseIndex], labelVisible: true };
+        return next;
+      });
+
+      // Step 2: start typing after label appears
+      setTimeout(() => {
+        let charIndex = 0;
+        const fullText = phase.text;
+
+        const typeInterval = setInterval(() => {
+          charIndex++;
+          const currentSlice = fullText.slice(0, charIndex);
+
+          setPhaseStates((prev) => {
+            const next = [...prev];
+            next[phaseIndex] = { ...next[phaseIndex], typedText: currentSlice };
+            return next;
+          });
+
+          if (charIndex >= fullText.length) {
+            clearInterval(typeInterval);
+            // Mark typing done
+            setPhaseStates((prev) => {
+              const next = [...prev];
+              next[phaseIndex] = { ...next[phaseIndex], typingDone: true };
+              return next;
+            });
+            typingRef.current = false;
+
+            // Pause then start next phase
+            if (phaseIndex < PHASES.length - 1) {
+              setTimeout(() => {
+                startTyping(phaseIndex + 1);
+              }, PAUSE_BETWEEN);
+            }
+          }
+        }, TYPE_SPEED);
+      }, LABEL_REVEAL);
+    },
+    []
+  );
+
+  // Start first typewriter after heading appears
+  useEffect(() => {
+    if (!showSubtitle) return;
+    const t = setTimeout(() => startTyping(0), 600);
+    return () => clearTimeout(t);
+  }, [showSubtitle, startTyping]);
+
+  // Calculate timeline line height
   useEffect(() => {
     const container = stepsContainerRef.current;
     if (!container) return;
 
-    const visibleCount = visibleSteps.filter(Boolean).length;
+    const visibleCount = phaseStates.filter((s) => s.labelVisible).length;
     if (visibleCount === 0) {
       setLineHeight(0);
       return;
     }
 
-    // Each step occupies 1/PHASES.length of the container
     const stepElements = container.querySelectorAll("[data-step]");
     if (stepElements.length === 0) return;
 
-    // Calculate the height to reach the center of the last visible step's dot
     let totalHeight = 0;
     for (let i = 0; i < visibleCount; i++) {
       const stepEl = stepElements[i] as HTMLElement;
       if (i < visibleCount - 1) {
         totalHeight += stepEl.offsetHeight;
       } else {
-        // For the last visible step, only go to the dot center (approx 10px from top)
         totalHeight += 10;
       }
     }
 
     setLineHeight(totalHeight);
-  }, [visibleSteps]);
+  }, [phaseStates]);
 
-  const visibleCount = visibleSteps.filter(Boolean).length;
+  const visibleCount = phaseStates.filter((s) => s.labelVisible).length;
+  const ease = "cubic-bezier(0.25, 0.1, 0.25, 1)";
 
   return (
     <section
@@ -151,9 +208,9 @@ export function OurJourneySection() {
             letterSpacing: "0.15em",
             textAlign: "center",
             marginBottom: "0.75rem",
-            opacity: sectionVisible ? 1 : 0,
-            transform: sectionVisible ? "translateY(0)" : "translateY(8px)",
-            transition: "opacity 0.8s ease, transform 0.8s ease",
+            opacity: showHeading ? 1 : 0,
+            transform: showHeading ? "translateY(0)" : "translateY(20px)",
+            transition: `opacity 1s ${ease}, transform 1s ${ease}`,
           }}
         >
           Our Journey
@@ -166,12 +223,13 @@ export function OurJourneySection() {
             fontSize: "0.75rem",
             fontWeight: 400,
             color: "#7D6E63",
-            opacity: sectionVisible ? 0.55 : 0,
+            opacity: showSubtitle ? 0.55 : 0,
             textAlign: "center",
             lineHeight: 1.8,
             maxWidth: "18rem",
             margin: "0 auto 2rem",
-            transition: "opacity 0.8s ease 0.2s",
+            transform: showSubtitle ? "translateY(0)" : "translateY(15px)",
+            transition: `opacity 1s ${ease} 0.2s, transform 1s ${ease} 0.2s`,
           }}
         >
           Kami menuliskan perjalanan ini dengan penuh rasa syukur.
@@ -182,7 +240,7 @@ export function OurJourneySection() {
           ref={stepsContainerRef}
           style={{ position: "relative", paddingLeft: "1.5rem" }}
         >
-          {/* Background line (full height, very faint) */}
+          {/* Background line */}
           <div
             style={{
               position: "absolute",
@@ -206,13 +264,13 @@ export function OurJourneySection() {
                 visibleCount === PHASES.length
                   ? "linear-gradient(to bottom, rgba(125,110,99,0.15), rgba(184,155,106,0.35))"
                   : "rgba(125, 110, 99, 0.18)",
-              transition: "height 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
+              transition: `height 0.8s ${ease}`,
             }}
           />
 
           {/* Steps */}
           {PHASES.map((phase, index) => {
-            const isStepVisible = visibleSteps[index];
+            const state = phaseStates[index];
             const isLast = index === PHASES.length - 1;
             const isMenikah = index === 3;
 
@@ -223,11 +281,11 @@ export function OurJourneySection() {
                 style={{
                   position: "relative",
                   paddingBottom: isLast ? 0 : "1.5rem",
-                  opacity: isStepVisible ? 1 : 0,
-                  transform: isStepVisible
+                  opacity: state.labelVisible ? 1 : 0,
+                  transform: state.labelVisible
                     ? "translateY(0)"
-                    : "translateY(8px)",
-                  transition: "opacity 0.5s ease, transform 0.5s ease",
+                    : "translateY(15px)",
+                  transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}`,
                 }}
               >
                 {/* Dot */}
@@ -240,19 +298,19 @@ export function OurJourneySection() {
                     height: "9px",
                     borderRadius: "50%",
                     border: `1.5px solid ${
-                      isMenikah && isStepVisible
+                      isMenikah && state.typingDone
                         ? "#B89B6A"
                         : "rgba(125, 110, 99, 0.3)"
                     }`,
-                    background: isStepVisible
-                      ? isMenikah
+                    background: state.labelVisible
+                      ? isMenikah && state.typingDone
                         ? "#B89B6A"
                         : "rgba(125, 110, 99, 0.15)"
                       : "transparent",
-                    transition: "all 0.5s ease",
+                    transition: `all 0.8s ${ease}`,
                     transform: "translateX(-2px)",
                     boxShadow:
-                      isMenikah && isStepVisible
+                      isMenikah && state.typingDone
                         ? "0 0 8px rgba(184, 155, 106, 0.25)"
                         : "none",
                   }}
@@ -265,16 +323,17 @@ export function OurJourneySection() {
                     fontSize: "0.5625rem",
                     fontWeight: 500,
                     color: "#7D6E63",
-                    opacity: isStepVisible ? 0.55 : 0.35,
+                    opacity: state.labelVisible ? 0.55 : 0.35,
                     letterSpacing: "0.12em",
                     textTransform: "uppercase",
                     marginBottom: "0.375rem",
+                    transition: `opacity 0.6s ${ease}`,
                   }}
                 >
                   {phase.label}
                 </p>
 
-                {/* Text */}
+                {/* Text — typewriter */}
                 <p
                   style={{
                     fontFamily: "var(--font-cormorant)",
@@ -284,19 +343,41 @@ export function OurJourneySection() {
                     color: "#7D6E63",
                     lineHeight: 1.9,
                     textShadow:
-                      isMenikah && isStepVisible
+                      isMenikah && state.typingDone
                         ? "0 0 20px rgba(184, 155, 106, 0.08)"
                         : "none",
                     transition: "text-shadow 1s ease",
+                    minHeight: "2.5rem",
                   }}
                 >
-                  {phase.text}
+                  {state.typedText}
+                  {!state.typingDone && state.typedText.length > 0 && (
+                    <span
+                      style={{
+                        display: "inline-block",
+                        width: "1px",
+                        height: "0.85em",
+                        background: "#7D6E63",
+                        marginLeft: "1px",
+                        animation: "nauka-blink 0.8s ease-in-out infinite",
+                        verticalAlign: "middle",
+                      }}
+                    />
+                  )}
                 </p>
               </div>
             );
           })}
         </div>
       </div>
+
+      {/* Keyframes */}
+      <style>{`
+        @keyframes nauka-blink {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0; }
+        }
+      `}</style>
     </section>
   );
 }

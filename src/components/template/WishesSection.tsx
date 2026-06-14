@@ -12,6 +12,9 @@ interface WishMessage {
 
 export function WishesSection() {
   const [sectionVisible, setSectionVisible] = useState(false);
+  const [showTitle, setShowTitle] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [showFeed, setShowFeed] = useState(false);
   const [nama, setNama] = useState("");
   const [doa, setDoa] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -62,6 +65,19 @@ export function WishesSection() {
     return () => observer.disconnect();
   }, [sectionVisible]);
 
+  // Staggered reveal
+  useEffect(() => {
+    if (!sectionVisible) return;
+    const t1 = setTimeout(() => setShowTitle(true), 200);
+    const t2 = setTimeout(() => setShowForm(true), 700);
+    const t3 = setTimeout(() => setShowFeed(true), 1200);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
+  }, [sectionVisible]);
+
   const isValid = nama.trim().length > 0 && doa.trim().length > 0;
 
   const formatTimestamp = (date: Date): string => {
@@ -89,7 +105,7 @@ export function WishesSection() {
         name: nama.trim(),
         message: doa.trim(),
         timestamp: new Date(),
-        status: "approved", // Auto-approve for now; in production this would be "pending"
+        status: "approved",
       };
 
       setMessages((prev) => [newMessage, ...prev].slice(0, 12));
@@ -101,6 +117,8 @@ export function WishesSection() {
       setTimeout(() => setShowToast(false), 3000);
     }, 1800);
   };
+
+  const ease = "cubic-bezier(0.25, 0.1, 0.25, 1)";
 
   const inputStyle: React.CSSProperties = {
     width: "100%",
@@ -170,9 +188,6 @@ export function WishesSection() {
           border: "1px solid rgba(125, 110, 99, 0.12)",
           borderRadius: "20px",
           padding: "2.5rem 2rem",
-          opacity: sectionVisible ? 1 : 0,
-          transform: sectionVisible ? "translateY(0)" : "translateY(24px)",
-          transition: "opacity 0.8s ease, transform 0.8s ease",
         }}
       >
         {/* Title */}
@@ -185,6 +200,9 @@ export function WishesSection() {
             letterSpacing: "0.1em",
             textAlign: "center",
             marginBottom: "0.5rem",
+            opacity: showTitle ? 1 : 0,
+            transform: showTitle ? "translateY(0)" : "translateY(20px)",
+            transition: `opacity 1s ${ease}, transform 1s ${ease}`,
           }}
         >
           Ucapan & Doa
@@ -197,10 +215,12 @@ export function WishesSection() {
             fontSize: "0.6875rem",
             fontWeight: 400,
             color: "#7D6E63",
-            opacity: 0.5,
+            opacity: showTitle ? 0.5 : 0,
             textAlign: "center",
             lineHeight: 1.7,
             marginBottom: "2rem",
+            transform: showTitle ? "translateY(0)" : "translateY(10px)",
+            transition: `opacity 1s ${ease} 0.15s, transform 1s ${ease} 0.15s`,
           }}
         >
           Tinggalkan doa terbaik untuk kami
@@ -213,6 +233,9 @@ export function WishesSection() {
             flexDirection: "column",
             gap: "1rem",
             marginBottom: "2rem",
+            opacity: showForm ? 1 : 0,
+            transform: showForm ? "translateY(0)" : "translateY(20px)",
+            transition: `opacity 1s ${ease}, transform 1s ${ease}`,
           }}
         >
           {/* Nama */}
@@ -226,8 +249,7 @@ export function WishesSection() {
               style={inputStyle}
               onFocus={(e) => {
                 e.target.style.borderColor = "rgba(125, 110, 99, 0.3)";
-                e.target.style.boxShadow =
-                  "0 0 0 2px rgba(125, 110, 99, 0.06)";
+                e.target.style.boxShadow = "0 0 0 2px rgba(125, 110, 99, 0.06)";
               }}
               onBlur={(e) => {
                 e.target.style.borderColor = "rgba(125, 110, 99, 0.15)";
@@ -251,8 +273,7 @@ export function WishesSection() {
               }}
               onFocus={(e) => {
                 e.target.style.borderColor = "rgba(125, 110, 99, 0.3)";
-                e.target.style.boxShadow =
-                  "0 0 0 2px rgba(125, 110, 99, 0.06)";
+                e.target.style.boxShadow = "0 0 0 2px rgba(125, 110, 99, 0.06)";
               }}
               onBlur={(e) => {
                 e.target.style.borderColor = "rgba(125, 110, 99, 0.15)";
@@ -271,42 +292,25 @@ export function WishesSection() {
               fontSize: "0.6875rem",
               fontWeight: 500,
               letterSpacing: "0.06em",
-              color:
-                isValid && !isSubmitting
-                  ? "#7D6E63"
-                  : "rgba(125, 110, 99, 0.35)",
-              background:
-                isValid && !isSubmitting
-                  ? "rgba(184, 155, 106, 0.1)"
-                  : "rgba(125, 110, 99, 0.03)",
-              border:
-                isValid && !isSubmitting
-                  ? "1px solid rgba(184, 155, 106, 0.3)"
-                  : "1px solid rgba(125, 110, 99, 0.1)",
+              color: isValid && !isSubmitting ? "#7D6E63" : "rgba(125, 110, 99, 0.35)",
+              background: isValid && !isSubmitting ? "rgba(184, 155, 106, 0.1)" : "rgba(125, 110, 99, 0.03)",
+              border: isValid && !isSubmitting ? "1px solid rgba(184, 155, 106, 0.3)" : "1px solid rgba(125, 110, 99, 0.1)",
               borderRadius: "8px",
               padding: "0.625rem 1.5rem",
-              cursor:
-                isValid && !isSubmitting ? "pointer" : "not-allowed",
+              cursor: isValid && !isSubmitting ? "pointer" : "not-allowed",
               transition: "all 0.3s ease",
               width: "100%",
               position: "relative",
               overflow: "hidden",
             }}
           >
-            {isSubmitting ? (
-              <span style={{ position: "relative", zIndex: 1 }}>
-                Mengirim...
-              </span>
-            ) : (
-              "Kirim Ucapan"
-            )}
+            {isSubmitting ? <span style={{ position: "relative", zIndex: 1 }}>Mengirim...</span> : "Kirim Ucapan"}
             {isSubmitting && (
               <span
                 style={{
                   position: "absolute",
                   inset: 0,
-                  background:
-                    "linear-gradient(90deg, transparent, rgba(184, 155, 106, 0.15), transparent)",
+                  background: "linear-gradient(90deg, transparent, rgba(184, 155, 106, 0.15), transparent)",
                   animation: "nauka-shimmer 1.5s ease-in-out infinite",
                 }}
               />
@@ -321,6 +325,8 @@ export function WishesSection() {
             height: "1px",
             background: "rgba(125, 110, 99, 0.08)",
             marginBottom: "1.5rem",
+            opacity: showFeed ? 1 : 0,
+            transition: `opacity 0.8s ${ease}`,
           }}
         />
 
@@ -331,11 +337,12 @@ export function WishesSection() {
             fontSize: "0.5625rem",
             fontWeight: 500,
             color: "#7D6E63",
-            opacity: 0.4,
+            opacity: showFeed ? 0.4 : 0,
             letterSpacing: "0.1em",
             textTransform: "uppercase" as const,
             marginBottom: "1rem",
             textAlign: "center",
+            transition: `opacity 0.8s ${ease}`,
           }}
         >
           Live Doa
@@ -354,7 +361,6 @@ export function WishesSection() {
           }}
         >
           {isEmpty ? (
-            /* Empty state */
             <p
               style={{
                 fontFamily: "var(--font-jakarta)",
@@ -373,28 +379,19 @@ export function WishesSection() {
             approvedMessages.map((msg, index) => (
               <div
                 key={msg.id}
-                className="nauka-wish-card"
                 style={{
                   background: "rgba(125, 110, 99, 0.025)",
                   border: "1px solid rgba(125, 110, 99, 0.07)",
                   borderRadius: "12px",
                   padding: "0.875rem 1rem",
-                  transition:
-                    "transform 0.25s ease, box-shadow 0.25s ease, opacity 0.6s ease",
                   cursor: "default",
-                  animation:
-                    sectionVisible
-                      ? `nauka-wish-enter 0.6s ease ${index * 0.08}s both`
-                      : "none",
-                  opacity:
-                    index >= 8
-                      ? Math.max(0.3, 1 - (index - 7) * 0.15)
-                      : 1,
+                  opacity: showFeed ? (index >= 8 ? Math.max(0.3, 1 - (index - 7) * 0.15) : 1) : 0,
+                  transform: showFeed ? "scale(1) translateY(0)" : "scale(0.98) translateY(10px)",
+                  transition: `transform 0.3s ease, box-shadow 0.3s ease, opacity 0.8s ${ease} ${index * 0.1}s, transform 0.8s ${ease} ${index * 0.1}s`,
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "scale(1.02)";
-                  e.currentTarget.style.boxShadow =
-                    "0 2px 8px rgba(125, 110, 99, 0.08)";
+                  e.currentTarget.style.transform = "scale(1.015)";
+                  e.currentTarget.style.boxShadow = "0 2px 8px rgba(125, 110, 99, 0.08)";
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = "scale(1)";
@@ -465,7 +462,7 @@ export function WishesSection() {
               fontWeight: 400,
               color: "#7D6E63",
               whiteSpace: "nowrap",
-              animation: "nauka-toast-in 0.4s ease forwards",
+              animation: "nauka-toast-in 0.5s ease forwards",
               zIndex: 10,
             }}
           >
@@ -480,20 +477,9 @@ export function WishesSection() {
           0% { transform: translateX(-100%); }
           100% { transform: translateX(350%); }
         }
-        @keyframes nauka-wish-enter {
-          from { opacity: 0; transform: translateY(16px); filter: blur(3px); }
-          to { opacity: 1; transform: translateY(0); filter: blur(0); }
-        }
         @keyframes nauka-toast-in {
           from { opacity: 0; transform: translateX(-50%) translateY(8px); }
           to { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
-        @keyframes nauka-breathe {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(1.5px); }
-        }
-        .nauka-wish-card {
-          animation: nauka-breathe 6s ease-in-out infinite;
         }
       `}</style>
     </section>

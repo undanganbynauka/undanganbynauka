@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 
 export function AmplopDigitalSection() {
   const [sectionVisible, setSectionVisible] = useState(false);
+  const [showContent, setShowContent] = useState(false);
   const [isRevealed, setIsRevealed] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
@@ -24,6 +25,12 @@ export function AmplopDigitalSection() {
 
     observer.observe(el);
     return () => observer.disconnect();
+  }, [sectionVisible]);
+
+  useEffect(() => {
+    if (!sectionVisible) return;
+    const t = setTimeout(() => setShowContent(true), 300);
+    return () => clearTimeout(t);
   }, [sectionVisible]);
 
   const handleCopy = (rekening: string, id: string) => {
@@ -94,9 +101,9 @@ export function AmplopDigitalSection() {
           border: "1px solid rgba(125, 110, 99, 0.12)",
           borderRadius: "20px",
           padding: "2.5rem 2rem",
-          opacity: sectionVisible ? 1 : 0,
-          transform: sectionVisible ? "translateY(0)" : "translateY(24px)",
-          transition: "opacity 0.8s ease, transform 0.8s ease",
+          opacity: showContent ? 1 : 0,
+          transform: showContent ? "translateY(0)" : "translateY(25px)",
+          transition: "opacity 1s cubic-bezier(0.25, 0.1, 0.25, 1), transform 1s cubic-bezier(0.25, 0.1, 0.25, 1)",
         }}
       >
         {/* Title */}

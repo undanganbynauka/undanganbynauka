@@ -7,6 +7,7 @@ type RsvpState = "form" | "loading" | "success";
 export function RsvpSection() {
   const [state, setState] = useState<RsvpState>("form");
   const [sectionVisible, setSectionVisible] = useState(false);
+  const [showContent, setShowContent] = useState(false);
   const [nama, setNama] = useState("");
   const [kehadiran, setKehadiran] = useState<"hadir" | "tidak_hadir" | "">("");
   const [jumlahTamu, setJumlahTamu] = useState(1);
@@ -28,6 +29,12 @@ export function RsvpSection() {
 
     observer.observe(el);
     return () => observer.disconnect();
+  }, [sectionVisible]);
+
+  useEffect(() => {
+    if (!sectionVisible) return;
+    const t = setTimeout(() => setShowContent(true), 300);
+    return () => clearTimeout(t);
   }, [sectionVisible]);
 
   const isValid = nama.trim().length > 0 && kehadiran !== "";
@@ -106,9 +113,9 @@ export function RsvpSection() {
           border: "1px solid rgba(125, 110, 99, 0.12)",
           borderRadius: "20px",
           padding: "2.5rem 2rem",
-          opacity: sectionVisible ? 1 : 0,
-          transform: sectionVisible ? "translateY(0)" : "translateY(24px)",
-          transition: "opacity 0.8s ease, transform 0.8s ease",
+          opacity: showContent ? 1 : 0,
+          transform: showContent ? "translateY(0)" : "translateY(25px)",
+          transition: "opacity 1s cubic-bezier(0.25, 0.1, 0.25, 1), transform 1s cubic-bezier(0.25, 0.1, 0.25, 1)",
         }}
       >
         {/* Title */}

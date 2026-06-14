@@ -167,12 +167,12 @@ export function ClosingSection() {
         </p>
       </div>
 
-      {/* Nauka Logo — small watermark above signature */}
+      {/* Nauka Logo — watermark above signature */}
       <div
         style={{
           position: "relative",
           zIndex: 2,
-          opacity: sectionVisible ? 0.3 : 0,
+          opacity: sectionVisible ? 0.45 : 0,
           transition: "opacity 1s ease 1.5s",
           marginBottom: "1rem",
         }}
@@ -180,38 +180,38 @@ export function ClosingSection() {
         <Image
           src="/nauka-logo.png"
           alt="Nauka"
-          width={28}
-          height={28}
+          width={52}
+          height={52}
           style={{
-            width: "28px",
+            width: "52px",
             height: "auto",
-            filter: "brightness(0.5) sepia(0.2)",
+            filter: "brightness(0.45) sepia(0.2)",
           }}
         />
       </div>
 
-      {/* Signature Block — full width, at the very bottom */}
+      {/* Signature Block — full width, at the very bottom, compact */}
       <div
         style={{
           position: "relative",
           zIndex: 2,
           width: "100%",
           borderTop: "0.75px solid rgba(125, 110, 99, 0.15)",
-          padding: "1.5rem 2rem",
+          padding: "0.875rem 2rem",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: "0.375rem",
+          gap: "0.125rem",
           opacity: sectionVisible ? 1 : 0,
           transition: "opacity 1s ease 1.7s",
           background: "rgba(125, 110, 99, 0.015)",
         }}
       >
-        {/* Names — bigger */}
+        {/* Names */}
         <p
           style={{
             fontFamily: "var(--font-cormorant)",
-            fontSize: "1.25rem",
+            fontSize: "1rem",
             fontWeight: 400,
             color: "#2E2E2E",
             letterSpacing: "0.06em",
@@ -220,14 +220,14 @@ export function ClosingSection() {
           Ali &amp; Lyla
         </p>
 
-        {/* Date — bigger */}
+        {/* Date */}
         <p
           style={{
             fontFamily: "var(--font-jakarta)",
-            fontSize: "0.6875rem",
+            fontSize: "0.625rem",
             fontWeight: 400,
             color: "#6F6F6F",
-            opacity: 0.6,
+            opacity: 0.55,
             letterSpacing: "0.06em",
           }}
         >

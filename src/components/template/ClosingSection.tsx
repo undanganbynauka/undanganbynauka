@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 
 export function ClosingSection() {
   const [sectionVisible, setSectionVisible] = useState(false);
@@ -33,7 +34,7 @@ export function ClosingSection() {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        padding: "4rem 3rem 3rem",
+        padding: "4rem 1.5rem 0",
         minHeight: "100vh",
       }}
     >
@@ -117,7 +118,7 @@ export function ClosingSection() {
           Baarakallahu lakuma wa baaraka &lsquo;alaikuma wa jama&lsquo;a bainakuma fii khair
         </p>
 
-        {/* Arti (optional) */}
+        {/* Arti */}
         <p
           style={{
             fontFamily: "var(--font-jakarta)",
@@ -156,7 +157,7 @@ export function ClosingSection() {
             color: "#6F6F6F",
             lineHeight: 1.9,
             textAlign: "center",
-            marginBottom: "4.5rem",
+            marginBottom: "4rem",
             maxWidth: "18rem",
             opacity: sectionVisible ? 0.75 : 0,
             transition: "opacity 1s ease 1.4s",
@@ -164,64 +165,74 @@ export function ClosingSection() {
         >
           Terima kasih telah menjadi bagian dari perjalanan kecil kami menuju kisah baru.
         </p>
+      </div>
 
-        {/* Signature Block — bottom right anchored */}
-        <div
+      {/* Nauka Logo — small watermark above signature */}
+      <div
+        style={{
+          position: "relative",
+          zIndex: 2,
+          opacity: sectionVisible ? 0.3 : 0,
+          transition: "opacity 1s ease 1.5s",
+          marginBottom: "1rem",
+        }}
+      >
+        <Image
+          src="/nauka-logo.png"
+          alt="Nauka"
+          width={28}
+          height={28}
           style={{
-            alignSelf: "flex-end",
-            border: "0.75px solid rgba(125, 110, 99, 0.18)",
-            borderRadius: "8px",
-            padding: "1.125rem 1.25rem",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: "0.375rem",
-            opacity: sectionVisible ? 1 : 0,
-            transition: "opacity 1s ease 1.7s",
+            width: "28px",
+            height: "auto",
+            filter: "brightness(0.5) sepia(0.2)",
+          }}
+        />
+      </div>
+
+      {/* Signature Block — full width, at the very bottom */}
+      <div
+        style={{
+          position: "relative",
+          zIndex: 2,
+          width: "100%",
+          borderTop: "0.75px solid rgba(125, 110, 99, 0.15)",
+          padding: "1.5rem 2rem",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "0.375rem",
+          opacity: sectionVisible ? 1 : 0,
+          transition: "opacity 1s ease 1.7s",
+          background: "rgba(125, 110, 99, 0.015)",
+        }}
+      >
+        {/* Names — bigger */}
+        <p
+          style={{
+            fontFamily: "var(--font-cormorant)",
+            fontSize: "1.25rem",
+            fontWeight: 400,
+            color: "#2E2E2E",
+            letterSpacing: "0.06em",
           }}
         >
-          {/* Logo placeholder */}
-          <p
-            style={{
-              fontFamily: "var(--font-cormorant)",
-              fontSize: "0.5rem",
-              fontWeight: 400,
-              color: "#6F6F6F",
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              opacity: 0.45,
-            }}
-          >
-            LOGO NAUKA
-          </p>
+          Ali &amp; Lyla
+        </p>
 
-          {/* Names */}
-          <p
-            style={{
-              fontFamily: "var(--font-cormorant)",
-              fontSize: "0.8125rem",
-              fontWeight: 400,
-              color: "#2E2E2E",
-              letterSpacing: "0.04em",
-            }}
-          >
-            Ali &amp; Lyla
-          </p>
-
-          {/* Date */}
-          <p
-            style={{
-              fontFamily: "var(--font-jakarta)",
-              fontSize: "0.5625rem",
-              fontWeight: 400,
-              color: "#6F6F6F",
-              opacity: 0.6,
-              letterSpacing: "0.06em",
-            }}
-          >
-            5 Juli 2026
-          </p>
-        </div>
+        {/* Date — bigger */}
+        <p
+          style={{
+            fontFamily: "var(--font-jakarta)",
+            fontSize: "0.6875rem",
+            fontWeight: 400,
+            color: "#6F6F6F",
+            opacity: 0.6,
+            letterSpacing: "0.06em",
+          }}
+        >
+          5 Juli 2026
+        </p>
       </div>
     </section>
   );

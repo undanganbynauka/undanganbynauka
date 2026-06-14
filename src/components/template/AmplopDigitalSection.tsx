@@ -111,7 +111,7 @@ export function AmplopDigitalSection() {
             marginBottom: "0.75rem",
           }}
         >
-          Amplop Digital
+          Hadiah &amp; Tanda Kasih
         </h2>
 
         {/* Subtitle */}
@@ -222,7 +222,8 @@ export function AmplopDigitalSection() {
                 {/* Rekening Number — monospace */}
                 <p
                   style={{
-                    fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace",
+                    fontFamily:
+                      "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace",
                     fontSize: "0.8125rem",
                     fontWeight: 400,
                     color: "#7D6E63",
@@ -265,6 +266,113 @@ export function AmplopDigitalSection() {
                 </button>
               </div>
             ))}
+
+            {/* Kado Fisik Section */}
+            <div
+              style={{
+                borderTop: "1px solid rgba(125, 110, 99, 0.08)",
+                paddingTop: "1.25rem",
+                marginTop: "0.25rem",
+              }}
+            >
+              {/* Kado Fisik Label */}
+              <p
+                style={{
+                  fontFamily: "var(--font-cormorant)",
+                  fontSize: "0.875rem",
+                  fontWeight: 400,
+                  color: "#7D6E63",
+                  letterSpacing: "0.06em",
+                  textAlign: "center",
+                  marginBottom: "0.625rem",
+                }}
+              >
+                Kado Fisik
+              </p>
+
+              <p
+                style={{
+                  fontFamily: "var(--font-jakarta)",
+                  fontSize: "0.6875rem",
+                  fontWeight: 400,
+                  color: "#7D6E63",
+                  opacity: 0.5,
+                  textAlign: "center",
+                  lineHeight: 1.8,
+                  marginBottom: "1rem",
+                  maxWidth: "18rem",
+                  marginLeft: "auto",
+                  marginRight: "auto",
+                }}
+              >
+                Bagi keluarga dan sahabat yang ingin menyampaikan tanda kasih
+                dalam bentuk hadiah, dengan tulus kami menerimanya melalui
+                pengiriman ke:
+              </p>
+
+              {/* Address Card */}
+              <div
+                style={{
+                  background: "rgba(125, 110, 99, 0.025)",
+                  border: "1px solid rgba(125, 110, 99, 0.07)",
+                  borderRadius: "12px",
+                  padding: "1rem",
+                  textAlign: "center",
+                }}
+              >
+                <p
+                  style={{
+                    fontFamily: "var(--font-jakarta)",
+                    fontSize: "0.625rem",
+                    fontWeight: 500,
+                    color: "#7D6E63",
+                    opacity: 0.55,
+                    letterSpacing: "0.06em",
+                    textTransform: "uppercase",
+                    marginBottom: "0.375rem",
+                  }}
+                >
+                  Penerima
+                </p>
+                <p
+                  style={{
+                    fontFamily: "var(--font-jakarta)",
+                    fontSize: "0.75rem",
+                    fontWeight: 400,
+                    color: "#7D6E63",
+                    marginBottom: "0.625rem",
+                  }}
+                >
+                  Lyla Azzahra
+                </p>
+                <p
+                  style={{
+                    fontFamily: "var(--font-jakarta)",
+                    fontSize: "0.625rem",
+                    fontWeight: 500,
+                    color: "#7D6E63",
+                    opacity: 0.55,
+                    letterSpacing: "0.06em",
+                    textTransform: "uppercase",
+                    marginBottom: "0.375rem",
+                  }}
+                >
+                  Alamat
+                </p>
+                <p
+                  style={{
+                    fontFamily: "var(--font-jakarta)",
+                    fontSize: "0.6875rem",
+                    fontWeight: 400,
+                    color: "#7D6E63",
+                    opacity: 0.7,
+                    lineHeight: 1.7,
+                  }}
+                >
+                  Kebon Jahe Kober 3 No. 1 Jakarta Pusat
+                </p>
+              </div>
+            </div>
           </div>
         )}
 

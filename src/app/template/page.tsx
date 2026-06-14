@@ -11,6 +11,7 @@ import { RsvpSection } from "@/components/template/RsvpSection";
 import { WishesSection } from "@/components/template/WishesSection";
 import { AmplopDigitalSection } from "@/components/template/AmplopDigitalSection";
 import { ClosingSection } from "@/components/template/ClosingSection";
+import { FloatingNav } from "@/components/template/FloatingNav";
 
 type Phase = "gate" | "opening" | "inside";
 
@@ -33,14 +34,14 @@ export default function TemplatePage() {
           transition: "opacity 1.2s ease",
         }}
       >
-        <CountdownSection />
-        <BismillahSection />
-        <OurJourneySection />
-        <BrideGroomSection />
-        <EventSection />
-        <RsvpSection />
-        <WishesSection />
-        <AmplopDigitalSection />
+        <div id="countdown"><CountdownSection /></div>
+        <div id="bismillah"><BismillahSection /></div>
+        <div id="journey"><OurJourneySection /></div>
+        <div id="mempelai"><BrideGroomSection /></div>
+        <div id="acara"><EventSection /></div>
+        <div id="rsvp"><RsvpSection /></div>
+        <div id="ucapan"><WishesSection /></div>
+        <div id="hadiah"><AmplopDigitalSection /></div>
         <ClosingSection />
       </div>
 
@@ -58,6 +59,9 @@ export default function TemplatePage() {
           <HeroSection onOpen={handleOpen} />
         </div>
       )}
+
+      {/* Floating Navigation — only when inside */}
+      {phase === "inside" && <FloatingNav />}
     </main>
   );
 }

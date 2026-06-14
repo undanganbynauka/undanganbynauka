@@ -167,63 +167,72 @@ export function ClosingSection() {
         </p>
       </div>
 
-      {/* Nauka Logo — above footer box, readable size */}
-      <div
-        style={{
-          position: "relative",
-          zIndex: 2,
-          opacity: sectionVisible ? 0.5 : 0,
-          transition: "opacity 1s ease 1.5s",
-          marginBottom: "0.75rem",
-        }}
-      >
-        <Image
-          src="/nauka-logo.png"
-          alt="Nauka"
-          width={48}
-          height={48}
-          style={{
-            width: "48px",
-            height: "auto",
-            filter: "brightness(0.4) sepia(0.15)",
-          }}
-        />
-      </div>
-
-      {/* Signature Block — full width slim footer, stacked centered */}
+      {/* Nauka Logo + Signature — full width slim footer */}
       <div
         style={{
           position: "relative",
           zIndex: 2,
           width: "100%",
           borderTop: "0.75px solid rgba(125, 110, 99, 0.15)",
-          padding: "0.875rem 1.5rem",
+          padding: "0.5rem 1.5rem",
           display: "flex",
-          flexDirection: "column",
+          flexDirection: "row",
           alignItems: "center",
-          gap: "0.125rem",
+          justifyContent: "center",
+          gap: "0.5rem",
           opacity: sectionVisible ? 1 : 0,
           transition: "opacity 1s ease 1.7s",
         }}
       >
-        {/* Names */}
+        <Image
+          src="/nauka-logo.png"
+          alt="Nauka"
+          width={36}
+          height={36}
+          style={{
+            width: "36px",
+            height: "auto",
+            filter: "brightness(0.4) sepia(0.15)",
+            opacity: 0.55,
+          }}
+        />
+
+        <span
+          style={{
+            width: "2px",
+            height: "2px",
+            borderRadius: "50%",
+            background: "rgba(125, 110, 99, 0.25)",
+            flexShrink: 0,
+          }}
+        />
+
         <p
           style={{
             fontFamily: "var(--font-cormorant)",
-            fontSize: "0.9375rem",
+            fontSize: "0.8125rem",
             fontWeight: 400,
             color: "#2E2E2E",
-            letterSpacing: "0.05em",
+            letterSpacing: "0.04em",
           }}
         >
           Ali &amp; Lyla
         </p>
 
-        {/* Date */}
+        <span
+          style={{
+            width: "2px",
+            height: "2px",
+            borderRadius: "50%",
+            background: "rgba(125, 110, 99, 0.25)",
+            flexShrink: 0,
+          }}
+        />
+
         <p
           style={{
             fontFamily: "var(--font-jakarta)",
-            fontSize: "0.625rem",
+            fontSize: "0.5625rem",
             fontWeight: 400,
             color: "#6F6F6F",
             opacity: 0.5,

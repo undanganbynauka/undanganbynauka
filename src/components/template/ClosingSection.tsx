@@ -8,9 +8,11 @@ export function ClosingSection() {
   const [showDoa, setShowDoa] = useState(false);
   const [showTranslit, setShowTranslit] = useState(false);
   const [showArti, setShowArti] = useState(false);
-  const [showDivider, setShowDivider] = useState(false);
   const [showUcapan, setShowUcapan] = useState(false);
-  const [showFooter, setShowFooter] = useState(false);
+  const [showDivider, setShowDivider] = useState(false);
+  const [showNames, setShowNames] = useState(false);
+  const [showDate, setShowDate] = useState(false);
+  const [showLogo, setShowLogo] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -30,16 +32,18 @@ export function ClosingSection() {
     return () => observer.disconnect();
   }, [sectionVisible]);
 
-  // Sequential: doa → translit → arti → divider → ucapan → footer
+  // Sequential: doa → translit → arti → ucapan → divider → names → date → logo
   useEffect(() => {
     if (!sectionVisible) return;
     const timers = [
       setTimeout(() => setShowDoa(true), 300),
       setTimeout(() => setShowTranslit(true), 1000),
       setTimeout(() => setShowArti(true), 1600),
-      setTimeout(() => setShowDivider(true), 2200),
-      setTimeout(() => setShowUcapan(true), 2800),     // after 500ms from divider
-      setTimeout(() => setShowFooter(true), 3600),     // last, 1.2s fade
+      setTimeout(() => setShowUcapan(true), 2200),
+      setTimeout(() => setShowDivider(true), 2900),
+      setTimeout(() => setShowNames(true), 3500),
+      setTimeout(() => setShowDate(true), 4100),
+      setTimeout(() => setShowLogo(true), 4700),
     ];
     return () => timers.forEach(clearTimeout);
   }, [sectionVisible]);
@@ -55,6 +59,7 @@ export function ClosingSection() {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
+        justifyContent: "center",
         padding: "0",
         minHeight: "100vh",
       }}
@@ -80,11 +85,10 @@ export function ClosingSection() {
           zIndex: 2,
           maxWidth: "24rem",
           width: "100%",
-          flex: 1,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          padding: "2.5rem 1.5rem 0",
+          padding: "2.5rem 1.5rem 2rem",
         }}
       >
         {/* Gold accent line — top */}
@@ -93,7 +97,7 @@ export function ClosingSection() {
             width: "40px",
             height: "0.75px",
             background: "#C8B28A",
-            marginBottom: "3rem",
+            marginBottom: "2.5rem",
             opacity: showDoa ? 1 : 0,
             transform: showDoa ? "scaleX(1)" : "scaleX(0)",
             transition: `opacity 1s ${ease}, transform 1s ${ease}`,
@@ -110,7 +114,7 @@ export function ClosingSection() {
             lineHeight: 2.2,
             textAlign: "center",
             direction: "rtl",
-            marginBottom: "2rem",
+            marginBottom: "1.5rem",
             maxWidth: "20rem",
             opacity: showDoa ? 1 : 0,
             transform: showDoa ? "translateY(0)" : "translateY(25px)",
@@ -131,7 +135,7 @@ export function ClosingSection() {
             color: "#6F6F6F",
             lineHeight: 1.9,
             textAlign: "center",
-            marginBottom: "1.5rem",
+            marginBottom: "1rem",
             maxWidth: "19rem",
             opacity: showTranslit ? 1 : 0,
             transform: showTranslit ? "translateY(0)" : "translateY(20px)",
@@ -150,7 +154,7 @@ export function ClosingSection() {
             color: "#8A8A8A",
             lineHeight: 1.8,
             textAlign: "center",
-            marginBottom: "3rem",
+            marginBottom: "2rem",
             maxWidth: "17rem",
             opacity: showArti ? 1 : 0,
             transform: showArti ? "translateY(0)" : "translateY(20px)",
@@ -159,19 +163,6 @@ export function ClosingSection() {
         >
           Semoga Allah memberkahimu berdua dan memberkai pernikahanmu, serta menghimpun kalian berdua dalam kebaikan.
         </p>
-
-        {/* Gold accent line — middle divider */}
-        <div
-          style={{
-            width: "24px",
-            height: "0.75px",
-            background: "#C8B28A",
-            marginBottom: "2.5rem",
-            opacity: showDivider ? 1 : 0,
-            transform: showDivider ? "scaleX(1)" : "scaleX(0)",
-            transition: `opacity 1s ${ease}, transform 1s ${ease}`,
-          }}
-        />
 
         {/* Ucapan Terima Kasih */}
         <p
@@ -191,75 +182,105 @@ export function ClosingSection() {
         >
           Terima kasih telah menjadi bagian dari perjalanan kecil kami menuju kisah baru.
         </p>
-      </div>
 
-      {/* Nauka Logo + Signature — anchored to bottom */}
-      <div
-        style={{
-          position: "relative",
-          zIndex: 2,
-          width: "100%",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "0.5rem",
-          paddingBottom: "0.75rem",
-          opacity: showFooter ? 1 : 0,
-          transform: showFooter ? "translateY(0)" : "translateY(10px)",
-          transition: `opacity 1.2s ${ease}, transform 1.2s ${ease}`,
-        }}
-      >
-        {/* Logo above the box */}
-        <Image
-          src="/nauka-logo.png"
-          alt="Nauka"
-          width={56}
-          height={56}
-          style={{
-            width: "56px",
-            height: "auto",
-            filter: "brightness(0.35) sepia(0.12)",
-            opacity: 0.65,
-          }}
-        />
-
-        {/* Slim signature box */}
+        {/* Decorative Divider: ───── ⚭ ───── */}
         <div
           style={{
-            width: "100%",
-            borderTop: "0.75px solid rgba(125, 110, 99, 0.15)",
-            padding: "0.5rem 1rem",
             display: "flex",
-            flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center",
-            textAlign: "center",
-            gap: "0.15rem",
+            gap: "0.75rem",
+            marginTop: "2rem",
+            marginBottom: "1.75rem",
+            opacity: showDivider ? 1 : 0,
+            transform: showDivider ? "translateY(0)" : "translateY(10px)",
+            transition: `opacity 1.2s ${ease}, transform 1.2s ${ease}`,
           }}
         >
-          <p
+          <div
+            style={{
+              width: "3rem",
+              height: "0.5px",
+              background: "#C8B28A",
+              opacity: 0.5,
+            }}
+          />
+          <span
             style={{
               fontFamily: "var(--font-cormorant)",
-              fontSize: "1rem",
-              fontWeight: 500,
-              color: "#2E2E2E",
-              letterSpacing: "0.05em",
+              fontSize: "0.75rem",
+              color: "#C8B28A",
+              lineHeight: 1,
             }}
           >
-            Ali &amp; Lyla
-          </p>
-          <p
+            ⚭
+          </span>
+          <div
             style={{
-              fontFamily: "var(--font-jakarta)",
-              fontSize: "0.6875rem",
-              fontWeight: 400,
-              color: "#6F6F6F",
-              opacity: 0.6,
-              letterSpacing: "0.05em",
+              width: "3rem",
+              height: "0.5px",
+              background: "#C8B28A",
+              opacity: 0.5,
             }}
-          >
-            05 Juli 2026
-          </p>
+          />
+        </div>
+
+        {/* Nama Mempelai — FOCAL POINT */}
+        <p
+          style={{
+            fontFamily: "var(--font-cormorant)",
+            fontSize: "1.625rem",
+            fontWeight: 500,
+            color: "#2E2E2E",
+            letterSpacing: "0.08em",
+            textAlign: "center",
+            marginBottom: "0.4rem",
+            opacity: showNames ? 1 : 0,
+            transform: showNames ? "translateY(0)" : "translateY(15px)",
+            transition: `opacity 1.2s ${ease}, transform 1.2s ${ease}`,
+          }}
+        >
+          Ali &amp; Lyla
+        </p>
+
+        {/* Tanggal */}
+        <p
+          style={{
+            fontFamily: "var(--font-jakarta)",
+            fontSize: "0.625rem",
+            fontWeight: 400,
+            color: "#6F6F6F",
+            opacity: showDate ? 0.55 : 0,
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            textAlign: "center",
+            marginBottom: "0",
+            transform: showDate ? "translateY(0)" : "translateY(8px)",
+            transition: `opacity 1s ${ease}, transform 1s ${ease}`,
+          }}
+        >
+          05 Juli 2026
+        </p>
+
+        {/* Logo — subtle, minimal */}
+        <div
+          style={{
+            marginTop: "2.5rem",
+            opacity: showLogo ? 0.35 : 0,
+            transform: showLogo ? "translateY(0)" : "translateY(6px)",
+            transition: `opacity 1.5s ${ease}, transform 1.5s ${ease}`,
+          }}
+        >
+          <Image
+            src="/nauka-logo.png"
+            alt="Nauka"
+            width={28}
+            height={28}
+            style={{
+              width: "28px",
+              height: "auto",
+              filter: "brightness(0.35) sepia(0.12)",
+            }}
+          />
         </div>
       </div>
     </section>

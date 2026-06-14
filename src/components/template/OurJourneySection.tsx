@@ -1,112 +1,116 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import Image from "next/image";
 
 const PHASES = [
   {
     label: "Ta'aruf",
     text: "Kami memulai dari proses ta'aruf, perkenalan yang dijaga dengan adab dan niat yang baik.",
+    delay: 0,
   },
   {
     label: "Nadzor",
     text: "Dilanjutkan dengan nadzor, sebagai tahap saling mengenal secukupnya dalam batas yang Allah tetapkan.",
+    delay: 200,
   },
   {
     label: "Khitbah",
     text: "Keluarga dipertemukan dalam proses khitbah sebagai bentuk keseriusan menuju pernikahan.",
+    delay: 400,
   },
   {
     label: "Menikah",
     text: "Hingga akhirnya, dengan izin Allah dan restu keluarga, kami sampai pada akad pernikahan.",
+    delay: 600,
   },
 ];
 
-function TypewriterText({
-  text,
-  active,
-  showFull,
-  speed = 30,
-}: {
-  text: string;
-  active: boolean;
-  showFull: boolean;
-  speed?: number;
-}) {
-  const [displayed, setDisplayed] = useState("");
-  const [done, setDone] = useState(false);
-  const hasStarted = useRef(false);
-
-  useEffect(() => {
-    if (active && !hasStarted.current) {
-      hasStarted.current = true;
-      let i = 0;
-      const interval = setInterval(() => {
-        i++;
-        if (i <= text.length) {
-          setDisplayed(text.slice(0, i));
-        } else {
-          setDone(true);
-          clearInterval(interval);
-        }
-      }, speed);
-      return () => clearInterval(interval);
-    }
-  }, [active, text, speed]);
-
-  // If told to show full (scrolled past), show everything
-  if (showFull && !done) {
-    setDisplayed(text);
-    setDone(true);
-  }
-
-  if (!hasStarted.current && !showFull) return null;
-
-  return (
-    <span>
-      {done ? text : displayed}
-      {!done && displayed.length < text.length && (
-        <span style={{ opacity: 0.25, fontWeight: 300 }}>|</span>
-      )}
-    </span>
-  );
-}
-
 export function OurJourneySection() {
-  const [activePhase, setActivePhase] = useState(-1);
-  const sentinelRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [sectionVisible, setSectionVisible] = useState(false);
+  const [visibleSteps, setVisibleSteps] = useState<boolean[]>([
+    false,
+    false,
+    false,
+    false,
+  ]);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const stepsContainerRef = useRef<HTMLDivElement>(null);
+  const [lineHeight, setLineHeight] = useState(0);
 
   useEffect(() => {
-    const observers: IntersectionObserver[] = [];
+    const el = sectionRef.current;
+    if (!el) return;
 
-    sentinelRefs.current.forEach((ref, index) => {
-      if (!ref) return;
-
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            setActivePhase((prev) => Math.max(prev, index));
-          }
-        },
-        {
-          threshold: 0.35,
-          rootMargin: "0px 0px -5% 0px",
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !sectionVisible) {
+          setSectionVisible(true);
         }
-      );
+      },
+      { threshold: 0.15 }
+    );
 
-      observer.observe(ref);
-      observers.push(observer);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [sectionVisible]);
+
+  // Stagger step appearance
+  useEffect(() => {
+    if (!sectionVisible) return;
+
+    PHASES.forEach((phase, index) => {
+      setTimeout(() => {
+        setVisibleSteps((prev) => {
+          const next = [...prev];
+          next[index] = true;
+          return next;
+        });
+      }, 500 + phase.delay); // 500ms base for heading to appear first
     });
+  }, [sectionVisible]);
 
-    return () => observers.forEach((o) => o.disconnect());
-  }, []);
+  // Calculate timeline line height based on visible steps
+  useEffect(() => {
+    const container = stepsContainerRef.current;
+    if (!container) return;
+
+    const visibleCount = visibleSteps.filter(Boolean).length;
+    if (visibleCount === 0) {
+      setLineHeight(0);
+      return;
+    }
+
+    // Each step occupies 1/PHASES.length of the container
+    const stepElements = container.querySelectorAll("[data-step]");
+    if (stepElements.length === 0) return;
+
+    // Calculate the height to reach the center of the last visible step's dot
+    let totalHeight = 0;
+    for (let i = 0; i < visibleCount; i++) {
+      const stepEl = stepElements[i] as HTMLElement;
+      if (i < visibleCount - 1) {
+        totalHeight += stepEl.offsetHeight;
+      } else {
+        // For the last visible step, only go to the dot center (approx 10px from top)
+        totalHeight += 10;
+      }
+    }
+
+    setLineHeight(totalHeight);
+  }, [visibleSteps]);
+
+  const visibleCount = visibleSteps.filter(Boolean).length;
 
   return (
     <section
       style={{
         position: "relative",
         background: "#F8F4EE",
-        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "3rem 1.5rem",
       }}
     >
       {/* Paper grain texture */}
@@ -123,48 +127,21 @@ export function OurJourneySection() {
         }}
       />
 
-      {/* Floating quill pen */}
-      {activePhase >= 0 && (
-        <div
-          style={{
-            position: "absolute",
-            right: "12%",
-            top: `${22 + activePhase * 18}%`,
-            transition: "top 1.5s cubic-bezier(0.4, 0, 0.2, 1)",
-            opacity: 0.25,
-            pointerEvents: "none",
-            zIndex: 1,
-            animation: "nauka-float 5s ease-in-out infinite",
-          }}
-        >
-          <Image
-            src="/quill-pen.png"
-            alt="Quill Pen"
-            width={40}
-            height={40}
-            style={{
-              width: "40px",
-              height: "auto",
-              filter: "brightness(0.5) sepia(0.3)",
-            }}
-          />
-        </div>
-      )}
-
-      {/* STATE 0 — Opening */}
+      {/* Single Card */}
       <div
+        ref={sectionRef}
         style={{
           position: "relative",
           zIndex: 2,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          textAlign: "center",
-          padding: "4rem 1.5rem 2rem",
-          minHeight: "55vh",
+          maxWidth: "22rem",
+          width: "100%",
+          background: "rgba(125, 110, 99, 0.04)",
+          border: "1px solid rgba(125, 110, 99, 0.12)",
+          borderRadius: "20px",
+          padding: "2.5rem 2rem",
         }}
       >
+        {/* Heading */}
         <h2
           style={{
             fontFamily: "var(--font-cormorant)",
@@ -172,113 +149,154 @@ export function OurJourneySection() {
             fontWeight: 400,
             color: "#7D6E63",
             letterSpacing: "0.15em",
-            marginBottom: "1rem",
+            textAlign: "center",
+            marginBottom: "0.75rem",
+            opacity: sectionVisible ? 1 : 0,
+            transform: sectionVisible ? "translateY(0)" : "translateY(8px)",
+            transition: "opacity 0.8s ease, transform 0.8s ease",
           }}
         >
           Our Journey
         </h2>
+
+        {/* Subtitle */}
         <p
           style={{
             fontFamily: "var(--font-jakarta)",
             fontSize: "0.75rem",
             fontWeight: 400,
             color: "#7D6E63",
-            opacity: 0.55,
+            opacity: sectionVisible ? 0.55 : 0,
+            textAlign: "center",
             lineHeight: 1.8,
             maxWidth: "18rem",
+            margin: "0 auto 2rem",
+            transition: "opacity 0.8s ease 0.2s",
           }}
         >
           Kami menuliskan perjalanan ini dengan penuh rasa syukur.
         </p>
-      </div>
 
-      {/* Phase blocks */}
-      {PHASES.map((phase, index) => {
-        const isActive = activePhase === index;
-        const isPast = activePhase > index;
-        const isFuture = activePhase < index;
-
-        return (
+        {/* Timeline Container */}
+        <div
+          ref={stepsContainerRef}
+          style={{ position: "relative", paddingLeft: "1.5rem" }}
+        >
+          {/* Background line (full height, very faint) */}
           <div
-            key={phase.label}
-            ref={(el) => {
-              sentinelRefs.current[index] = el;
-            }}
             style={{
-              position: "relative",
-              zIndex: 2,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              textAlign: "center",
-              padding: "2.5rem 1.5rem",
-              minHeight: index === 3 ? "55vh" : "45vh",
-              opacity: isFuture ? 0 : isPast ? 0.35 : 1,
-              transform: isPast ? "translateY(-6px)" : "none",
-              transition: "opacity 1.2s ease, transform 1.2s ease",
+              position: "absolute",
+              left: "4px",
+              top: "6px",
+              width: "1px",
+              bottom: "6px",
+              background: "rgba(125, 110, 99, 0.06)",
             }}
-          >
-            {/* Phase label */}
-            <p
-              style={{
-                fontFamily: "var(--font-jakarta)",
-                fontSize: "0.5625rem",
-                fontWeight: 500,
-                color: "#7D6E63",
-                opacity: isActive ? 0.55 : 0.35,
-                letterSpacing: "0.12em",
-                textTransform: "uppercase",
-                marginBottom: "1.25rem",
-              }}
-            >
-              {phase.label}
-            </p>
+          />
 
-            {/* Phase text with typewriter or full display */}
-            <p
-              style={{
-                fontFamily: "var(--font-cormorant)",
-                fontStyle: "italic",
-                fontSize: "0.9375rem",
-                fontWeight: 400,
-                color: "#7D6E63",
-                lineHeight: 2,
-                maxWidth: "20rem",
-                transition: "text-shadow 1.5s ease",
-                textShadow:
-                  index === 3 && isActive
-                    ? "0 0 25px rgba(184, 155, 106, 0.12)"
-                    : "none",
-              }}
-            >
-              {isFuture ? null : isPast ? (
-                phase.text
-              ) : (
-                <TypewriterText
-                  text={phase.text}
-                  active={isActive}
-                  showFull={isPast}
-                />
-              )}
-            </p>
+          {/* Active line — grows vertically */}
+          <div
+            style={{
+              position: "absolute",
+              left: "4px",
+              top: "6px",
+              width: "1px",
+              height: `${lineHeight}px`,
+              background:
+                visibleCount === PHASES.length
+                  ? "linear-gradient(to bottom, rgba(125,110,99,0.15), rgba(184,155,106,0.35))"
+                  : "rgba(125, 110, 99, 0.18)",
+              transition: "height 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
+            }}
+          />
 
-            {/* Decorative dot after each phase */}
-            {isPast && (
+          {/* Steps */}
+          {PHASES.map((phase, index) => {
+            const isStepVisible = visibleSteps[index];
+            const isLast = index === PHASES.length - 1;
+            const isMenikah = index === 3;
+
+            return (
               <div
+                key={phase.label}
+                data-step
                 style={{
-                  width: "3px",
-                  height: "3px",
-                  borderRadius: "50%",
-                  background: "rgba(125, 110, 99, 0.2)",
-                  marginTop: "1.5rem",
-                  transition: "opacity 1s ease",
+                  position: "relative",
+                  paddingBottom: isLast ? 0 : "1.5rem",
+                  opacity: isStepVisible ? 1 : 0,
+                  transform: isStepVisible
+                    ? "translateY(0)"
+                    : "translateY(8px)",
+                  transition: "opacity 0.5s ease, transform 0.5s ease",
                 }}
-              />
-            )}
-          </div>
-        );
-      })}
+              >
+                {/* Dot */}
+                <div
+                  style={{
+                    position: "absolute",
+                    left: "-1.5rem",
+                    top: "4px",
+                    width: "9px",
+                    height: "9px",
+                    borderRadius: "50%",
+                    border: `1.5px solid ${
+                      isMenikah && isStepVisible
+                        ? "#B89B6A"
+                        : "rgba(125, 110, 99, 0.3)"
+                    }`,
+                    background: isStepVisible
+                      ? isMenikah
+                        ? "#B89B6A"
+                        : "rgba(125, 110, 99, 0.15)"
+                      : "transparent",
+                    transition: "all 0.5s ease",
+                    transform: "translateX(-2px)",
+                    boxShadow:
+                      isMenikah && isStepVisible
+                        ? "0 0 8px rgba(184, 155, 106, 0.25)"
+                        : "none",
+                  }}
+                />
+
+                {/* Label */}
+                <p
+                  style={{
+                    fontFamily: "var(--font-jakarta)",
+                    fontSize: "0.5625rem",
+                    fontWeight: 500,
+                    color: "#7D6E63",
+                    opacity: isStepVisible ? 0.55 : 0.35,
+                    letterSpacing: "0.12em",
+                    textTransform: "uppercase",
+                    marginBottom: "0.375rem",
+                  }}
+                >
+                  {phase.label}
+                </p>
+
+                {/* Text */}
+                <p
+                  style={{
+                    fontFamily: "var(--font-cormorant)",
+                    fontStyle: "italic",
+                    fontSize: "0.875rem",
+                    fontWeight: 400,
+                    color: "#7D6E63",
+                    lineHeight: 1.9,
+                    textShadow:
+                      isMenikah && isStepVisible
+                        ? "0 0 20px rgba(184, 155, 106, 0.08)"
+                        : "none",
+                    transition: "text-shadow 1s ease",
+                  }}
+                >
+                  {phase.text}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </section>
   );
 }

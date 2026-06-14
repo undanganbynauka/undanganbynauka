@@ -57,6 +57,19 @@ export function HeroSection({ onOpen }: { onOpen: () => void }) {
         priority
       />
 
+      {/* Islamic geometric pattern */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          opacity: 0.35,
+          backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cdefs%3E%3Cpattern id='p' width='80' height='80' patternUnits='userSpaceOnUse'%3E%3Cpath d='M40 5 L75 40 L40 75 L5 40 Z' fill='none' stroke='%23cbbfae' stroke-width='0.6' opacity='0.25'/%3E%3Cpath d='M40 18 L62 40 L40 62 L18 40 Z' fill='none' stroke='%23cbbfae' stroke-width='0.4' opacity='0.2'/%3E%3Ccircle cx='40' cy='40' r='1.2' fill='%23cbbfae' opacity='0.25'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23p)'/%3E%3C/svg%3E\")",
+          backgroundRepeat: "repeat",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
+
       {/* Top ornament — over-stretched to hide transparent edges */}
       <div
         style={{

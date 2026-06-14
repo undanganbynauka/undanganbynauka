@@ -33,8 +33,7 @@ export function ClosingSection() {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        justifyContent: "center",
-        padding: "4rem 1.5rem 0",
+        padding: "0",
         minHeight: "100vh",
       }}
     >
@@ -52,16 +51,19 @@ export function ClosingSection() {
         }}
       />
 
-      {/* Main content wrapper */}
+      {/* Main content wrapper — centered in available space */}
       <div
         style={{
           position: "relative",
           zIndex: 2,
           maxWidth: "24rem",
           width: "100%",
+          flex: 1,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          justifyContent: "center",
+          padding: "4rem 1.5rem 0",
           opacity: sectionVisible ? 1 : 0,
           transform: sectionVisible ? "translateY(0)" : "translateY(20px)",
           transition: "opacity 1s ease, transform 1s ease",
@@ -157,7 +159,7 @@ export function ClosingSection() {
             color: "#6F6F6F",
             lineHeight: 1.9,
             textAlign: "center",
-            marginBottom: "4rem",
+            marginBottom: "0",
             maxWidth: "18rem",
             opacity: sectionVisible ? 0.75 : 0,
             transition: "opacity 1s ease 1.4s",
@@ -167,7 +169,7 @@ export function ClosingSection() {
         </p>
       </div>
 
-      {/* Nauka Logo + Signature — slim footer */}
+      {/* Nauka Logo + Signature — anchored to bottom */}
       <div
         style={{
           position: "relative",
@@ -177,7 +179,7 @@ export function ClosingSection() {
           flexDirection: "column",
           alignItems: "center",
           gap: "0.5rem",
-          paddingTop: "1.5rem",
+          paddingBottom: "0.75rem",
           opacity: sectionVisible ? 1 : 0,
           transition: "opacity 1s ease 1.7s",
         }}

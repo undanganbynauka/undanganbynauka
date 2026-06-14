@@ -167,44 +167,34 @@ export function ClosingSection() {
         </p>
       </div>
 
-      {/* Signature Block — full width slim footer bar */}
+      {/* Signature Block — full width slim footer, stacked centered */}
       <div
         style={{
           position: "relative",
           zIndex: 2,
           width: "100%",
           borderTop: "0.75px solid rgba(125, 110, 99, 0.15)",
-          padding: "0.625rem 1.5rem",
+          padding: "0.75rem 1.5rem",
           display: "flex",
-          flexDirection: "row",
+          flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center",
-          gap: "0.5rem",
+          gap: "0.0625rem",
           opacity: sectionVisible ? 1 : 0,
           transition: "opacity 1s ease 1.7s",
         }}
       >
-        {/* Nauka Logo — small inside footer */}
+        {/* Nauka Logo — small above names */}
         <Image
           src="/nauka-logo.png"
           alt="Nauka"
-          width={20}
-          height={20}
+          width={24}
+          height={24}
           style={{
-            width: "20px",
+            width: "24px",
             height: "auto",
             filter: "brightness(0.4) sepia(0.15)",
-            opacity: 0.5,
-          }}
-        />
-
-        {/* Divider dot */}
-        <span
-          style={{
-            width: "2px",
-            height: "2px",
-            borderRadius: "50%",
-            background: "rgba(125, 110, 99, 0.25)",
+            opacity: 0.4,
+            marginBottom: "0.125rem",
           }}
         />
 
@@ -221,16 +211,6 @@ export function ClosingSection() {
           Ali &amp; Lyla
         </p>
 
-        {/* Divider dot */}
-        <span
-          style={{
-            width: "2px",
-            height: "2px",
-            borderRadius: "50%",
-            background: "rgba(125, 110, 99, 0.25)",
-          }}
-        />
-
         {/* Date */}
         <p
           style={{
@@ -238,11 +218,11 @@ export function ClosingSection() {
             fontSize: "0.5625rem",
             fontWeight: 400,
             color: "#6F6F6F",
-            opacity: 0.55,
+            opacity: 0.5,
             letterSpacing: "0.04em",
           }}
         >
-          5 Juli 2026
+          05 Juli 2026
         </p>
       </div>
     </section>

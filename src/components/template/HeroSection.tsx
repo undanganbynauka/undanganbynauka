@@ -62,8 +62,7 @@ export function HeroSection({ onOpen }: { onOpen: () => void }) {
         style={{
           position: "absolute",
           inset: 0,
-          opacity: 0.35,
-          backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cdefs%3E%3Cpattern id='p' width='80' height='80' patternUnits='userSpaceOnUse'%3E%3Cpath d='M40 5 L75 40 L40 75 L5 40 Z' fill='none' stroke='%23cbbfae' stroke-width='0.6' opacity='0.25'/%3E%3Cpath d='M40 18 L62 40 L40 62 L18 40 Z' fill='none' stroke='%23cbbfae' stroke-width='0.4' opacity='0.2'/%3E%3Ccircle cx='40' cy='40' r='1.2' fill='%23cbbfae' opacity='0.25'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23p)'/%3E%3C/svg%3E\")",
+          backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='900'%3E%3Cdefs%3E%3Cpattern id='p' width='65' height='65' patternUnits='userSpaceOnUse'%3E%3Cpath d='M32.5 4 L61 32.5 L32.5 61 L4 32.5 Z' fill='none' stroke='%23b9ab98' stroke-width='1.2' opacity='0.45'/%3E%3Cpath d='M32.5 16 L48 32.5 L32.5 49 L16 32.5 Z' fill='none' stroke='%23b9ab98' stroke-width='0.9' opacity='0.35'/%3E%3Ccircle cx='32.5' cy='32.5' r='1.6' fill='%23b9ab98' opacity='0.5'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23p)'/%3E%3C/svg%3E\")",
           backgroundRepeat: "repeat",
           pointerEvents: "none",
           zIndex: 0,

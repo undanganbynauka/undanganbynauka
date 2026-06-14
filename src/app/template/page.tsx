@@ -8,6 +8,7 @@ import { BrideGroomSection } from "@/components/template/BrideGroomSection";
 import { EventSection } from "@/components/template/EventSection";
 import { OurJourneySection } from "@/components/template/OurJourneySection";
 import { RsvpSection } from "@/components/template/RsvpSection";
+import { WishesSection } from "@/components/template/WishesSection";
 
 type Phase = "gate" | "opening" | "inside";
 
@@ -36,6 +37,7 @@ export default function TemplatePage() {
         <BrideGroomSection />
         <EventSection />
         <RsvpSection />
+        <WishesSection />
       </div>
 
       {/* HERO GATE — smooth fade out */}

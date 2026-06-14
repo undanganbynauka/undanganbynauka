@@ -201,20 +201,20 @@ export function ClosingSection() {
           style={{
             width: "100%",
             borderTop: "0.75px solid rgba(125, 110, 99, 0.15)",
-            padding: "0.4rem 1rem",
+            padding: "0.5rem 1rem",
             display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: "0.1rem",
+          gap: "0.15rem",
           }}
         >
           <p
             style={{
               fontFamily: "var(--font-cormorant)",
-              fontSize: "0.75rem",
-              fontWeight: 400,
+              fontSize: "1rem",
+              fontWeight: 500,
               color: "#2E2E2E",
-              letterSpacing: "0.04em",
+              letterSpacing: "0.05em",
             }}
           >
             Ali &amp; Lyla
@@ -222,11 +222,11 @@ export function ClosingSection() {
           <p
             style={{
               fontFamily: "var(--font-jakarta)",
-              fontSize: "0.5rem",
+              fontSize: "0.6875rem",
               fontWeight: 400,
               color: "#6F6F6F",
-              opacity: 0.5,
-              letterSpacing: "0.04em",
+              opacity: 0.6,
+              letterSpacing: "0.05em",
             }}
           >
             05 Juli 2026

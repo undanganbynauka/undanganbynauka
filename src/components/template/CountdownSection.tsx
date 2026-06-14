@@ -134,12 +134,12 @@ export function CountdownSection() {
         padding: "3rem 1.5rem",
       }}
     >
-      {/* Background image — 30% opacity */}
+      {/* Background image — 8-10% opacity */}
       <div
         style={{
           position: "absolute",
           inset: 0,
-          opacity: 0.09,
+          opacity: 0.1,
           backgroundImage: "url(/countdown-bg.png)",
           backgroundSize: "cover",
           backgroundPosition: "center",
@@ -156,6 +156,9 @@ export function CountdownSection() {
           zIndex: 2,
           maxWidth: "22rem",
           width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
         }}
       >
         {/* Countdown card */}

@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback } from "react";
 import { HeroSection } from "@/components/template/HeroSection";
-import { ChooseYourJourney } from "@/components/template/ChooseYourJourney";
+import { CountdownSection } from "@/components/template/CountdownSection";
 import { BismillahSection } from "@/components/template/BismillahSection";
 import { BrideGroomSection } from "@/components/template/BrideGroomSection";
 import { EventSection } from "@/components/template/EventSection";
@@ -28,7 +28,7 @@ export default function TemplatePage() {
           transition: "opacity 1.2s ease",
         }}
       >
-        <ChooseYourJourney visible={phase !== "gate"} />
+        <CountdownSection />
         <BismillahSection />
         <BrideGroomSection />
         <EventSection />

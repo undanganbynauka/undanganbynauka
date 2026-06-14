@@ -42,7 +42,7 @@ export default function TemplatePage() {
         <div id="rsvp"><RsvpSection /></div>
         <div id="ucapan"><WishesSection /></div>
         <div id="hadiah"><AmplopDigitalSection /></div>
-        <ClosingSection />
+        <div id="doa"><ClosingSection /></div>
       </div>
 
       {/* HERO GATE — smooth fade out */}

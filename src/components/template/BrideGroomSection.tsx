@@ -30,18 +30,6 @@ export function BrideGroomSection() {
         }}
       />
 
-      {/* Islamic geometric pattern */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cdefs%3E%3Cpattern id='p' width='110' height='110' patternUnits='userSpaceOnUse'%3E%3Cpath d='M55 10 L65 40 L95 55 L65 70 L55 100 L45 70 L15 55 L45 40 Z' fill='none' stroke='%23b8ac9a' stroke-width='0.7' opacity='0.18'/%3E%3Ccircle cx='55' cy='55' r='18' fill='none' stroke='%23b8ac9a' stroke-width='0.5' opacity='0.12'/%3E%3Ccircle cx='55' cy='55' r='1.4' fill='%23b8ac9a' opacity='0.22'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23p)'/%3E%3C/svg%3E\")",
-          backgroundRepeat: "repeat",
-          pointerEvents: "none",
-          zIndex: 1,
-        }}
-      />
-
       {/* Content */}
       <div
         style={{

@@ -133,8 +133,9 @@ export function FloatingNav() {
             padding: "0.5rem",
             boxShadow: "0 4px 20px rgba(125, 110, 99, 0.1)",
             display: "flex",
-            flexWrap: "nowrap",
-            gap: "0.125rem",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "0.25rem",
           }}
         >
           {NAV_ITEMS.map((item) => {

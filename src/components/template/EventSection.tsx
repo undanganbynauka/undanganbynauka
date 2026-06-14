@@ -3,264 +3,83 @@
 import React, { useState, useEffect, useRef } from "react";
 
 export function EventSection() {
-  const [sectionVisible, setSectionVisible] = useState(false);
-  const [showTitle, setShowTitle] = useState(false);
-  const [showCard1, setShowCard1] = useState(false);
-  const [showCard2, setShowCard2] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [step, setStep] = useState(0);
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
-
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !sectionVisible) {
-          setSectionVisible(true);
-        }
-      },
+      ([entry]) => { if (entry.isIntersecting && !visible) setVisible(true); },
       { threshold: 0.15 }
     );
-
     observer.observe(el);
     return () => observer.disconnect();
-  }, [sectionVisible]);
+  }, [visible]);
 
   useEffect(() => {
-    if (!sectionVisible) return;
-    const t1 = setTimeout(() => setShowTitle(true), 200);
-    const t2 = setTimeout(() => setShowCard1(true), 700);
-    const t3 = setTimeout(() => setShowCard2(true), 900);
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
-    };
-  }, [sectionVisible]);
+    if (!visible) return;
+    const t = [setTimeout(() => setStep(1), 200), setTimeout(() => setStep(2), 500), setTimeout(() => setStep(3), 700)];
+    return () => t.forEach(clearTimeout);
+  }, [visible]);
 
   const ease = "cubic-bezier(0.25, 0.1, 0.25, 1)";
 
+  const mapsUrl = "https://maps.google.com/?q=Gedung+Auditorium+Koni+Jakarta+Pusat";
+
+  const events = [
+    { title: "Akad Nikah", date: "Ahad, 05 Juli 2026", time: "08:00 — 10:00 WIB", venue: "Gedung Auditorium Koni", address: "Jakarta Pusat" },
+    { title: "Resepsi", date: "Ahad, 05 Juli 2026", time: "11:00 — 14:00 WIB", venue: "Gedung Auditorium Koni", address: "Jakarta Pusat" },
+  ];
+
   return (
-    <section
-      ref={sectionRef}
-      style={{
-        position: "relative",
-        background: "#F8F4EE",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "3rem 1.5rem",
-      }}
-    >
-      {/* Paper grain texture */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          opacity: 0.02,
-          backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")",
-          backgroundSize: "256px 256px",
-          pointerEvents: "none",
-          zIndex: 0,
-        }}
-      />
+    <section ref={sectionRef} id="acara" style={{
+      position: "relative", padding: "4rem 1.5rem",
+      display: "flex", flexDirection: "column", alignItems: "center", background: "#FAF7F2",
+    }}>
+      <p style={{
+        fontFamily: "var(--font-jakarta)", fontSize: "0.6875rem", fontWeight: 400,
+        letterSpacing: "0.15em", textTransform: "uppercase", color: "#8A8A8A", marginBottom: "0.5rem",
+        opacity: step >= 1 ? 1 : 0, transform: step >= 1 ? "translateY(0)" : "translateY(15px)",
+        transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}`,
+      }}>Waktu &amp; Tempat</p>
+      <h2 style={{
+        fontFamily: "var(--font-cormorant)", fontSize: "1.75rem", fontWeight: 500,
+        color: "#2E2E2E", marginBottom: "2rem",
+        opacity: step >= 1 ? 1 : 0, transform: step >= 1 ? "translateY(0)" : "translateY(15px)",
+        transition: `opacity 0.8s ${ease} 0.1s, transform 0.8s ${ease} 0.1s`,
+      }}>Acara</h2>
 
-      {/* Content */}
-      <div
-        style={{
-          position: "relative",
-          zIndex: 2,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          maxWidth: "22rem",
-          textAlign: "center",
-          width: "100%",
-          gap: "1.25rem",
-        }}
-      >
-        {/* Section Title */}
-        <h2
-          style={{
-            fontFamily: "var(--font-cormorant)",
-            fontSize: "1.125rem",
-            fontWeight: 400,
-            color: "#7D6E63",
-            letterSpacing: "0.15em",
-            marginBottom: "0.5rem",
-            opacity: showTitle ? 1 : 0,
-            transform: showTitle ? "translateY(0)" : "translateY(20px)",
-            transition: `opacity 1s ${ease}, transform 1s ${ease}`,
-          }}
-        >
-          Waktu & Tempat
-        </h2>
-
-        {/* Card: Akad Nikah */}
-        <div
-          style={{
-            background: "rgba(125, 110, 99, 0.04)",
-            border: "1px solid rgba(125, 110, 99, 0.12)",
-            borderRadius: "20px",
-            padding: "1.75rem 1.5rem",
-            textAlign: "center",
-            width: "100%",
-            opacity: showCard1 ? 1 : 0,
-            transform: showCard1 ? "translateY(0)" : "translateY(25px)",
-            transition: `opacity 1.1s ${ease}, transform 1.1s ${ease}`,
-          }}
-        >
-          <h3
-            style={{
-              fontFamily: "var(--font-cormorant)",
-              fontSize: "1.125rem",
-              fontWeight: 400,
-              color: "#7D6E63",
-              marginBottom: "1rem",
-              letterSpacing: "0.03em",
+      <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", maxWidth: "22rem", width: "100%" }}>
+        {events.map((ev, i) => (
+          <div key={ev.title} style={{
+            background: "rgba(125, 110, 99, 0.04)", border: "1px solid rgba(125, 110, 99, 0.12)",
+            borderRadius: "20px", padding: "1.75rem 1.5rem", textAlign: "center",
+            opacity: step >= i + 2 ? 1 : 0, transform: step >= i + 2 ? "translateY(0)" : "translateY(20px)",
+            transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}`,
+          }}>
+            <h3 style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.25rem", fontWeight: 500, color: "#2E2E2E", marginBottom: "0.75rem" }}>{ev.title}</h3>
+            <p style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.75rem", color: "#6F6F6F", lineHeight: 1.7, marginBottom: "0.25rem" }}>{ev.date}</p>
+            <p style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.6875rem", color: "#7D6A52", fontWeight: 500, letterSpacing: "0.03em", marginBottom: "0.75rem" }}>{ev.time}</p>
+            <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "0.9375rem", fontWeight: 500, color: "#2E2E2E", marginBottom: "0.25rem" }}>{ev.venue}</p>
+            <p style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.625rem", color: "#8A8A8A", lineHeight: 1.5, marginBottom: "0.75rem" }}>{ev.address}</p>
+            <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{
+              display: "inline-flex", alignItems: "center", gap: "0.375rem",
+              fontFamily: "var(--font-jakarta)", fontSize: "0.625rem", fontWeight: 500,
+              letterSpacing: "0.08em", textTransform: "uppercase", textDecoration: "none",
+              color: "#7D6A52", background: "rgba(125, 106, 82, 0.08)",
+              border: "1px solid rgba(125, 106, 82, 0.2)", borderRadius: "999px",
+              padding: "0.5rem 1.25rem", transition: "all 0.3s ease",
             }}
-          >
-            Akad Nikah
-          </h3>
-          <p
-            style={{
-              fontFamily: "var(--font-jakarta)",
-              fontSize: "0.75rem",
-              fontWeight: 400,
-              color: "#7D6E63",
-              lineHeight: 1.8,
-              marginBottom: "0.25rem",
-            }}
-          >
-            Ahad, 5 Juli 2026
-          </p>
-          <p
-            style={{
-              fontFamily: "var(--font-jakarta)",
-              fontSize: "0.75rem",
-              fontWeight: 400,
-              color: "#7D6E63",
-              lineHeight: 1.8,
-              marginBottom: "0.25rem",
-            }}
-          >
-            09.00 - selesai
-          </p>
-          <p
-            style={{
-              fontFamily: "var(--font-jakarta)",
-              fontSize: "0.75rem",
-              fontWeight: 400,
-              color: "#7D6E63",
-              lineHeight: 1.8,
-              marginBottom: "1.25rem",
-            }}
-          >
-            Gedung Auditorium Koni, Tanah Abang 1 - Jakarta Pusat
-          </p>
-          <a
-            href="#"
-            style={{
-              display: "inline-block",
-              fontFamily: "var(--font-jakarta)",
-              fontSize: "0.6875rem",
-              fontWeight: 500,
-              color: "#7D6E63",
-              border: "1px solid rgba(125, 110, 99, 0.3)",
-              borderRadius: "4px",
-              padding: "0.375rem 1rem",
-              textDecoration: "none",
-              letterSpacing: "0.03em",
-              boxShadow: "0 1px 3px rgba(125, 110, 99, 0.15), 0 1px 2px rgba(125, 110, 99, 0.08)",
-            }}
-          >
-            Lihat Lokasi
-          </a>
-        </div>
-
-        {/* Card: Resepsi */}
-        <div
-          style={{
-            background: "rgba(125, 110, 99, 0.04)",
-            border: "1px solid rgba(125, 110, 99, 0.12)",
-            borderRadius: "20px",
-            padding: "1.75rem 1.5rem",
-            textAlign: "center",
-            width: "100%",
-            opacity: showCard2 ? 1 : 0,
-            transform: showCard2 ? "translateY(0)" : "translateY(25px)",
-            transition: `opacity 1.1s ${ease}, transform 1.1s ${ease}`,
-          }}
-        >
-          <h3
-            style={{
-              fontFamily: "var(--font-cormorant)",
-              fontSize: "1.125rem",
-              fontWeight: 400,
-              color: "#7D6E63",
-              marginBottom: "1rem",
-              letterSpacing: "0.03em",
-            }}
-          >
-            Resepsi
-          </h3>
-          <p
-            style={{
-              fontFamily: "var(--font-jakarta)",
-              fontSize: "0.75rem",
-              fontWeight: 400,
-              color: "#7D6E63",
-              lineHeight: 1.8,
-              marginBottom: "0.25rem",
-            }}
-          >
-            Ahad, 5 Juli 2026
-          </p>
-          <p
-            style={{
-              fontFamily: "var(--font-jakarta)",
-              fontSize: "0.75rem",
-              fontWeight: 400,
-              color: "#7D6E63",
-              lineHeight: 1.8,
-              marginBottom: "0.25rem",
-            }}
-          >
-            09.00 - selesai
-          </p>
-          <p
-            style={{
-              fontFamily: "var(--font-jakarta)",
-              fontSize: "0.75rem",
-              fontWeight: 400,
-              color: "#7D6E63",
-              lineHeight: 1.8,
-              marginBottom: "1.25rem",
-            }}
-          >
-            Gedung Auditorium Koni, Tanah Abang 1 - Jakarta Pusat
-          </p>
-          <a
-            href="#"
-            style={{
-              display: "inline-block",
-              fontFamily: "var(--font-jakarta)",
-              fontSize: "0.6875rem",
-              fontWeight: 500,
-              color: "#7D6E63",
-              border: "1px solid rgba(125, 110, 99, 0.3)",
-              borderRadius: "4px",
-              padding: "0.375rem 1rem",
-              textDecoration: "none",
-              letterSpacing: "0.03em",
-              boxShadow: "0 1px 3px rgba(125, 110, 99, 0.15), 0 1px 2px rgba(125, 110, 99, 0.08)",
-            }}
-          >
-            Lihat Lokasi
-          </a>
-        </div>
+            onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(125, 106, 82, 0.16)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(125, 106, 82, 0.08)"; }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Lihat di Maps
+            </a>
+          </div>
+        ))}
       </div>
     </section>
   );

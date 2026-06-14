@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 240" width="480" height="240">
+  <!--
+    Batik Megamendung Cloud — vector tracing from reference
+    Outline/stroke only, no fill, transparent interior.
+    3 layered cloud bands (top→bottom, each wider)
+    End spirals with 1.5 rotations curling outward, tips pointing up
+    2 small top spiral hooks flanking top band
+  -->
+  <g fill="none" stroke="#D8C3A5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+
+    <!-- ===== TOP BAND (smallest/narrowest) ===== -->
+    <path d="
+      M 168,72
+      C 185,62 210,56 238,56
+      C 266,56 291,62 308,72
+      C 318,78 322,88 316,94
+      C 310,100 298,100 286,94
+      C 272,86 256,80 238,80
+      C 220,80 204,86 190,94
+      C 178,100 166,100 160,94
+      C 154,88 158,78 168,72
+      Z
+    "/>
+
+    <!-- ===== MIDDLE BAND (largest/widest) ===== -->
+    <path d="
+      M 126,94
+      C 148,80 186,70 238,70
+      C 290,70 328,80 350,94
+      C 364,102 368,116 358,124
+      C 348,132 332,128 316,118
+      C 298,106 272,98 238,98
+      C 204,98 178,106 160,118
+      C 144,128 128,132 118,124
+      C 108,116 112,102 126,94
+      Z
+    "/>
+
+    <!-- ===== BOTTOM BAND (slightly narrower than middle) ===== -->
+    <path d="
+      M 90,118
+      C 116,102 168,90 238,90
+      C 308,90 360,102 386,118
+      C 402,128 406,144 394,150
+      C 382,156 364,150 346,138
+      C 324,122 286,114 238,114
+      C 190,114 152,122 130,138
+      C 112,150 94,156 82,150
+      C 70,144 74,128 90,118
+      Z
+    "/>
+
+    <!-- ===== LEFT END SPIRAL — outer (1.5 rotations, curls outward, tip points up) ===== -->
+    <path d="
+      M 90,118
+      C 76,112 56,114 42,126
+      C 28,140 28,160 42,170
+      C 56,180 76,174 82,160
+      C 88,146 78,134 66,136
+      C 56,138 52,150 60,156
+      C 66,160 74,154 72,148
+    "/>
+
+    <!-- ===== LEFT END SPIRAL — inner (smaller, nested) ===== -->
+    <path d="
+      M 126,94
+      C 112,88 94,90 84,100
+      C 74,112 76,128 88,134
+      C 100,140 114,132 114,120
+      C 114,110 104,106 98,112
+    "/>
+
+    <!-- ===== RIGHT END SPIRAL — outer (1.5 rotations, curls outward, tip points up) ===== -->
+    <path d="
+      M 386,118
+      C 400,112 420,114 434,126
+      C 448,140 448,160 434,170
+      C 420,180 400,174 394,160
+      C 388,146 398,134 410,136
+      C 420,138 424,150 416,156
+      C 410,160 402,154 404,148
+    "/>
+
+    <!-- ===== RIGHT END SPIRAL — inner (smaller, nested) ===== -->
+    <path d="
+      M 350,94
+      C 364,88 382,90 392,100
+      C 402,112 400,128 388,134
+      C 376,140 362,132 362,120
+      C 362,110 372,106 378,112
+    "/>
+
+    <!-- ===== TOP LEFT HOOK — small spiral above top band ===== -->
+    <path d="
+      M 168,72
+      C 156,64 140,66 134,78
+      C 128,90 136,100 148,98
+      C 158,96 160,86 154,80
+      C 150,76 144,78 144,84
+    "/>
+
+    <!-- ===== TOP RIGHT HOOK — small spiral above top band ===== -->
+    <path d="
+      M 308,72
+      C 320,64 336,66 342,78
+      C 348,90 340,100 328,98
+      C 318,96 316,86 322,80
+      C 326,76 332,78 332,84
+    "/>
+
+  </g>
+</svg>

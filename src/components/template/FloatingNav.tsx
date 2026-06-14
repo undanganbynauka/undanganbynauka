@@ -1,16 +1,16 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 
 const NAV_ITEMS = [
-  { id: "countdown", symbol: "\u23F3" },
-  { id: "journey", symbol: "\uD83D\uDCD6" },
-  { id: "mempelai", symbol: "\uD83E\uDD0D" },
-  { id: "acara", symbol: "\uD83D\uDCC5" },
-  { id: "rsvp", symbol: "\uD83D\uDCDD" },
-  { id: "ucapan", symbol: "\uD83D\uDC8C" },
-  { id: "hadiah", symbol: "\uD83C\uDF81" },
-  { id: "doa", symbol: "\uD83E\uDD32" },
+  { id: "countdown", symbol: "⏳" },
+  { id: "journey", symbol: "📖" },
+  { id: "mempelai", symbol: "🤍" },
+  { id: "acara", symbol: "📅" },
+  { id: "rsvp", symbol: "📝" },
+  { id: "ucapan", symbol: "💌" },
+  { id: "hadiah", symbol: "🎁" },
+  { id: "doa", symbol: "🤲" },
 ];
 
 export function FloatingNav() {
@@ -18,184 +18,73 @@ export function FloatingNav() {
   const [activeSection, setActiveSection] = useState("");
 
   useEffect(() => {
-    const sectionIds = NAV_ITEMS.map((item) => item.id);
-
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
-          }
+          if (entry.isIntersecting) setActiveSection(entry.target.id);
         });
       },
-      { threshold: 0.3, rootMargin: "-10% 0px -40% 0px" }
+      { threshold: 0.3 }
     );
-
-    sectionIds.forEach((id) => {
+    NAV_ITEMS.forEach(({ id }) => {
       const el = document.getElementById(id);
       if (el) observer.observe(el);
     });
-
     return () => observer.disconnect();
   }, []);
 
-  const scrollTo = useCallback((id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
-      setIsOpen(false);
-    }
-  }, []);
+  const scrollTo = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    setIsOpen(false);
+  };
 
   return (
     <>
-      {/* FAB Button — fixed bottom right */}
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        aria-label="Navigasi"
-        style={{
-          position: "fixed",
-          bottom: "1.25rem",
-          right: "1.25rem",
-          zIndex: 40,
-          width: "40px",
-          height: "40px",
-          borderRadius: "50%",
-          border: "1px solid rgba(125, 110, 99, 0.2)",
-          background: isOpen
-            ? "rgba(247, 243, 238, 0.98)"
-            : "rgba(247, 243, 238, 0.92)",
-          backdropFilter: "blur(12px)",
-          WebkitBackdropFilter: "blur(12px)",
-          boxShadow: "0 2px 12px rgba(125, 110, 99, 0.12)",
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          transition: "all 0.3s ease",
-          padding: 0,
-        }}
-      >
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 16 16"
-          fill="none"
-          style={{
-            transition: "transform 0.3s ease",
-            transform: isOpen ? "rotate(45deg)" : "rotate(0deg)",
-          }}
-        >
-          {isOpen ? (
-            <path
-              d="M4 4L12 12M12 4L4 12"
-              stroke="#7D6E63"
-              strokeWidth="1.25"
-              strokeLinecap="round"
-            />
-          ) : (
-            <>
-              <circle cx="4" cy="4" r="1.25" fill="#7D6E63" opacity="0.5" />
-              <circle cx="8" cy="4" r="1.25" fill="#7D6E63" opacity="0.7" />
-              <circle cx="12" cy="4" r="1.25" fill="#7D6E63" opacity="0.5" />
-              <circle cx="4" cy="8" r="1.25" fill="#7D6E63" opacity="0.7" />
-              <circle cx="8" cy="8" r="1.25" fill="#7D6E63" />
-              <circle cx="12" cy="8" r="1.25" fill="#7D6E63" opacity="0.7" />
-              <circle cx="4" cy="12" r="1.25" fill="#7D6E63" opacity="0.5" />
-              <circle cx="8" cy="12" r="1.25" fill="#7D6E63" opacity="0.7" />
-              <circle cx="12" cy="12" r="1.25" fill="#7D6E63" opacity="0.5" />
-            </>
-          )}
-        </svg>
-      </button>
-
-      {/* Nav Panel — expands from FAB, symbols only */}
-      <div
-        style={{
-          position: "fixed",
-          bottom: "4rem",
-          right: "1.25rem",
-          zIndex: 39,
-          opacity: isOpen ? 1 : 0,
-          transform: isOpen ? "translateY(0) scale(1)" : "translateY(8px) scale(0.95)",
-          pointerEvents: isOpen ? "auto" : "none",
-          transition: "opacity 0.25s ease, transform 0.25s ease",
-        }}
-      >
-        <div
-          style={{
-            background: "rgba(247, 243, 238, 0.97)",
-            backdropFilter: "blur(16px)",
-            WebkitBackdropFilter: "blur(16px)",
-            border: "1px solid rgba(125, 110, 99, 0.12)",
-            borderRadius: "16px",
-            padding: "0.5rem",
-            boxShadow: "0 4px 20px rgba(125, 110, 99, 0.1)",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: "0.25rem",
-          }}
-        >
-          {NAV_ITEMS.map((item) => {
-            const isActive = activeSection === item.id;
+      {isOpen && (
+        <div onClick={() => setIsOpen(false)} style={{
+          position: "fixed", inset: 0, zIndex: 55, background: "rgba(0,0,0,0.15)",
+        }} />
+      )}
+      {isOpen && (
+        <div style={{
+          position: "fixed", bottom: "4.5rem", right: "1rem", zIndex: 56,
+          display: "flex", flexDirection: "column", gap: "0.5rem",
+          animation: "nauka-fade-in 0.3s ease-out",
+        }}>
+          {NAV_ITEMS.map(({ id, symbol }) => {
+            const isActive = id === activeSection;
             return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => scrollTo(item.id)}
-                aria-label={item.id}
-                style={{
-                  width: "32px",
-                  height: "32px",
-                  borderRadius: "8px",
-                  border: "none",
-                  background: isActive
-                    ? "rgba(125, 110, 99, 0.08)"
-                    : "transparent",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "0.875rem",
-                  lineHeight: 1,
-                  padding: 0,
-                  opacity: isActive ? 1 : 0.5,
-                  transition: "all 0.2s ease",
-                  transform: isActive ? "scale(1.1)" : "scale(1)",
-                }}
-                onMouseEnter={(e) => {
-                  if (!isActive) {
-                    e.currentTarget.style.background = "rgba(125, 110, 99, 0.04)";
-                    e.currentTarget.style.opacity = "0.75";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isActive) {
-                    e.currentTarget.style.background = "transparent";
-                    e.currentTarget.style.opacity = "0.5";
-                  }
-                }}
-              >
-                {item.symbol}
+              <button key={id} onClick={() => scrollTo(id)} style={{
+                width: "40px", height: "40px", borderRadius: "12px",
+                border: isActive ? "1px solid rgba(125, 106, 82, 0.25)" : "1px solid rgba(125, 110, 99, 0.08)",
+                background: isActive ? "rgba(125, 106, 82, 0.08)" : "rgba(255, 255, 255, 0.55)",
+                backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
+                display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1rem",
+                cursor: "pointer", transition: "all 0.3s ease",
+                transform: isActive ? "scale(1.1)" : "scale(1)", opacity: isActive ? 1 : 0.5,
+              }}>
+                {symbol}
               </button>
             );
           })}
         </div>
-      </div>
-
-      {/* Backdrop — close on tap outside */}
-      {isOpen && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 38,
-          }}
-          onClick={() => setIsOpen(false)}
-        />
       )}
+      <button onClick={() => setIsOpen(!isOpen)} style={{
+        position: "fixed", bottom: "1rem", right: "1rem", width: "40px", height: "40px",
+        borderRadius: "50%", border: "1px solid rgba(125, 110, 99, 0.15)",
+        background: "rgba(255, 255, 255, 0.55)", backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)", display: "flex", alignItems: "center",
+        justifyContent: "center", cursor: "pointer", zIndex: 56, transition: "all 0.3s ease",
+        boxShadow: "0 1px 4px rgba(125, 106, 82, 0.08)",
+      }}>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#7D6A52" strokeWidth="1.2" strokeLinecap="round">
+          {isOpen ? (
+            <><line x1="4" y1="4" x2="12" y2="12" /><line x1="12" y1="4" x2="4" y2="12" /></>
+          ) : (
+            <><circle cx="5" cy="5" r="1.2" /><circle cx="11" cy="5" r="1.2" /><circle cx="5" cy="11" r="1.2" /><circle cx="11" cy="11" r="1.2" /><circle cx="8" cy="8" r="1.2" /></>
+          )}
+        </svg>
+      </button>
     </>
   );
 }

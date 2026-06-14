@@ -1,383 +1,185 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
-const PHASES = [
-  {
-    label: "Ta'aruf",
-    text: "Kami memulai dari proses ta'aruf, perkenalan yang dijaga dengan adab dan niat yang baik.",
-  },
-  {
-    label: "Nadzor",
-    text: "Dilanjutkan dengan nadzor, sebagai tahap saling mengenal secukupnya dalam batas yang Allah tetapkan.",
-  },
-  {
-    label: "Khitbah",
-    text: "Keluarga dipertemukan dalam proses khitbah sebagai bentuk keseriusan menuju pernikahan.",
-  },
-  {
-    label: "Menikah",
-    text: "Hingga akhirnya, dengan izin Allah dan restu keluarga, kami sampai pada akad pernikahan.",
-  },
+const JOURNEY_PHASES = [
+  { phase: "Ta'aruf", date: "Maret 2026", description: "Pertemuan pertama yang terasa seperti kenangan lama. Dua jiwa yang tak saling kenal, namun dunia seolah sudah mengatur jalan mereka untuk berpapasan." },
+  { phase: "Nadzor", date: "Maret 2026", description: "Langkah kedua yang penuh kehati-hatian dan keindahan. Masing-masing melihat dengan mata hati, memastikan bahwa perasaan ini bukan sekadar ilusi." },
+  { phase: "Khitbah", date: "Juni 2026", description: "Sebuah janji yang diucapkan dengan penuh keyakinan. Di hadapan keluarga, dua nama resmi disatukan dalam satu ikatan yang suci." },
+  { phase: "Menikah", date: "Juli 2026", description: "Puncak dari segala doa dan harapan. Hari di mana dua jiwa akhirnya menjadi satu, di bawah rahmat dan berkat-Nya." },
 ];
 
-const TYPE_SPEED = 70; // ms per character
-const PAUSE_BETWEEN = 1800; // ms pause between phases
-const LABEL_REVEAL = 400; // ms for label to appear before typing starts
-
 export function OurJourneySection() {
-  const [sectionVisible, setSectionVisible] = useState(false);
-  const [showHeading, setShowHeading] = useState(false);
-  const [showSubtitle, setShowSubtitle] = useState(false);
-  // Each phase tracks: label visible, typed text, typing complete
-  const [phaseStates, setPhaseStates] = useState<
-    { labelVisible: boolean; typedText: string; typingDone: boolean }[]
-  >(PHASES.map(() => ({ labelVisible: false, typedText: "", typingDone: false })));
-
+  const [visible, setVisible] = useState(false);
+  const [step, setStep] = useState(0);
   const sectionRef = useRef<HTMLDivElement>(null);
-  const stepsContainerRef = useRef<HTMLDivElement>(null);
-  const [lineHeight, setLineHeight] = useState(0);
-  const typingRef = useRef(false);
 
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
-
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !sectionVisible) {
-          setSectionVisible(true);
-        }
-      },
-      { threshold: 0.15 }
+      ([entry]) => { if (entry.isIntersecting && !visible) setVisible(true); },
+      { threshold: 0.1 }
     );
-
     observer.observe(el);
     return () => observer.disconnect();
-  }, [sectionVisible]);
+  }, [visible]);
 
-  // Staggered heading reveal
   useEffect(() => {
-    if (!sectionVisible) return;
-    const t1 = setTimeout(() => setShowHeading(true), 200);
-    const t2 = setTimeout(() => setShowSubtitle(true), 600);
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-    };
-  }, [sectionVisible]);
+    if (!visible) return;
+    const t = [
+      setTimeout(() => setStep(1), 200),   // subtitle
+      setTimeout(() => setStep(2), 600),   // title
+      setTimeout(() => setStep(3), 1000),  // line starts growing
+      setTimeout(() => setStep(4), 1200),  // Taaruf active
+      setTimeout(() => setStep(5), 2000),  // Taaruf passed, line to Nadzor
+      setTimeout(() => setStep(6), 2800),  // Nadzor active
+      setTimeout(() => setStep(7), 3600),  // Nadzor passed, line to Khitbah
+      setTimeout(() => setStep(8), 4400),  // Khitbah active
+      setTimeout(() => setStep(9), 5200),  // Khitbah passed, line to Menikah
+      setTimeout(() => setStep(10), 6000), // Menikah active
+    ];
+    return () => t.forEach(clearTimeout);
+  }, [visible]);
 
-  // Typewriter logic — sequential, one phase at a time
-  const startTyping = useCallback(
-    (phaseIndex: number) => {
-      if (phaseIndex >= PHASES.length) return;
-      if (typingRef.current) return;
-      typingRef.current = true;
-
-      const phase = PHASES[phaseIndex];
-
-      // Step 1: show label
-      setPhaseStates((prev) => {
-        const next = [...prev];
-        next[phaseIndex] = { ...next[phaseIndex], labelVisible: true };
-        return next;
-      });
-
-      // Step 2: start typing after label appears
-      setTimeout(() => {
-        let charIndex = 0;
-        const fullText = phase.text;
-
-        const typeInterval = setInterval(() => {
-          charIndex++;
-          const currentSlice = fullText.slice(0, charIndex);
-
-          setPhaseStates((prev) => {
-            const next = [...prev];
-            next[phaseIndex] = { ...next[phaseIndex], typedText: currentSlice };
-            return next;
-          });
-
-          if (charIndex >= fullText.length) {
-            clearInterval(typeInterval);
-            // Mark typing done
-            setPhaseStates((prev) => {
-              const next = [...prev];
-              next[phaseIndex] = { ...next[phaseIndex], typingDone: true };
-              return next;
-            });
-            typingRef.current = false;
-
-            // Pause then start next phase
-            if (phaseIndex < PHASES.length - 1) {
-              setTimeout(() => {
-                startTyping(phaseIndex + 1);
-              }, PAUSE_BETWEEN);
-            }
-          }
-        }, TYPE_SPEED);
-      }, LABEL_REVEAL);
-    },
-    []
-  );
-
-  // Start first typewriter after heading appears
-  useEffect(() => {
-    if (!showSubtitle) return;
-    const t = setTimeout(() => startTyping(0), 600);
-    return () => clearTimeout(t);
-  }, [showSubtitle, startTyping]);
-
-  // Calculate timeline line height
-  useEffect(() => {
-    const container = stepsContainerRef.current;
-    if (!container) return;
-
-    const visibleCount = phaseStates.filter((s) => s.labelVisible).length;
-    if (visibleCount === 0) {
-      setLineHeight(0);
-      return;
-    }
-
-    const stepElements = container.querySelectorAll("[data-step]");
-    if (stepElements.length === 0) return;
-
-    let totalHeight = 0;
-    for (let i = 0; i < visibleCount; i++) {
-      const stepEl = stepElements[i] as HTMLElement;
-      if (i < visibleCount - 1) {
-        totalHeight += stepEl.offsetHeight;
-      } else {
-        totalHeight += 10;
-      }
-    }
-
-    setLineHeight(totalHeight);
-  }, [phaseStates]);
-
-  const visibleCount = phaseStates.filter((s) => s.labelVisible).length;
   const ease = "cubic-bezier(0.25, 0.1, 0.25, 1)";
 
+  // Determine dot state for each phase
+  const getDotState = (i: number) => {
+    const activeStep = (() => {
+      if (step >= 10) return 3;  // Menikah active
+      if (step >= 9) return 3;   // Menikah activating
+      if (step >= 8) return 2;   // Khitbah active
+      if (step >= 7) return 2;   // Khitbah activating
+      if (step >= 6) return 1;   // Nadzor active
+      if (step >= 5) return 1;   // Nadzor activating
+      if (step >= 4) return 0;   // Taaruf active
+      return -1;
+    })();
+
+    const passedStep = (() => {
+      if (step >= 9) return 2;   // Khitbah passed
+      if (step >= 7) return 1;   // Nadzor passed
+      if (step >= 5) return 0;   // Taaruf passed
+      return -1;
+    })();
+
+    if (i === activeStep) return "active";
+    if (i <= passedStep) return "passed";
+    return "inactive";
+  };
+
+  // Line fill progress (0 to 1 for each segment)
+  const getLineProgress = (segmentIndex: number) => {
+    // segmentIndex 0 = line between Taaruf and Nadzor
+    // segmentIndex 1 = line between Nadzor and Khitbah
+    // segmentIndex 2 = line between Khitbah and Menikah
+    if (segmentIndex === 0) {
+      if (step >= 6) return 1;
+      if (step >= 5) return 0.5;
+      if (step >= 4) return 0;
+      return 0;
+    }
+    if (segmentIndex === 1) {
+      if (step >= 8) return 1;
+      if (step >= 7) return 0.5;
+      return 0;
+    }
+    if (segmentIndex === 2) {
+      if (step >= 10) return 1;
+      if (step >= 9) return 0.5;
+      return 0;
+    }
+    return 0;
+  };
+
+  // Content visibility
+  const isContentVisible = (i: number) => {
+    if (i === 0) return step >= 4;  // Taaruf
+    if (i === 1) return step >= 6;  // Nadzor
+    if (i === 2) return step >= 8;  // Khitbah
+    if (i === 3) return step >= 10; // Menikah
+    return false;
+  };
+
   return (
-    <section
-      style={{
-        position: "relative",
-        background: "#F8F4EE",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "3rem 1.5rem",
-      }}
-    >
-      {/* Paper grain texture */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          opacity: 0.02,
-          backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")",
-          backgroundSize: "256px 256px",
-          pointerEvents: "none",
-          zIndex: 0,
-        }}
-      />
+    <section ref={sectionRef} id="journey" style={{
+      position: "relative", padding: "4rem 1.5rem",
+      display: "flex", flexDirection: "column", alignItems: "center", background: "#FAF7F2",
+    }}>
+      <p style={{
+        fontFamily: "var(--font-jakarta)", fontSize: "0.6875rem", fontWeight: 400,
+        letterSpacing: "0.15em", textTransform: "uppercase", color: "#8A8A8A", marginBottom: "0.5rem",
+        opacity: step >= 1 ? 1 : 0, transform: step >= 1 ? "translateY(0)" : "translateY(15px)",
+        transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}`,
+      }}>Perjalanan cinta yang Allah satukan</p>
+      <h2 style={{
+        fontFamily: "var(--font-cormorant)", fontSize: "1.75rem", fontWeight: 500,
+        color: "#2E2E2E", marginBottom: "2.5rem",
+        opacity: step >= 2 ? 1 : 0, transform: step >= 2 ? "translateY(0)" : "translateY(15px)",
+        transition: `opacity 0.8s ${ease} 0.1s, transform 0.8s ${ease} 0.1s`,
+      }}>Kisah Kami</h2>
 
-      {/* Single Card */}
-      <div
-        ref={sectionRef}
-        style={{
-          position: "relative",
-          zIndex: 2,
-          maxWidth: "22rem",
-          width: "100%",
-          background: "rgba(125, 110, 99, 0.04)",
-          border: "1px solid rgba(125, 110, 99, 0.12)",
-          borderRadius: "20px",
-          padding: "2.5rem 2rem",
-        }}
-      >
-        {/* Heading */}
-        <h2
-          style={{
-            fontFamily: "var(--font-cormorant)",
-            fontSize: "1.125rem",
-            fontWeight: 400,
-            color: "#7D6E63",
-            letterSpacing: "0.15em",
-            textAlign: "center",
-            marginBottom: "0.75rem",
-            opacity: showHeading ? 1 : 0,
-            transform: showHeading ? "translateY(0)" : "translateY(20px)",
-            transition: `opacity 1s ${ease}, transform 1s ${ease}`,
-          }}
-        >
-          Our Journey
-        </h2>
+      <div style={{ maxWidth: "22rem", width: "100%", position: "relative" }}>
+        {/* Background line (full, faded) */}
+        <div style={{ position: "absolute", left: "11px", top: "0.5rem", bottom: "0.5rem", width: "0.5px", background: "rgba(200, 178, 138, 0.15)" }} />
 
-        {/* Subtitle */}
-        <p
-          style={{
-            fontFamily: "var(--font-jakarta)",
-            fontSize: "0.75rem",
-            fontWeight: 400,
-            color: "#7D6E63",
-            opacity: showSubtitle ? 0.55 : 0,
-            textAlign: "center",
-            lineHeight: 1.8,
-            maxWidth: "18rem",
-            margin: "0 auto 2rem",
-            transform: showSubtitle ? "translateY(0)" : "translateY(15px)",
-            transition: `opacity 1s ${ease} 0.2s, transform 1s ${ease} 0.2s`,
-          }}
-        >
-          Kami menuliskan perjalanan ini dengan penuh rasa syukur.
-        </p>
+        {/* Filled line segments */}
+        {JOURNEY_PHASES.slice(0, -1).map((_, i) => {
+          const segmentHeight = `calc(${100 / (JOURNEY_PHASES.length - 1)}% - 1rem)`;
+          const topOffset = `calc(${(i * 100) / (JOURNEY_PHASES.length - 1)}% + 0.5rem)`;
+          const progress = getLineProgress(i);
 
-        {/* Timeline Container */}
-        <div
-          ref={stepsContainerRef}
-          style={{ position: "relative", paddingLeft: "1.5rem" }}
-        >
-          {/* Background line */}
-          <div
-            style={{
+          return (
+            <div key={`line-${i}`} style={{
               position: "absolute",
-              left: "4px",
-              top: "6px",
-              width: "1px",
-              bottom: "6px",
-              background: "rgba(125, 110, 99, 0.06)",
-            }}
-          />
+              left: "11px",
+              top: topOffset,
+              height: segmentHeight,
+              width: "0.5px",
+              overflow: "hidden",
+            }}>
+              <div style={{
+                width: "100%",
+                height: "100%",
+                background: "rgba(200, 178, 138, 0.4)",
+                transformOrigin: "top",
+                transform: `scaleY(${progress})`,
+                transition: `transform 1.2s ease-out`,
+              }} />
+            </div>
+          );
+        })}
 
-          {/* Active line — grows vertically */}
-          <div
-            style={{
-              position: "absolute",
-              left: "4px",
-              top: "6px",
-              width: "1px",
-              height: `${lineHeight}px`,
-              background:
-                visibleCount === PHASES.length
-                  ? "linear-gradient(to bottom, rgba(125,110,99,0.15), rgba(184,155,106,0.35))"
-                  : "rgba(125, 110, 99, 0.18)",
-              transition: `height 0.8s ${ease}`,
-            }}
-          />
+        {JOURNEY_PHASES.map((p, i) => {
+          const dotState = getDotState(i);
+          const contentVisible = isContentVisible(i);
 
-          {/* Steps */}
-          {PHASES.map((phase, index) => {
-            const state = phaseStates[index];
-            const isLast = index === PHASES.length - 1;
-            const isMenikah = index === 3;
-
-            return (
-              <div
-                key={phase.label}
-                data-step
-                style={{
-                  position: "relative",
-                  paddingBottom: isLast ? 0 : "1.5rem",
-                  opacity: state.labelVisible ? 1 : 0,
-                  transform: state.labelVisible
-                    ? "translateY(0)"
-                    : "translateY(15px)",
-                  transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}`,
-                }}
-              >
-                {/* Dot */}
-                <div
-                  style={{
-                    position: "absolute",
-                    left: "-1.5rem",
-                    top: "4px",
-                    width: "9px",
-                    height: "9px",
-                    borderRadius: "50%",
-                    border: `1.5px solid ${
-                      isMenikah && state.typingDone
-                        ? "#B89B6A"
-                        : "rgba(125, 110, 99, 0.3)"
-                    }`,
-                    background: state.labelVisible
-                      ? isMenikah && state.typingDone
-                        ? "#B89B6A"
-                        : "rgba(125, 110, 99, 0.15)"
-                      : "transparent",
-                    transition: `all 0.8s ${ease}`,
-                    transform: "translateX(-2px)",
-                    boxShadow:
-                      isMenikah && state.typingDone
-                        ? "0 0 8px rgba(184, 155, 106, 0.25)"
-                        : "none",
-                  }}
-                />
-
-                {/* Label */}
-                <p
-                  style={{
-                    fontFamily: "var(--font-jakarta)",
-                    fontSize: "0.5625rem",
-                    fontWeight: 500,
-                    color: "#7D6E63",
-                    opacity: state.labelVisible ? 0.55 : 0.35,
-                    letterSpacing: "0.12em",
-                    textTransform: "uppercase",
-                    marginBottom: "0.375rem",
-                    transition: `opacity 0.6s ${ease}`,
-                  }}
-                >
-                  {phase.label}
-                </p>
-
-                {/* Text — typewriter */}
-                <p
-                  style={{
-                    fontFamily: "var(--font-cormorant)",
-                    fontStyle: "italic",
-                    fontSize: "0.875rem",
-                    fontWeight: 400,
-                    color: "#7D6E63",
-                    lineHeight: 1.9,
-                    textShadow:
-                      isMenikah && state.typingDone
-                        ? "0 0 20px rgba(184, 155, 106, 0.08)"
-                        : "none",
-                    transition: "text-shadow 1s ease",
-                    minHeight: "2.5rem",
-                  }}
-                >
-                  {state.typedText}
-                  {!state.typingDone && state.typedText.length > 0 && (
-                    <span
-                      style={{
-                        display: "inline-block",
-                        width: "1px",
-                        height: "0.85em",
-                        background: "#7D6E63",
-                        marginLeft: "1px",
-                        animation: "nauka-blink 0.8s ease-in-out infinite",
-                        verticalAlign: "middle",
-                      }}
-                    />
-                  )}
-                </p>
+          return (
+            <div key={p.phase} style={{
+              display: "flex", gap: "1rem", marginBottom: i < JOURNEY_PHASES.length - 1 ? "2rem" : 0,
+              opacity: contentVisible ? 1 : 0,
+              transform: contentVisible ? "translateY(0)" : "translateY(40px)",
+              transition: `opacity 0.8s ease-out, transform 0.8s ease-out`,
+            }}>
+              <div style={{ width: "23px", flexShrink: 0, display: "flex", justifyContent: "center", paddingTop: "0.35rem" }}>
+                <div style={{
+                  width: "7px", height: "7px", borderRadius: "50%",
+                  background: "#7D6A52",
+                  opacity: dotState === "active" ? 1 : dotState === "passed" ? 0.45 : 0.2,
+                  transform: dotState === "active" ? "scale(1)" : dotState === "passed" ? "scale(0.9)" : "scale(1)",
+                  transition: "opacity 0.6s ease-out, transform 0.6s ease-out",
+                }} />
               </div>
-            );
-          })}
-        </div>
+              <div>
+                <h3 style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.125rem", fontWeight: 500, color: "#2E2E2E", marginBottom: "0.25rem" }}>{p.phase}</h3>
+                <p style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.5625rem", fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", color: "#7D6A52", marginBottom: "0.5rem" }}>{p.date}</p>
+                <p style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.75rem", color: "#6F6F6F", lineHeight: 1.7 }}>{p.description}</p>
+              </div>
+            </div>
+          );
+        })}
       </div>
-
-      {/* Keyframes */}
-      <style>{`
-        @keyframes nauka-blink {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0; }
-        }
-      `}</style>
     </section>
   );
 }

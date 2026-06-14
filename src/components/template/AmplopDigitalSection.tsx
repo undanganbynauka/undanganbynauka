@@ -1,425 +1,201 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 
 export function AmplopDigitalSection() {
-  const [sectionVisible, setSectionVisible] = useState(false);
-  const [showContent, setShowContent] = useState(false);
-  const [isRevealed, setIsRevealed] = useState(false);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [showToast, setShowToast] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [step, setStep] = useState(0);
+  const [revealed, setRevealed] = useState(false);
+  const [showAli, setShowAli] = useState(false);
+  const [showLyla, setShowLyla] = useState(false);
+  const [copiedAli, setCopiedAli] = useState(false);
+  const [copiedLyla, setCopiedLyla] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
-
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !sectionVisible) {
-          setSectionVisible(true);
-        }
-      },
+      ([entry]) => { if (entry.isIntersecting && !visible) setVisible(true); },
       { threshold: 0.15 }
     );
-
     observer.observe(el);
     return () => observer.disconnect();
-  }, [sectionVisible]);
+  }, [visible]);
 
   useEffect(() => {
-    if (!sectionVisible) return;
-    const t = setTimeout(() => setShowContent(true), 300);
-    return () => clearTimeout(t);
-  }, [sectionVisible]);
+    if (!visible) return;
+    const t = [setTimeout(() => setStep(1), 200), setTimeout(() => setStep(2), 500)];
+    return () => t.forEach(clearTimeout);
+  }, [visible]);
 
-  const handleCopy = (rekening: string, id: string) => {
-    navigator.clipboard.writeText(rekening).then(() => {
-      setCopiedId(id);
-      setShowToast(true);
+  const ease = "cubic-bezier(0.25, 0.1, 0.25, 1)";
 
-      setTimeout(() => {
-        setCopiedId(null);
-      }, 2000);
+  const aliAccount = "1234567890";
+  const lylaAccount = "1234567890";
 
-      setTimeout(() => {
-        setShowToast(false);
-      }, 1800);
-    });
+  const maskNumber = (num: string) => {
+    return "\u2022\u2022\u2022\u2022 \u2022\u2022\u2022\u2022 \u2022\u2022\u2022\u2022 " + num.slice(-4);
   };
 
-  const accounts = [
-    {
-      id: "groom",
-      name: "Ali Rahman",
-      bank: "Bank Muamalat",
-      rekening: "1234567890",
-    },
-    {
-      id: "bride",
-      name: "Lyla Azzahra",
-      bank: "BSI Syariah",
-      rekening: "1234567890",
-    },
-  ];
+  const handleCopy = useCallback(async (number: string, who: "ali" | "lyla") => {
+    try {
+      await navigator.clipboard.writeText(number);
+    } catch {
+      const textarea = document.createElement("textarea");
+      textarea.value = number;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+    }
+    if (who === "ali") {
+      setCopiedAli(true);
+      setTimeout(() => setCopiedAli(false), 2000);
+    } else {
+      setCopiedLyla(true);
+      setTimeout(() => setCopiedLyla(false), 2000);
+    }
+  }, []);
 
   return (
-    <section
-      ref={sectionRef}
-      style={{
-        position: "relative",
-        background: "#F8F4EE",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "3rem 1.5rem",
-      }}
-    >
-      {/* Paper grain texture */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          opacity: 0.02,
-          backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")",
-          backgroundSize: "256px 256px",
-          pointerEvents: "none",
-          zIndex: 0,
-        }}
-      />
+    <section ref={sectionRef} id="hadiah" style={{
+      position: "relative", padding: "4rem 1.5rem",
+      display: "flex", flexDirection: "column", alignItems: "center", background: "#FAF7F2",
+    }}>
+      <p style={{
+        fontFamily: "var(--font-jakarta)", fontSize: "0.6875rem", fontWeight: 400,
+        letterSpacing: "0.15em", textTransform: "uppercase", color: "#8A8A8A", marginBottom: "0.5rem",
+        opacity: step >= 1 ? 1 : 0, transform: step >= 1 ? "translateY(0)" : "translateY(15px)",
+        transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}`,
+      }}>Tanda Kasih</p>
+      <h2 style={{
+        fontFamily: "var(--font-cormorant)", fontSize: "1.75rem", fontWeight: 500,
+        color: "#2E2E2E", marginBottom: "1rem",
+        opacity: step >= 1 ? 1 : 0, transform: step >= 1 ? "translateY(0)" : "translateY(15px)",
+        transition: `opacity 0.8s ${ease} 0.1s, transform 0.8s ${ease} 0.1s`,
+      }}>Hadiah</h2>
+      <p style={{
+        fontFamily: "var(--font-jakarta)", fontSize: "0.75rem", color: "#6F6F6F",
+        textAlign: "center", lineHeight: 1.7, maxWidth: "18rem", marginBottom: "1.5rem",
+        opacity: step >= 2 ? 0.8 : 0, transition: `opacity 0.8s ${ease}`,
+      }}>
+        Doa restu Anda merupakan karunia yang sangat berarti bagi kami. Namun jika Anda ingin memberikan tanda kasih, kami menyediakan informasi berikut.
+      </p>
 
-      {/* Single Card */}
-      <div
-        style={{
-          position: "relative",
-          zIndex: 2,
-          maxWidth: "22rem",
-          width: "100%",
-          background: "rgba(125, 110, 99, 0.04)",
-          border: "1px solid rgba(125, 110, 99, 0.12)",
-          borderRadius: "20px",
-          padding: "2.5rem 2rem",
-          opacity: showContent ? 1 : 0,
-          transform: showContent ? "translateY(0)" : "translateY(25px)",
-          transition: "opacity 1s cubic-bezier(0.25, 0.1, 0.25, 1), transform 1s cubic-bezier(0.25, 0.1, 0.25, 1)",
-        }}
-      >
-        {/* Title */}
-        <h2
+      {!revealed ? (
+        <button
+          onClick={() => setRevealed(true)}
+          onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(125, 106, 82, 0.16)"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(125, 106, 82, 0.08)"; }}
           style={{
-            fontFamily: "var(--font-cormorant)",
-            fontSize: "1.125rem",
-            fontWeight: 400,
-            color: "#7D6E63",
-            letterSpacing: "0.1em",
-            textAlign: "center",
-            marginBottom: "0.75rem",
+            fontFamily: "var(--font-jakarta)", fontSize: "0.6875rem", fontWeight: 500,
+            letterSpacing: "0.1em", textTransform: "uppercase", color: "#7D6A52",
+            background: "rgba(125, 106, 82, 0.08)", border: "1px solid rgba(125, 106, 82, 0.2)",
+            borderRadius: "999px", padding: "0.625rem 1.5rem", cursor: "pointer",
+            opacity: step >= 2 ? 1 : 0, transition: "all 0.3s ease",
           }}
         >
-          Hadiah &amp; Tanda Kasih
-        </h2>
-
-        {/* Subtitle */}
-        <p
-          style={{
-            fontFamily: "var(--font-jakarta)",
-            fontSize: "0.6875rem",
-            fontWeight: 400,
-            color: "#7D6E63",
-            opacity: 0.5,
-            textAlign: "center",
-            lineHeight: 1.8,
-            marginBottom: "1.75rem",
-            maxWidth: "18rem",
-            marginLeft: "auto",
-            marginRight: "auto",
-          }}
-        >
-          Dengan penuh rasa syukur, kami menerima setiap bentuk doa dan kasih
-          sayang yang ingin disampaikan melalui amplop digital.
-        </p>
-
-        {/* Reveal Button */}
-        {!isRevealed && (
-          <div style={{ textAlign: "center" }}>
-            <button
-              type="button"
-              onClick={() => setIsRevealed(true)}
-              style={{
-                fontFamily: "var(--font-jakarta)",
-                fontSize: "0.6875rem",
-                fontWeight: 500,
-                color: "#7D6E63",
-                background: "rgba(184, 155, 106, 0.1)",
-                border: "1px solid rgba(184, 155, 106, 0.3)",
-                borderRadius: "8px",
-                padding: "0.625rem 1.75rem",
-                cursor: "pointer",
-                letterSpacing: "0.04em",
-                transition: "all 0.3s ease",
-              }}
-            >
-              Lihat Tanda Kasih
-            </button>
-          </div>
-        )}
-
-        {/* Rekening Details — revealed */}
-        {isRevealed && (
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "1.25rem",
-              animation: "nauka-amplop-reveal 0.5s ease forwards",
-            }}
-          >
-            {accounts.map((account) => (
-              <div
-                key={account.id}
+          Lihat
+        </button>
+      ) : (
+        <div style={{
+          maxWidth: "22rem", width: "100%", display: "flex", flexDirection: "column", gap: "1rem",
+          animation: "fadeInUp 0.5s ease forwards",
+        }}>
+          {/* Ali Rahman - Bank Syariah Indonesia */}
+          <div style={{
+            background: "rgba(125, 110, 99, 0.04)", border: "1px solid rgba(125, 110, 99, 0.12)",
+            borderRadius: "16px", padding: "1.25rem",
+          }}>
+            <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1rem", fontWeight: 500, color: "#2E2E2E", marginBottom: "0.25rem" }}>Ali Rahman</p>
+            <p style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.6875rem", color: "#8A8A8A", marginBottom: "0.5rem" }}>Bank Syariah Indonesia</p>
+            <p style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.8125rem", color: "#7D6A52", fontWeight: 500, letterSpacing: "0.05em", marginBottom: "0.5rem" }}>
+              {showAli ? aliAccount : maskNumber(aliAccount)}
+            </p>
+            <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+              <button
+                onClick={() => setShowAli(!showAli)}
                 style={{
-                  background: "rgba(125, 110, 99, 0.025)",
-                  border: "1px solid rgba(125, 110, 99, 0.07)",
-                  borderRadius: "12px",
-                  padding: "1.125rem 1rem",
-                  transition: "transform 0.2s ease, box-shadow 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "scale(1.01)";
-                  e.currentTarget.style.boxShadow =
-                    "0 2px 8px rgba(125, 110, 99, 0.06)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "scale(1)";
-                  e.currentTarget.style.boxShadow = "none";
+                  fontFamily: "var(--font-jakarta)", fontSize: "0.625rem", fontWeight: 500,
+                  color: "#7D6A52", background: "none", border: "none", cursor: "pointer",
+                  display: "inline-flex", alignItems: "center", gap: "0.25rem", padding: 0,
                 }}
               >
-                {/* Name */}
-                <p
-                  style={{
-                    fontFamily: "var(--font-jakarta)",
-                    fontSize: "0.625rem",
-                    fontWeight: 500,
-                    color: "#7D6E63",
-                    opacity: 0.55,
-                    letterSpacing: "0.06em",
-                    textTransform: "uppercase",
-                    marginBottom: "0.375rem",
-                  }}
-                >
-                  {account.name}
-                </p>
-
-                {/* Bank */}
-                <p
-                  style={{
-                    fontFamily: "var(--font-jakarta)",
-                    fontSize: "0.6875rem",
-                    fontWeight: 400,
-                    color: "#7D6E63",
-                    opacity: 0.7,
-                    marginBottom: "0.5rem",
-                  }}
-                >
-                  {account.bank}
-                </p>
-
-                {/* Rekening Number — monospace */}
-                <p
-                  style={{
-                    fontFamily:
-                      "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace",
-                    fontSize: "0.8125rem",
-                    fontWeight: 400,
-                    color: "#7D6E63",
-                    letterSpacing: "0.08em",
-                    marginBottom: "0.75rem",
-                    lineHeight: 1,
-                  }}
-                >
-                  {account.rekening}
-                </p>
-
-                {/* Salin Button */}
-                <button
-                  type="button"
-                  onClick={() => handleCopy(account.rekening, account.id)}
-                  style={{
-                    fontFamily: "var(--font-jakarta)",
-                    fontSize: "0.625rem",
-                    fontWeight: 500,
-                    color:
-                      copiedId === account.id
-                        ? "#B89B6A"
-                        : "rgba(125, 110, 99, 0.55)",
-                    background:
-                      copiedId === account.id
-                        ? "rgba(184, 155, 106, 0.08)"
-                        : "transparent",
-                    border:
-                      copiedId === account.id
-                        ? "1px solid rgba(184, 155, 106, 0.2)"
-                        : "1px solid rgba(125, 110, 99, 0.12)",
-                    borderRadius: "6px",
-                    padding: "0.3rem 0.75rem",
-                    cursor: "pointer",
-                    letterSpacing: "0.04em",
-                    transition: "all 0.3s ease",
-                  }}
-                >
-                  {copiedId === account.id ? "✓ Tersalin" : "Salin"}
-                </button>
-              </div>
-            ))}
-
-            {/* Kado Fisik Section */}
-            <div
-              style={{
-                borderTop: "1px solid rgba(125, 110, 99, 0.08)",
-                paddingTop: "1.25rem",
-                marginTop: "0.25rem",
-              }}
-            >
-              {/* Kado Fisik Label */}
-              <p
+                {showAli ? "\uD83D\uDC41\uFE0F Sembunyikan nomor" : "\uD83D\uDC41\uFE0F Tampilkan nomor"}
+              </button>
+              <button
+                onClick={() => handleCopy(aliAccount, "ali")}
                 style={{
-                  fontFamily: "var(--font-cormorant)",
-                  fontSize: "0.875rem",
-                  fontWeight: 400,
-                  color: "#7D6E63",
-                  letterSpacing: "0.06em",
-                  textAlign: "center",
-                  marginBottom: "0.625rem",
+                  fontFamily: "var(--font-jakarta)", fontSize: "0.625rem", fontWeight: 500,
+                  color: "#7D6A52", background: "none", border: "none", cursor: "pointer",
+                  display: "inline-flex", alignItems: "center", gap: "0.25rem", padding: 0,
                 }}
               >
-                Kado Fisik
-              </p>
-
-              <p
-                style={{
-                  fontFamily: "var(--font-jakarta)",
-                  fontSize: "0.6875rem",
-                  fontWeight: 400,
-                  color: "#7D6E63",
-                  opacity: 0.5,
-                  textAlign: "center",
-                  lineHeight: 1.8,
-                  marginBottom: "1rem",
-                  maxWidth: "18rem",
-                  marginLeft: "auto",
-                  marginRight: "auto",
-                }}
-              >
-                Bagi keluarga dan sahabat yang ingin menyampaikan tanda kasih
-                dalam bentuk hadiah, dengan tulus kami menerimanya melalui
-                pengiriman ke:
-              </p>
-
-              {/* Address Card */}
-              <div
-                style={{
-                  background: "rgba(125, 110, 99, 0.025)",
-                  border: "1px solid rgba(125, 110, 99, 0.07)",
-                  borderRadius: "12px",
-                  padding: "1rem",
-                  textAlign: "center",
-                }}
-              >
-                <p
-                  style={{
-                    fontFamily: "var(--font-jakarta)",
-                    fontSize: "0.625rem",
-                    fontWeight: 500,
-                    color: "#7D6E63",
-                    opacity: 0.55,
-                    letterSpacing: "0.06em",
-                    textTransform: "uppercase",
-                    marginBottom: "0.375rem",
-                  }}
-                >
-                  Penerima
-                </p>
-                <p
-                  style={{
-                    fontFamily: "var(--font-jakarta)",
-                    fontSize: "0.75rem",
-                    fontWeight: 400,
-                    color: "#7D6E63",
-                    marginBottom: "0.625rem",
-                  }}
-                >
-                  Lyla Azzahra
-                </p>
-                <p
-                  style={{
-                    fontFamily: "var(--font-jakarta)",
-                    fontSize: "0.625rem",
-                    fontWeight: 500,
-                    color: "#7D6E63",
-                    opacity: 0.55,
-                    letterSpacing: "0.06em",
-                    textTransform: "uppercase",
-                    marginBottom: "0.375rem",
-                  }}
-                >
-                  Alamat
-                </p>
-                <p
-                  style={{
-                    fontFamily: "var(--font-jakarta)",
-                    fontSize: "0.6875rem",
-                    fontWeight: 400,
-                    color: "#7D6E63",
-                    opacity: 0.7,
-                    lineHeight: 1.7,
-                  }}
-                >
-                  Kebon Jahe Kober 3 No. 1 Jakarta Pusat
-                </p>
-              </div>
+                {copiedAli ? "\uD83D\uDCCB Tersalin!" : "\uD83D\uDCCB Salin"}
+              </button>
             </div>
           </div>
-        )}
 
-        {/* Toast */}
-        {showToast && (
-          <div
-            style={{
-              position: "absolute",
-              bottom: "1.5rem",
-              left: "50%",
-              transform: "translateX(-50%)",
-              background: "rgba(184, 155, 106, 0.12)",
-              border: "1px solid rgba(184, 155, 106, 0.2)",
-              borderRadius: "8px",
-              padding: "0.5rem 1.25rem",
-              fontFamily: "var(--font-jakarta)",
-              fontSize: "0.6875rem",
-              fontWeight: 400,
-              color: "#7D6E63",
-              whiteSpace: "nowrap",
-              animation: "nauka-toast-in 0.4s ease forwards",
-              zIndex: 10,
-            }}
-          >
-            Tersalin ✓
+          {/* Lyla Azzahra - Bank Muamalat Indonesia */}
+          <div style={{
+            background: "rgba(125, 110, 99, 0.04)", border: "1px solid rgba(125, 110, 99, 0.12)",
+            borderRadius: "16px", padding: "1.25rem",
+          }}>
+            <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1rem", fontWeight: 500, color: "#2E2E2E", marginBottom: "0.25rem" }}>Lyla Azzahra</p>
+            <p style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.6875rem", color: "#8A8A8A", marginBottom: "0.5rem" }}>Bank Muamalat Indonesia</p>
+            <p style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.8125rem", color: "#7D6A52", fontWeight: 500, letterSpacing: "0.05em", marginBottom: "0.5rem" }}>
+              {showLyla ? lylaAccount : maskNumber(lylaAccount)}
+            </p>
+            <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+              <button
+                onClick={() => setShowLyla(!showLyla)}
+                style={{
+                  fontFamily: "var(--font-jakarta)", fontSize: "0.625rem", fontWeight: 500,
+                  color: "#7D6A52", background: "none", border: "none", cursor: "pointer",
+                  display: "inline-flex", alignItems: "center", gap: "0.25rem", padding: 0,
+                }}
+              >
+                {showLyla ? "\uD83D\uDC41\uFE0F Sembunyikan nomor" : "\uD83D\uDC41\uFE0F Tampilkan nomor"}
+              </button>
+              <button
+                onClick={() => handleCopy(lylaAccount, "lyla")}
+                style={{
+                  fontFamily: "var(--font-jakarta)", fontSize: "0.625rem", fontWeight: 500,
+                  color: "#7D6A52", background: "none", border: "none", cursor: "pointer",
+                  display: "inline-flex", alignItems: "center", gap: "0.25rem", padding: 0,
+                }}
+              >
+                {copiedLyla ? "\uD83D\uDCCB Tersalin!" : "\uD83D\uDCCB Salin"}
+              </button>
+            </div>
           </div>
-        )}
-      </div>
 
-      {/* Keyframes */}
-      <style>{`
-        @keyframes nauka-amplop-reveal {
-          from { opacity: 0; transform: translateY(12px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes nauka-toast-in {
-          from { opacity: 0; transform: translateX(-50%) translateY(8px); }
-          to { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
-      `}</style>
+          {/* Kado Fisik */}
+          <div style={{
+            background: "rgba(125, 110, 99, 0.04)", border: "1px solid rgba(125, 110, 99, 0.12)",
+            borderRadius: "16px", padding: "1.25rem",
+          }}>
+            <p style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.6875rem", fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", color: "#7D6A52", marginBottom: "0.5rem" }}>
+              {"\uD83C\uDF81 KADO FISIK"}
+            </p>
+            <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1rem", fontWeight: 500, color: "#2E2E2E", marginBottom: "0.25rem" }}>Lyla Azzahra</p>
+            <p style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.6875rem", color: "#8A8A8A", lineHeight: 1.7 }}>
+              Kebon Jahe Kober 1<br />Jakarta Pusat
+            </p>
+          </div>
+
+          {/* Inline animation keyframes */}
+          <style>{`
+            @keyframes fadeInUp {
+              from { opacity: 0; transform: translateY(12px); }
+              to { opacity: 1; transform: translateY(0); }
+            }
+          `}</style>
+        </div>
+      )}
     </section>
   );
 }

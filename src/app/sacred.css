@@ -1,0 +1,318 @@
+/* ===== SACRED SILENCE WEDDING TEMPLATE ===== */
+
+:root {
+  --sacred-ivory: #F8F4EE;
+  --sacred-beige: #E9DED2;
+  --sacred-taupe: #6B5E54;
+  --sacred-taupe-light: #8E7E72;
+  --sacred-olive: #A3A38D;
+  --sacred-gold: #C9B79C;
+  --sacred-text: #6F6055;
+  --sacred-text-soft: #8E7E72;
+  --sacred-border: #BFAF9F;
+}
+
+/* Page */
+.sacred-page {
+  background: var(--sacred-ivory);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ===== HERO ===== */
+.sacred-hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background: #F8F4EE;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* ARCH */
+.sacred-arch {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: auto;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* GROOM */
+.sacred-groom {
+  position: absolute;
+  left: -80px;
+  bottom: 0;
+  width: auto;
+  height: 55vh;
+  z-index: 2;
+}
+
+/* BRIDE */
+.sacred-bride {
+  position: absolute;
+  right: -60px;
+  bottom: 0;
+  width: auto;
+  height: 55vh;
+  z-index: 2;
+}
+
+/* CENTER CONTENT */
+.sacred-hero-content {
+  position: relative;
+  z-index: 3;
+  width: 50%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-bottom: 60px;
+}
+
+.sacred-hero-subtitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  color: #8E7E72;
+  letter-spacing: 2px;
+}
+
+.sacred-hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 72px;
+  font-weight: 600;
+  color: #6F6055;
+  line-height: 1.2;
+}
+
+.sacred-hero-date {
+  font-family: 'Lora', serif;
+  font-size: 20px;
+  color: #8E7E72;
+}
+
+.sacred-hero-recipient {
+  margin-top: 20px;
+}
+
+.sacred-hero-recipient p {
+  font-family: 'Lora', serif;
+  font-size: 11px;
+  color: #8E7E72;
+  line-height: 1.5;
+}
+
+.sacred-guest-name {
+  font-size: 22px;
+  font-weight: 500;
+  color: #6F6055;
+}
+
+.sacred-hero-button {
+  margin-top: 10px;
+}
+
+.sacred-hero-button button {
+  padding: 6px 16px;
+  border: 1px solid #BFAF9F;
+  border-radius: 999px;
+  font-family: 'Lora', serif;
+  font-size: 12px;
+  color: #6F6055;
+  background: transparent;
+  cursor: pointer;
+  transition: 0.3s ease;
+  box-shadow: 0 2px 5px rgba(111, 96, 85, 0.1);
+}
+
+.sacred-hero-button button:hover {
+  background: #E9DED2;
+  box-shadow: 0 3px 7px rgba(111, 96, 85, 0.15);
+}
+
+/* BOTTOM FADE */
+.sacred-bottom-fade {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 180px;
+  background: linear-gradient(
+    to top,
+    rgba(248, 244, 238, 1),
+    rgba(248, 244, 238, 0)
+  );
+  z-index: 4;
+  pointer-events: none;
+}
+
+/* ===== COVER ENTRANCE ANIMATIONS ===== */
+
+/* 1. Background zoom-in */
+@keyframes sacred-bg-zoom {
+  from { transform: scale(1.05); }
+  to { transform: scale(1); }
+}
+.sacred-hero {
+  animation: sacred-bg-zoom 2.5s ease-out forwards;
+  will-change: transform;
+}
+
+/* 2. Top ornament (arch) */
+@keyframes sacred-arch-enter {
+  from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+.sacred-arch {
+  opacity: 0;
+  animation: sacred-arch-enter 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) 0.3s forwards;
+  will-change: opacity, transform;
+}
+
+/* 3. Subtitle — "The Wedding Invitation Of" */
+@keyframes sacred-subtitle-enter {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.sacred-hero-subtitle {
+  opacity: 0;
+  animation: sacred-subtitle-enter 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) 0.8s forwards;
+  will-change: opacity, transform;
+}
+
+/* 4. Names — blur + fade + slide */
+@keyframes sacred-names-enter {
+  from { opacity: 0; transform: translateY(20px); filter: blur(10px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+.sacred-hero-title {
+  opacity: 0;
+  animation: sacred-names-enter 1s cubic-bezier(0.25, 0.1, 0.25, 1) 1.2s forwards;
+  will-change: opacity, transform, filter;
+}
+
+/* 5. Date — fade up */
+@keyframes sacred-date-enter {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.sacred-hero-date {
+  opacity: 0;
+  animation: sacred-date-enter 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) 1.8s forwards;
+  will-change: opacity, transform;
+}
+
+/* 5b. Recipient — same timing as date */
+.sacred-hero-recipient {
+  opacity: 0;
+  animation: sacred-date-enter 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) 1.8s forwards;
+  will-change: opacity, transform;
+}
+
+/* 6. Open Invitation button */
+@keyframes sacred-button-enter {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.sacred-hero-button {
+  opacity: 0;
+  animation: sacred-button-enter 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) 2.3s forwards;
+  will-change: opacity, transform;
+}
+
+/* Groom & Bride slide in subtly */
+@keyframes sacred-groom-enter {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes sacred-bride-enter {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.sacred-groom {
+  opacity: 0;
+  animation: sacred-groom-enter 1.2s cubic-bezier(0.25, 0.1, 0.25, 1) 0.5s forwards;
+  will-change: opacity, transform;
+}
+.sacred-bride {
+  opacity: 0;
+  animation: sacred-bride-enter 1.2s cubic-bezier(0.25, 0.1, 0.25, 1) 0.5s forwards;
+  will-change: opacity, transform;
+}
+
+/* ===== END COVER ENTRANCE ANIMATIONS ===== */
+
+/* GATE OPEN ANIMATION */
+@keyframes gate-open {
+  0% {
+    opacity: 1;
+    transform: perspective(1200px) translateZ(0) rotateX(0deg);
+    transform-origin: top center;
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: perspective(1200px) translateZ(-80px) rotateX(-8deg);
+    transform-origin: top center;
+  }
+}
+
+.animate-gate-open {
+  animation: gate-open 1.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .sacred-hero-content {
+    width: 75%;
+    gap: 18px;
+  }
+
+  .sacred-hero-title {
+    font-size: 42px;
+  }
+
+  .sacred-hero-subtitle {
+    font-size: 18px;
+  }
+
+  .sacred-hero-date {
+    font-size: 16px;
+  }
+
+  .sacred-hero-recipient p {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .sacred-guest-name {
+    font-size: 18px;
+  }
+
+  .sacred-hero-button button {
+    padding: 6px 16px;
+    font-size: 11px;
+  }
+
+  .sacred-groom {
+    height: 55vh;
+    width: auto;
+    left: -10px;
+  }
+
+  .sacred-bride {
+    height: 55vh;
+    width: auto;
+    right: -10px;
+  }
+
+  .sacred-bottom-fade {
+    height: 120px;
+  }
+}

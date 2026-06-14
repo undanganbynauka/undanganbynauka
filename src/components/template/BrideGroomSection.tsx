@@ -4,239 +4,154 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 
 export function BrideGroomSection() {
-  const [sectionVisible, setSectionVisible] = useState(false);
-  const [showIntro, setShowIntro] = useState(false);
-  const [showBridePhoto, setShowBridePhoto] = useState(false);
-  const [showBrideName, setShowBrideName] = useState(false);
-  const [showBrideDesc, setShowBrideDesc] = useState(false);
-  const [showGroomPhoto, setShowGroomPhoto] = useState(false);
-  const [showGroomName, setShowGroomName] = useState(false);
-  const [showGroomDesc, setShowGroomDesc] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [step, setStep] = useState(0);
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
-
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !sectionVisible) {
-          setSectionVisible(true);
-        }
-      },
+      ([entry]) => { if (entry.isIntersecting && !visible) setVisible(true); },
       { threshold: 0.15 }
     );
-
     observer.observe(el);
     return () => observer.disconnect();
-  }, [sectionVisible]);
+  }, [visible]);
 
-  // Staggered: intro → bride photo → bride name → bride desc → groom photo → groom name → groom desc
   useEffect(() => {
-    if (!sectionVisible) return;
+    if (!visible) return;
     const timers = [
-      setTimeout(() => setShowIntro(true), 200),
-      setTimeout(() => setShowBridePhoto(true), 800),
-      setTimeout(() => setShowBrideName(true), 1200),
-      setTimeout(() => setShowBrideDesc(true), 1500),
-      setTimeout(() => setShowGroomPhoto(true), 2200),
-      setTimeout(() => setShowGroomName(true), 2600),
-      setTimeout(() => setShowGroomDesc(true), 2900),
+      setTimeout(() => setStep(1), 200),   // groom avatar
+      setTimeout(() => setStep(2), 600),   // groom name
+      setTimeout(() => setStep(3), 900),   // groom parents
+      setTimeout(() => setStep(4), 1300),  // divider lines
+      setTimeout(() => setStep(5), 1600),  // divider star
+      setTimeout(() => setStep(6), 2000),  // bride avatar
+      setTimeout(() => setStep(7), 2400),  // bride name
+      setTimeout(() => setStep(8), 2700),  // bride parents
     ];
     return () => timers.forEach(clearTimeout);
-  }, [sectionVisible]);
+  }, [visible]);
 
   const ease = "cubic-bezier(0.25, 0.1, 0.25, 1)";
 
   return (
-    <section
-      ref={sectionRef}
-      style={{
-        position: "relative",
-        background: "#F8F4EE",
+    <section ref={sectionRef} id="mempelai" style={{
+      position: "relative", padding: "3rem 1.5rem 5rem",
+      display: "flex", flexDirection: "column", alignItems: "center", background: "#FAF7F2",
+    }}>
+      {/* Groom */}
+      <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+        <div style={{
+          width: "140px", height: "140px", borderRadius: "50%",
+          border: "0.75px solid rgba(125, 110, 99, 0.15)",
+          margin: "0 auto 1.5rem", overflow: "hidden",
+          opacity: step >= 1 ? 1 : 0, transform: step >= 1 ? "scale(1)" : "scale(0.95)",
+          transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}`,
+        }}>
+          <Image src="/sacred/groom-avatar.png" alt="Ali Rahman" width={140} height={140}
+            style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top center" }} />
+        </div>
+        <p style={{
+          fontFamily: "var(--font-jakarta)", fontSize: "0.5625rem", fontWeight: 500,
+          letterSpacing: "0.15em", textTransform: "uppercase", color: "#8A8A8A",
+          marginBottom: "0.5rem",
+          opacity: step >= 2 ? 1 : 0, transform: step >= 2 ? "translateY(0)" : "translateY(20px)",
+          transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}`,
+        }}>Mempelai Pria</p>
+        <h3 style={{
+          fontFamily: "var(--font-cormorant)", fontSize: "1.625rem", fontWeight: 500,
+          color: "#2E2E2E", marginBottom: "0.5rem",
+          opacity: step >= 2 ? 1 : 0, transform: step >= 2 ? "translateY(0)" : "translateY(20px)",
+          transition: `opacity 0.8s ${ease} 0.1s, transform 0.8s ${ease} 0.1s`,
+        }}>Ali Rahman</h3>
+        <p style={{
+          fontFamily: "var(--font-jakarta)", fontSize: "0.6875rem", color: "#8A8A8A",
+          lineHeight: 1.7,
+          opacity: step >= 3 ? 0.8 : 0, transform: step >= 3 ? "translateY(0)" : "translateY(10px)",
+          transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}`,
+        }}>
+          Putra dari<br />Bapak Hendri &amp; Ibu Ningsih
+        </p>
+      </div>
+
+      {/* Decorative Divider ── ✦ ── */}
+      <div style={{
         display: "flex",
-        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        padding: "3rem 1.5rem",
-      }}
-    >
-      {/* Paper grain texture */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          opacity: 0.02,
-          backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")",
-          backgroundSize: "256px 256px",
-          pointerEvents: "none",
-          zIndex: 0,
-        }}
-      />
-
-      {/* Content */}
-      <div
-        style={{
-          position: "relative",
-          zIndex: 2,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          maxWidth: "22rem",
-          textAlign: "center",
-          width: "100%",
-        }}
-      >
-        {/* Opening text */}
-        <p
+        width: "120px",
+        marginBottom: "3rem",
+      }}>
+        {/* Left line */}
+        <div style={{
+          flex: 1,
+          height: "0.5px",
+          background: "#C8B28A",
+          opacity: step >= 4 ? 0.35 : 0,
+          transform: step >= 4 ? "scaleX(1)" : "scaleX(0)",
+          transformOrigin: "right center",
+          transition: `opacity 0.8s ease-out, transform 0.8s ease-out`,
+        }} />
+        {/* Star symbol (SVG) */}
+        <svg
+          width="10" height="10" viewBox="0 0 24 24"
+          fill="#C8B28A"
           style={{
-            fontFamily: "var(--font-jakarta)",
-            fontSize: "0.75rem",
-            fontWeight: 400,
-            color: "#7D6E63",
-            lineHeight: 1.9,
-            marginBottom: "2.5rem",
-            opacity: showIntro ? 1 : 0,
-            transform: showIntro ? "translateY(0)" : "translateY(20px)",
-            transition: `opacity 1s ${ease}, transform 1s ${ease}`,
+            margin: "0 6px",
+            opacity: step >= 5 ? 0.4 : 0,
+            transform: step >= 5 ? "scale(1)" : "scale(0.8)",
+            transition: `opacity 0.6s ease-out 0.3s, transform 0.6s ease-out 0.3s`,
           }}
         >
-          Dengan memohon rahmat dan ridha Allah SWT, kami mengundang Bapak/Ibu/Saudara/i untuk menjadi bagian dari momen bahagia pernikahan kami.
-        </p>
+          <path d="M12 0L14.59 8.41L23 11L14.59 13.59L12 22L9.41 13.59L1 11L9.41 8.41Z" />
+        </svg>
+        {/* Right line */}
+        <div style={{
+          flex: 1,
+          height: "0.5px",
+          background: "#C8B28A",
+          opacity: step >= 4 ? 0.35 : 0,
+          transform: step >= 4 ? "scaleX(1)" : "scaleX(0)",
+          transformOrigin: "left center",
+          transition: `opacity 0.8s ease-out, transform 0.8s ease-out`,
+        }} />
+      </div>
 
-        {/* Bride & Groom profiles */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "2.5rem",
-            alignItems: "center",
-            width: "100%",
-          }}
-        >
-          {/* Bride */}
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
-            <div
-              style={{
-                opacity: showBridePhoto ? 1 : 0,
-                transform: showBridePhoto ? "translateY(0) scale(1)" : "translateY(20px) scale(0.97)",
-                transition: `opacity 1.1s ${ease}, transform 1.1s ${ease}`,
-              }}
-            >
-              <Image
-                src="/bride-profile.png"
-                alt="Mempelai Wanita"
-                width={120}
-                height={198}
-                style={{
-                  width: "120px",
-                  height: "auto",
-                  marginBottom: "1rem",
-                }}
-                priority
-              />
-            </div>
-            <h3
-              style={{
-                fontFamily: "var(--font-cormorant)",
-                fontSize: "1.25rem",
-                fontWeight: 400,
-                color: "#7D6E63",
-                marginBottom: "0.375rem",
-                letterSpacing: "0.02em",
-                opacity: showBrideName ? 1 : 0,
-                transform: showBrideName ? "translateY(0)" : "translateY(15px)",
-                transition: `opacity 0.9s ${ease}, transform 0.9s ${ease}`,
-              }}
-            >
-              Lyla Azzahra
-            </h3>
-            <p
-              style={{
-                fontFamily: "var(--font-jakarta)",
-                fontSize: "0.6875rem",
-                fontWeight: 400,
-                color: "#7D6E63",
-                opacity: showBrideDesc ? 0.7 : 0,
-                transform: showBrideDesc ? "translateY(0)" : "translateY(10px)",
-                lineHeight: 1.6,
-                transition: `opacity 0.9s ${ease}, transform 0.9s ${ease}`,
-              }}
-            >
-              Putri kedua dari
-              <br />
-              Bapak Ihsan & Ibu Ratna
-            </p>
-          </div>
-
-          {/* Groom */}
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
-            <div
-              style={{
-                opacity: showGroomPhoto ? 1 : 0,
-                transform: showGroomPhoto ? "translateY(0) scale(1)" : "translateY(20px) scale(0.97)",
-                transition: `opacity 1.1s ${ease}, transform 1.1s ${ease}`,
-              }}
-            >
-              <Image
-                src="/groom-profile.png"
-                alt="Mempelai Pria"
-                width={120}
-                height={198}
-                style={{
-                  width: "120px",
-                  height: "auto",
-                  marginBottom: "1rem",
-                }}
-                priority
-              />
-            </div>
-            <h3
-              style={{
-                fontFamily: "var(--font-cormorant)",
-                fontSize: "1.25rem",
-                fontWeight: 400,
-                color: "#7D6E63",
-                marginBottom: "0.375rem",
-                letterSpacing: "0.02em",
-                opacity: showGroomName ? 1 : 0,
-                transform: showGroomName ? "translateY(0)" : "translateY(15px)",
-                transition: `opacity 0.9s ${ease}, transform 0.9s ${ease}`,
-              }}
-            >
-              Ali Rahman
-            </h3>
-            <p
-              style={{
-                fontFamily: "var(--font-jakarta)",
-                fontSize: "0.6875rem",
-                fontWeight: 400,
-                color: "#7D6E63",
-                opacity: showGroomDesc ? 0.7 : 0,
-                transform: showGroomDesc ? "translateY(0)" : "translateY(10px)",
-                lineHeight: 1.6,
-                transition: `opacity 0.9s ${ease}, transform 0.9s ${ease}`,
-              }}
-            >
-              Putra pertama dari
-              <br />
-              Bapak Hendri & Ibu Sarah
-            </p>
-          </div>
+      {/* Bride */}
+      <div style={{ textAlign: "center" }}>
+        <div style={{
+          width: "140px", height: "140px", borderRadius: "50%",
+          border: "0.75px solid rgba(125, 110, 99, 0.15)",
+          margin: "0 auto 1.5rem", overflow: "hidden",
+          opacity: step >= 6 ? 1 : 0, transform: step >= 6 ? "scale(1)" : "scale(0.95)",
+          transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}`,
+        }}>
+          <Image src="/sacred/bride-avatar.png" alt="Lyla Azzahra" width={140} height={140}
+            style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top center" }} />
         </div>
+        <p style={{
+          fontFamily: "var(--font-jakarta)", fontSize: "0.5625rem", fontWeight: 500,
+          letterSpacing: "0.15em", textTransform: "uppercase", color: "#8A8A8A",
+          marginBottom: "0.5rem",
+          opacity: step >= 7 ? 1 : 0, transform: step >= 7 ? "translateY(0)" : "translateY(20px)",
+          transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}`,
+        }}>Mempelai Wanita</p>
+        <h3 style={{
+          fontFamily: "var(--font-cormorant)", fontSize: "1.625rem", fontWeight: 500,
+          color: "#2E2E2E", marginBottom: "0.5rem",
+          opacity: step >= 7 ? 1 : 0, transform: step >= 7 ? "translateY(0)" : "translateY(20px)",
+          transition: `opacity 0.8s ${ease} 0.1s, transform 0.8s ${ease} 0.1s`,
+        }}>Lyla Azzahra</h3>
+        <p style={{
+          fontFamily: "var(--font-jakarta)", fontSize: "0.6875rem", color: "#8A8A8A",
+          lineHeight: 1.7,
+          opacity: step >= 8 ? 0.8 : 0, transform: step >= 8 ? "translateY(0)" : "translateY(10px)",
+          transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}`,
+        }}>
+          Putri dari<br />Bapak Yusuf &amp; Ibu Rahayu
+        </p>
       </div>
     </section>
   );

@@ -134,15 +134,16 @@ export function CountdownSection() {
         padding: "3rem 1.5rem",
       }}
     >
-      {/* Paper grain texture */}
+      {/* Background image — 30% opacity */}
       <div
         style={{
           position: "absolute",
           inset: 0,
-          opacity: 0.02,
-          backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")",
-          backgroundSize: "256px 256px",
+          opacity: 0.3,
+          backgroundImage: "url(/countdown-bg.png)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
           pointerEvents: "none",
           zIndex: 0,
         }}

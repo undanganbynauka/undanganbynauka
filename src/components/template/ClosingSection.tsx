@@ -205,9 +205,11 @@ export function ClosingSection() {
             borderTop: "0.75px solid rgba(125, 110, 99, 0.15)",
             padding: "0.5rem 1rem",
             display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "0.15rem",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            textAlign: "center",
+            gap: "0.15rem",
           }}
         >
           <p

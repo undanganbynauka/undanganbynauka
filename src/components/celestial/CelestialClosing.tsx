@@ -214,8 +214,8 @@ export function CelestialClosing() {
         <div
           style={{
             position: "relative",
-            width: "50px",
-            height: "50px",
+            width: "70px",
+            height: "70px",
             margin: "0 auto 2rem",
             opacity: step >= 3 ? 1 : 0,
             transform: step >= 3 ? "scale(1) translateY(0)" : "scale(0.95) translateY(5px)",

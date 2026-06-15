@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 
 const JOURNEY_PHASES = [
   {
@@ -21,6 +21,101 @@ const JOURNEY_PHASES = [
   },
 ];
 
+/* ── Shooting Star with Gentle Trail Dust ── */
+function JourneyShootingStar({ visible }: { visible: boolean }) {
+  // Trail dust particles — positioned along the shooting star diagonal path
+  // Shooting star goes from ~top-right to ~bottom-left
+  const trailDust = useMemo(
+    () =>
+      Array.from({ length: 14 }, (_, i) => ({
+        id: i,
+        // Positions along the diagonal path (staggered)
+        left: 72 - i * 3.8, // 72% → ~19%
+        top: 7 + i * 4.2, // 7% → ~66%
+        size: 0.6 + Math.random() * 1,
+        // Each particle has its own unique drift keyframe
+        delay: i * 0.15 + 0.5,
+        duration: 3.5 + Math.random() * 2,
+        isGold: i % 4 === 0,
+        // Unique drift direction per particle
+        driftX: (Math.random() - 0.5) * 20,
+        driftY: -5 - Math.random() * 15, // gentle upward drift
+      })),
+    []
+  );
+
+  return (
+    <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden", zIndex: 5 }}>
+      {/* Shooting star head — slow, graceful diagonal traverse */}
+      {visible && (
+        <div style={{ position: "absolute", top: "7%", right: "28%" }}>
+          <div
+            style={{
+              width: "2px",
+              height: "2px",
+              borderRadius: "50%",
+              background: "#fff",
+              boxShadow:
+                "0 0 5px 2px rgba(255,255,255,0.8), " +
+                "0 0 10px 3px rgba(201,169,110,0.35), " +
+                "0 0 18px 5px rgba(255,255,255,0.1)",
+              animation: "celJourneyShoot 3s ease-in-out forwards",
+            }}
+          />
+        </div>
+      )}
+
+      {/* Trail dust — each particle has a unique drift via inline keyframes */}
+      {visible &&
+        trailDust.map((dust) => (
+          <div
+            key={dust.id}
+            style={{
+              position: "absolute",
+              left: `${dust.left}%`,
+              top: `${dust.top}%`,
+              width: `${dust.size}px`,
+              height: `${dust.size}px`,
+              borderRadius: "50%",
+              background: dust.isGold ? "rgba(201,169,110,0.85)" : "rgba(255,255,255,0.65)",
+              boxShadow: dust.isGold
+                ? "0 0 3px rgba(201,169,110,0.3)"
+                : "0 0 2px rgba(255,255,255,0.15)",
+              animation: `celJourneyDust${dust.id} ${dust.duration}s ease-in-out ${dust.delay}s forwards`,
+              pointerEvents: "none",
+            }}
+          />
+        ))}
+
+      {/* Per-particle unique keyframes — each drifts in a unique direction */}
+      <style>{trailDust.map((dust) => `
+        @keyframes celJourneyDust${dust.id} {
+          0% {
+            opacity: 0;
+            transform: translate(0, 0) scale(0.4);
+          }
+          12% {
+            opacity: ${0.2 + Math.random() * 0.2};
+            transform: translate(0, 0) scale(1);
+          }
+          35% {
+            opacity: ${0.12 + Math.random() * 0.1};
+            transform: translate(${dust.driftX * 0.3}px, ${dust.driftY * 0.3}px) scale(0.85);
+          }
+          65% {
+            opacity: ${0.06 + Math.random() * 0.06};
+            transform: translate(${dust.driftX * 0.7}px, ${dust.driftY * 0.7}px) scale(0.6);
+          }
+          100% {
+            opacity: 0;
+            transform: translate(${dust.driftX}px, ${dust.driftY}px) scale(0.2);
+          }
+        }
+      `).join("")}</style>
+    </div>
+  );
+}
+
 export function CelestialJourney() {
   const [visible, setVisible] = useState(false);
   const [step, setStep] = useState(0);
@@ -28,7 +123,7 @@ export function CelestialJourney() {
   const [timelineProgress, setTimelineProgress] = useState(0);
   const sectionRef = useRef<HTMLDivElement>(null);
 
-  // IntersectionObserver — trigger when section enters viewport
+  // IntersectionObserver
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
@@ -48,21 +143,18 @@ export function CelestialJourney() {
 
     const timers: ReturnType<typeof setTimeout>[] = [];
 
-    // Step 0: Shooting star starts (at visibility, no timer needed)
-    // Step 1: Light spread (1.6s)
-    timers.push(setTimeout(() => setStep(1), 1600));
+    // Step 0: Shooting star starts immediately
+    // Step 1: Subtitle fade in (2.8s — after shooting star traversed)
+    timers.push(setTimeout(() => setStep(1), 2800));
 
-    // Step 2: Subtitle fade in (2.4s)
-    timers.push(setTimeout(() => setStep(2), 2400));
+    // Step 2: Title slide up + fade in (3.5s)
+    timers.push(setTimeout(() => setStep(2), 3500));
 
-    // Step 3: Title slide up + fade in (3s)
-    timers.push(setTimeout(() => setStep(3), 3000));
-
-    // Step 4: Timeline line grows from top to bottom
-    timers.push(setTimeout(() => setStep(4), 4100));
+    // Step 3: Timeline line grows
+    timers.push(setTimeout(() => setStep(3), 4600));
 
     // Animate timeline line growing
-    const lineStart = 4100;
+    const lineStart = 4600;
     const lineDuration = 2000;
     const lineSteps = 40;
     for (let i = 0; i <= lineSteps; i++) {
@@ -73,10 +165,9 @@ export function CelestialJourney() {
       );
     }
 
-    // Phase reveals — each 1.3s apart
+    // Phase reveals
     const phaseStart = lineStart + lineDuration + 400;
     JOURNEY_PHASES.forEach((_, i) => {
-      // Dot glow appears
       timers.push(
         setTimeout(() => {
           setActivePhase(i);
@@ -102,42 +193,24 @@ export function CelestialJourney() {
         overflow: "hidden",
       }}
     >
-      {/* Shooting Star — signature */}
-      {step >= 0 && step < 2 && (
-        <div style={{ position: "absolute", top: "10%", left: "8%", pointerEvents: "none", zIndex: 5 }}>
-          <div style={{
-            width: "3px", height: "3px", borderRadius: "50%", background: "#fff",
-            animation: "celSectionShoot 1.5s ease-out forwards",
-          }} />
-        </div>
-      )}
+      {/* Shooting Star with Trail Dust */}
+      <JourneyShootingStar visible={visible} />
 
-      {/* Light spread */}
-      {step >= 1 && (
-        <div style={{
-          position: "absolute", top: "16%", right: "12%",
-          width: "60px", height: "60px", borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(201,169,110,0.1) 0%, transparent 70%)",
-          pointerEvents: "none",
-          animation: "celSectionLightSpread 1.5s ease-out forwards",
-        }} />
-      )}
-
-      {/* ── Background particles ── */}
+      {/* Background ambient particles — very slow, gentle */}
       <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
-        {Array.from({ length: 12 }).map((_, i) => (
+        {Array.from({ length: 8 }).map((_, i) => (
           <div
             key={`particle-${i}`}
             style={{
               position: "absolute",
-              width: `${1.5 + Math.random() * 1.5}px`,
-              height: `${1.5 + Math.random() * 1.5}px`,
+              width: `${0.8 + Math.random() * 0.8}px`,
+              height: `${0.8 + Math.random() * 0.8}px`,
               borderRadius: "50%",
-              background: i % 3 === 0 ? "var(--cel-accent)" : "rgba(255,255,255,0.5)",
+              background: i % 3 === 0 ? "rgba(201,169,110,0.3)" : "rgba(255,255,255,0.2)",
               left: `${5 + Math.random() * 90}%`,
               top: `${5 + Math.random() * 90}%`,
               opacity: 0,
-              animation: `celJourneyParticle ${4 + Math.random() * 6}s ease-in-out ${Math.random() * 3}s infinite`,
+              animation: `celJourneyAmbient ${7 + Math.random() * 8}s ease-in-out ${Math.random() * 5}s infinite`,
             }}
           />
         ))}
@@ -153,8 +226,8 @@ export function CelestialJourney() {
           textTransform: "uppercase",
           color: "var(--cel-accent)",
           marginBottom: "0.75rem",
-          opacity: step >= 2 ? 1 : 0,
-          transition: `opacity 0.6s ${easeInOut}`,
+          opacity: step >= 1 ? 1 : 0,
+          transition: `opacity 0.8s ${easeInOut}`,
         }}
       >
         Cerita Kami
@@ -169,8 +242,8 @@ export function CelestialJourney() {
           color: "var(--cel-text)",
           letterSpacing: "0.06em",
           marginBottom: "3.5rem",
-          opacity: step >= 3 ? 1 : 0,
-          transform: step >= 3 ? "translateY(0)" : "translateY(20px)",
+          opacity: step >= 2 ? 1 : 0,
+          transform: step >= 2 ? "translateY(0)" : "translateY(20px)",
           transition: `opacity 1s ${easeInOut}, transform 1s ${easeInOut}`,
         }}
       >
@@ -185,7 +258,7 @@ export function CelestialJourney() {
           width: "100%",
         }}
       >
-        {/* Vertical line — grows from top to bottom */}
+        {/* Vertical line */}
         <div
           style={{
             position: "absolute",
@@ -197,7 +270,7 @@ export function CelestialJourney() {
               "linear-gradient(to bottom, rgba(201,169,110,0.25), rgba(201,169,110,0.08))",
             transformOrigin: "top center",
             scaleY: timelineProgress,
-            opacity: step >= 4 ? 1 : 0,
+            opacity: step >= 3 ? 1 : 0,
             transition: "opacity 0.5s ease",
           }}
         />
@@ -236,7 +309,6 @@ export function CelestialJourney() {
                     marginTop: "2px",
                   }}
                 >
-                  {/* Outer glow ring — only for active */}
                   {isActive && (
                     <div
                       style={{
@@ -250,7 +322,6 @@ export function CelestialJourney() {
                     />
                   )}
 
-                  {/* The dot itself */}
                   <div
                     style={{
                       width: isLast ? "8px" : "6px",
@@ -274,7 +345,6 @@ export function CelestialJourney() {
                     }}
                   />
 
-                  {/* Active dot pulse */}
                   {isActive && (
                     <div
                       style={{
@@ -340,20 +410,39 @@ export function CelestialJourney() {
 
       {/* ── Keyframes ── */}
       <style>{`
-        @keyframes celJourneyParticle {
+        /* Slow, graceful shooting star — diagonal traverse, ease-in-out */
+        @keyframes celJourneyShoot {
+          0% {
+            transform: translate(0, 0);
+            opacity: 0;
+          }
+          10% {
+            opacity: 1;
+          }
+          75% {
+            opacity: 0.85;
+          }
+          100% {
+            transform: translate(-240px, 120px);
+            opacity: 0;
+          }
+        }
+
+        /* Ambient floating particles — very slow, gentle */
+        @keyframes celJourneyAmbient {
           0%, 100% {
             opacity: 0;
             transform: translateY(0) translateX(0);
           }
-          25% {
-            opacity: 0.4;
+          20% {
+            opacity: 0.15;
           }
           50% {
-            opacity: 0.2;
-            transform: translateY(-15px) translateX(5px);
+            opacity: 0.08;
+            transform: translateY(-8px) translateX(2px);
           }
-          75% {
-            opacity: 0.35;
+          80% {
+            opacity: 0.12;
           }
         }
 

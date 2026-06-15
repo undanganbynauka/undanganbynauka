@@ -24,72 +24,83 @@ export function CelestialSaveTheDate() {
       ref={sectionRef}
       className="celestial-section"
       style={{
-        background: "linear-gradient(180deg, #0F1530 0%, #1A2555 50%, #0F1530 100%)",
+        background: "#0F1530",
         padding: 0,
         position: "relative",
         overflow: "hidden",
       }}
     >
-      {/* Image — full width, cover */}
+      {/* Full viewport image */}
       <div
         style={{
           width: "100%",
-          aspectRatio: "9 / 16",
-          maxHeight: "85vh",
+          height: "100vh",
           position: "relative",
           overflow: "hidden",
         }}
       >
+        {/* Image — 100% width & height, cover */}
         <div
           style={{
             position: "absolute",
             inset: 0,
             backgroundImage: "url('/celestial/save-the-date.png')",
             backgroundSize: "cover",
-            backgroundPosition: "center top",
+            backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
             opacity: visible ? 1 : 0,
             transition: `opacity 1.5s ${ease}`,
           }}
         />
 
-        {/* Bottom gradient fade into dark */}
+        {/* Dark overlay — dim the image slightly */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: "rgba(11, 16, 38, 0.35)",
+            opacity: visible ? 1 : 0,
+            transition: `opacity 1.5s ${ease} 0.2s`,
+          }}
+        />
+
+        {/* Bottom gradient fade into next section */}
         <div
           style={{
             position: "absolute",
             bottom: 0,
             left: 0,
             right: 0,
-            height: "40%",
-            background: "linear-gradient(to top, #0F1530 0%, rgba(15,21,48,0.6) 50%, transparent 100%)",
+            height: "35%",
+            background: "linear-gradient(to top, #0F1530 0%, rgba(15,21,48,0.5) 50%, transparent 100%)",
             pointerEvents: "none",
           }}
         />
 
-        {/* Text overlay on top of image */}
+        {/* Text — bottom right corner */}
         <div
           style={{
             position: "absolute",
-            inset: 0,
+            bottom: "3rem",
+            right: "1.5rem",
+            textAlign: "right",
             display: "flex",
             flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "2rem 1.5rem",
+            alignItems: "flex-end",
           }}
         >
           {/* The Wedding of */}
           <p
             style={{
               fontFamily: "var(--font-inter)",
-              fontSize: "0.5625rem",
+              fontSize: "0.5rem",
               fontWeight: 400,
               letterSpacing: "0.25em",
               textTransform: "uppercase",
               color: "var(--cel-accent)",
-              marginBottom: "1.5rem",
+              marginBottom: "0.875rem",
               opacity: visible ? 1 : 0,
-              transform: visible ? "translateY(0)" : "translateY(12px)",
+              transform: visible ? "translateY(0)" : "translateY(10px)",
               transition: `opacity 1s ${ease} 0.3s, transform 1s ${ease} 0.3s`,
             }}
           >
@@ -100,16 +111,16 @@ export function CelestialSaveTheDate() {
           <h2
             style={{
               fontFamily: "var(--font-cormorant)",
-              fontSize: "2.75rem",
+              fontSize: "2.5rem",
               fontWeight: 300,
               color: "var(--cel-text)",
               letterSpacing: "0.03em",
               lineHeight: 1.1,
-              textAlign: "center",
-              marginBottom: "1.5rem",
-              textShadow: "0 0 30px rgba(11,16,38,0.6), 0 0 60px rgba(11,16,38,0.3)",
+              textAlign: "right",
+              marginBottom: "0.875rem",
+              textShadow: "0 2px 20px rgba(0,0,0,0.5), 0 0 40px rgba(11,16,38,0.4)",
               opacity: visible ? 1 : 0,
-              transform: visible ? "translateY(0)" : "translateY(15px)",
+              transform: visible ? "translateY(0)" : "translateY(12px)",
               transition: `opacity 1s ${ease} 0.5s, transform 1s ${ease} 0.5s`,
             }}
           >
@@ -120,12 +131,12 @@ export function CelestialSaveTheDate() {
           <p
             style={{
               fontFamily: "var(--font-inter)",
-              fontSize: "0.625rem",
+              fontSize: "0.5625rem",
               fontWeight: 400,
               letterSpacing: "0.18em",
               color: "var(--cel-text-dim)",
               opacity: visible ? 1 : 0,
-              transform: visible ? "translateY(0)" : "translateY(12px)",
+              transform: visible ? "translateY(0)" : "translateY(10px)",
               transition: `opacity 1s ${ease} 0.7s, transform 1s ${ease} 0.7s`,
             }}
           >

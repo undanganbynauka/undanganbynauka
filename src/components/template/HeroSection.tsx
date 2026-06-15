@@ -189,7 +189,7 @@ export function HeroSection({ onOpen }: { onOpen: () => void }) {
             transition: `opacity 1s ${ease} 0s, transform 1s ${ease} 0s`,
           }}
         >
-          Ahad • 05 Juli 2026
+          Sabtu • 05 Desember 2026
         </p>
 
         {/* Kepada Yth. */}

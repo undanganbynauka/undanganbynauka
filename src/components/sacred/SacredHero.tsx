@@ -27,7 +27,7 @@ export function SacredHero({ onOpen, guestName }: SacredHeroProps) {
         </div>
 
         <div className="sacred-hero-date">
-          Ahad &bull; 05 Juli 2026
+          Sabtu &bull; 05 Desember 2026
         </div>
 
         <div className="sacred-hero-recipient">

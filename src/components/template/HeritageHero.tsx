@@ -15,7 +15,7 @@ interface HeritageHeroProps {
 export function HeritageHero({
   bride,
   groom,
-  date = "Ahad • 05 Juli 2026",
+  date = "Sabtu • 05 Desember 2026",
   guestName = "Nama Tamu",
   onOpen,
 }: HeritageHeroProps) {

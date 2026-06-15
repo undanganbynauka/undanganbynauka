@@ -8,7 +8,7 @@ export function CountdownSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const target = new Date("2026-07-05T08:00:00+07:00").getTime();
+    const target = new Date("2026-12-05T08:00:00+07:00").getTime();
     const tick = () => {
       const now = Date.now();
       const diff = Math.max(0, target - now);

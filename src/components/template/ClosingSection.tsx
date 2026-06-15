@@ -139,7 +139,7 @@ export function ClosingSection() {
           transform: showDate ? "translateY(0)" : "translateY(8px)",
           transition: `opacity 1s ${ease}, transform 1s ${ease}`,
         }}>
-          05 Juli 2026
+          05 Desember 2026
         </p>
 
         {/* Logo */}

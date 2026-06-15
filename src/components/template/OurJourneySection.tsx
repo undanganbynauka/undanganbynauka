@@ -6,7 +6,7 @@ const JOURNEY_PHASES = [
   { phase: "Ta'aruf", date: "Maret 2026", description: "Pertemuan pertama yang terasa seperti kenangan lama. Dua jiwa yang tak saling kenal, namun dunia seolah sudah mengatur jalan mereka untuk berpapasan." },
   { phase: "Nadzor", date: "Maret 2026", description: "Langkah kedua yang penuh kehati-hatian dan keindahan. Masing-masing melihat dengan mata hati, memastikan bahwa perasaan ini bukan sekadar ilusi." },
   { phase: "Khitbah", date: "Juni 2026", description: "Sebuah janji yang diucapkan dengan penuh keyakinan. Di hadapan keluarga, dua nama resmi disatukan dalam satu ikatan yang suci." },
-  { phase: "Menikah", date: "Juli 2026", description: "Puncak dari segala doa dan harapan. Hari di mana dua jiwa akhirnya menjadi satu, di bawah rahmat dan berkat-Nya." },
+  { phase: "Menikah", date: "Desember 2026", description: "Puncak dari segala doa dan harapan. Hari di mana dua jiwa akhirnya menjadi satu, di bawah rahmat dan berkat-Nya." },
 ];
 
 export function OurJourneySection() {

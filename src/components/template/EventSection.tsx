@@ -29,8 +29,8 @@ export function EventSection() {
   const mapsUrl = "https://maps.google.com/?q=Gedung+Auditorium+Koni+Jakarta+Pusat";
 
   const events = [
-    { title: "Akad Nikah", date: "Ahad, 05 Juli 2026", time: "08:00 — 10:00 WIB", venue: "Gedung Auditorium Koni", address: "Jakarta Pusat" },
-    { title: "Resepsi", date: "Ahad, 05 Juli 2026", time: "11:00 — 14:00 WIB", venue: "Gedung Auditorium Koni", address: "Jakarta Pusat" },
+    { title: "Akad Nikah", date: "Sabtu, 05 Desember 2026", time: "08:00 — 10:00 WIB", venue: "Gedung Auditorium Koni", address: "Jakarta Pusat" },
+    { title: "Resepsi", date: "Sabtu, 05 Desember 2026", time: "11:00 — 14:00 WIB", venue: "Gedung Auditorium Koni", address: "Jakarta Pusat" },
   ];
 
   return (

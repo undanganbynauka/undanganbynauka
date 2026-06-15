@@ -117,7 +117,7 @@ export function CoverSection({ onOpen }: { onOpen: () => void }) {
             transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}`,
           }}
         >
-          Ahad &bull; 05 Juli 2026
+          Sabtu &bull; 05 Desember 2026
         </p>
 
         {/* CTA Button */}

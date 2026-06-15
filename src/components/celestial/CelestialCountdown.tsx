@@ -12,7 +12,7 @@ export function CelestialCountdown() {
 
   // Countdown timer
   useEffect(() => {
-    const target = new Date("2026-07-05T08:00:00+07:00").getTime();
+    const target = new Date("2026-12-05T08:00:00+07:00").getTime();
     const tick = () => {
       const diff = Math.max(0, target - Date.now());
       setTimeLeft({
@@ -206,8 +206,8 @@ export function CelestialCountdown() {
       }}>
         <button
           onClick={() => {
-            const start = new Date("2026-07-05T08:00:00+07:00");
-            const end = new Date("2026-07-05T14:00:00+07:00");
+            const start = new Date("2026-12-05T08:00:00+07:00");
+            const end = new Date("2026-12-05T14:00:00+07:00");
             const gcal = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=Wedding+Ali+%26+Lyla&dates=${start.toISOString().replace(/[-:]/g,"").replace(/\.\d{3}/,"")}/${end.toISOString().replace(/[-:]/g,"").replace(/\.\d{3}/,"")}&details=The+Wedding+of+Ali+%26+Lyla&location=Gedung+Auditorium+Koni,+Jakarta+Pusat`;
             window.open(gcal, "_blank");
           }}

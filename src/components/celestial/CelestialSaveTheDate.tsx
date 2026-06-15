@@ -198,7 +198,7 @@ export function CelestialSaveTheDate() {
               transition: `opacity 0.8s ${easeInOut}, transform 0.8s ${easeInOut}`,
             }}
           >
-            05 Juli 2026
+            5 Desember 2026
           </p>
         </div>
       </div>

@@ -36,14 +36,14 @@ export function CelestialEvent() {
   const events = [
     {
       title: "Akad Nikah",
-      date: "Ahad, 5 Juli 2026",
+      date: "Sabtu, 5 Desember 2026",
       time: "08:00 - 10:00 WIB",
       venue: "Gedung Auditorium Koni",
       address: "Jakarta Pusat",
     },
     {
       title: "Resepsi",
-      date: "Ahad, 5 Juli 2026",
+      date: "Sabtu, 5 Desember 2026",
       time: "11:00 - 14:00 WIB",
       venue: "Gedung Auditorium Koni",
       address: "Jakarta Pusat",

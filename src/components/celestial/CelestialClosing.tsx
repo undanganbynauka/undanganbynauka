@@ -400,7 +400,7 @@ export function CelestialClosing() {
             transition: `opacity 1s ${easeInOut}`,
           }}
         >
-          05 Juli 2026
+          5 Desember 2026
         </p>
 
         {/* ── 11. Nauka Logo (watermark) ── */}

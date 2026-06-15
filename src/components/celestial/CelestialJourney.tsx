@@ -48,18 +48,21 @@ export function CelestialJourney() {
 
     const timers: ReturnType<typeof setTimeout>[] = [];
 
-    // Step 1: Subtitle fade in (0.6s)
-    timers.push(setTimeout(() => setStep(1), 100));
+    // Step 0: Shooting star starts (at visibility, no timer needed)
+    // Step 1: Light spread (1.6s)
+    timers.push(setTimeout(() => setStep(1), 1600));
 
-    // Step 2: Title slide up + fade in (1s)
-    timers.push(setTimeout(() => setStep(2), 700));
+    // Step 2: Subtitle fade in (2.4s)
+    timers.push(setTimeout(() => setStep(2), 2400));
 
-    // Step 3: Pause — let title breathe (1s)
-    // Step 4: Timeline line grows from top to bottom (2s)
-    timers.push(setTimeout(() => setStep(3), 1800));
+    // Step 3: Title slide up + fade in (3s)
+    timers.push(setTimeout(() => setStep(3), 3000));
+
+    // Step 4: Timeline line grows from top to bottom
+    timers.push(setTimeout(() => setStep(4), 4100));
 
     // Animate timeline line growing
-    const lineStart = 2800;
+    const lineStart = 4100;
     const lineDuration = 2000;
     const lineSteps = 40;
     for (let i = 0; i <= lineSteps; i++) {
@@ -70,7 +73,7 @@ export function CelestialJourney() {
       );
     }
 
-    // Step 5+: Phase reveals — each 1.3s apart
+    // Phase reveals — each 1.3s apart
     const phaseStart = lineStart + lineDuration + 400;
     JOURNEY_PHASES.forEach((_, i) => {
       // Dot glow appears
@@ -99,6 +102,27 @@ export function CelestialJourney() {
         overflow: "hidden",
       }}
     >
+      {/* Shooting Star — signature */}
+      {step >= 0 && step < 2 && (
+        <div style={{ position: "absolute", top: "10%", left: "8%", pointerEvents: "none", zIndex: 5 }}>
+          <div style={{
+            width: "3px", height: "3px", borderRadius: "50%", background: "#fff",
+            animation: "celSectionShoot 1.5s ease-out forwards",
+          }} />
+        </div>
+      )}
+
+      {/* Light spread */}
+      {step >= 1 && (
+        <div style={{
+          position: "absolute", top: "16%", right: "12%",
+          width: "60px", height: "60px", borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(201,169,110,0.1) 0%, transparent 70%)",
+          pointerEvents: "none",
+          animation: "celSectionLightSpread 1.5s ease-out forwards",
+        }} />
+      )}
+
       {/* ── Background particles ── */}
       <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
         {Array.from({ length: 12 }).map((_, i) => (
@@ -129,7 +153,7 @@ export function CelestialJourney() {
           textTransform: "uppercase",
           color: "var(--cel-accent)",
           marginBottom: "0.75rem",
-          opacity: step >= 1 ? 1 : 0,
+          opacity: step >= 2 ? 1 : 0,
           transition: `opacity 0.6s ${easeInOut}`,
         }}
       >
@@ -145,8 +169,8 @@ export function CelestialJourney() {
           color: "var(--cel-text)",
           letterSpacing: "0.06em",
           marginBottom: "3.5rem",
-          opacity: step >= 2 ? 1 : 0,
-          transform: step >= 2 ? "translateY(0)" : "translateY(20px)",
+          opacity: step >= 3 ? 1 : 0,
+          transform: step >= 3 ? "translateY(0)" : "translateY(20px)",
           transition: `opacity 1s ${easeInOut}, transform 1s ${easeInOut}`,
         }}
       >
@@ -173,7 +197,7 @@ export function CelestialJourney() {
               "linear-gradient(to bottom, rgba(201,169,110,0.25), rgba(201,169,110,0.08))",
             transformOrigin: "top center",
             scaleY: timelineProgress,
-            opacity: step >= 3 ? 1 : 0,
+            opacity: step >= 4 ? 1 : 0,
             transition: "opacity 0.5s ease",
           }}
         />

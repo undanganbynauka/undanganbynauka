@@ -50,10 +50,10 @@ export function CelestialCountdown() {
   useEffect(() => {
     if (!visible) return;
     const timers = [
-      setTimeout(() => setStep(1), 300),
-      setTimeout(() => setStep(2), 700),
-      setTimeout(() => setStep(3), 1200),
-      setTimeout(() => setStep(4), 1700),
+      setTimeout(() => setStep(1), 1500),   // light spread
+      setTimeout(() => setStep(2), 2500),   // "Our Special Day" heading
+      setTimeout(() => setStep(3), 3500),   // countdown numbers
+      setTimeout(() => setStep(4), 4500),   // divider + quote + button
     ];
     return () => timers.forEach(clearTimeout);
   }, [visible]);
@@ -74,8 +74,48 @@ export function CelestialCountdown() {
       style={{
         background: "linear-gradient(180deg, #0F1530 0%, #1A2555 40%, #0F1530 100%)",
         padding: "4rem 1.5rem 5rem",
+        position: "relative",
+        overflow: "hidden",
       }}
     >
+      {/* Shooting Star — signature */}
+      {step >= 0 && step < 2 && (
+        <div style={{ position: "absolute", top: "10%", left: "8%", pointerEvents: "none", zIndex: 5 }}>
+          <div style={{
+            width: "3px", height: "3px", borderRadius: "50%", background: "#fff",
+            animation: "celSectionShoot 1.5s ease-out forwards",
+          }} />
+        </div>
+      )}
+
+      {/* Light spread */}
+      {step >= 1 && (
+        <div style={{
+          position: "absolute", top: "16%", right: "12%",
+          width: "60px", height: "60px", borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(201,169,110,0.1) 0%, transparent 70%)",
+          pointerEvents: "none",
+          animation: "celSectionLightSpread 1.5s ease-out forwards",
+        }} />
+      )}
+
+      {/* Floating background particles */}
+      <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={`p-${i}`} style={{
+            position: "absolute",
+            width: `${1 + Math.random() * 1.5}px`,
+            height: `${1 + Math.random() * 1.5}px`,
+            borderRadius: "50%",
+            background: i % 3 === 0 ? "rgba(201,169,110,0.5)" : "rgba(255,255,255,0.4)",
+            left: `${5 + Math.random() * 90}%`,
+            top: `${5 + Math.random() * 90}%`,
+            opacity: 0,
+            animation: `celSectionParticle ${5 + Math.random() * 7}s ease-in-out ${Math.random() * 4}s infinite`,
+          }} />
+        ))}
+      </div>
+
       {/* Section title */}
       <p
         style={{
@@ -86,8 +126,8 @@ export function CelestialCountdown() {
           textTransform: "uppercase",
           color: "var(--cel-accent)",
           marginBottom: "2rem",
-          opacity: step >= 1 ? 1 : 0,
-          transform: step >= 1 ? "translateY(0)" : "translateY(10px)",
+          opacity: step >= 2 ? 1 : 0,
+          transform: step >= 2 ? "translateY(0)" : "translateY(10px)",
           transition: `opacity 1s ${ease}, transform 1s ${ease}`,
         }}
       >
@@ -98,8 +138,8 @@ export function CelestialCountdown() {
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "center",
         gap: "0.25rem", maxWidth: "18rem", width: "100%",
-        opacity: step >= 2 ? 1 : 0,
-        transform: step >= 2 ? "translateY(0)" : "translateY(15px)",
+        opacity: step >= 3 ? 1 : 0,
+        transform: step >= 3 ? "translateY(0)" : "translateY(15px)",
         transition: `opacity 1s ${ease}, transform 1s ${ease}`,
       }}>
         {units.map((u, i) => (
@@ -138,7 +178,7 @@ export function CelestialCountdown() {
       <div key={shimmerKey} className="cel-countdown-shimmer" />
 
       {/* Divider */}
-      <div className="celestial-divider" style={{ justifyContent: "center", margin: "2.5rem 0", opacity: step >= 3 ? 1 : 0, transition: `opacity 1s ${ease}` }}>
+      <div className="celestial-divider" style={{ justifyContent: "center", margin: "2.5rem 0", opacity: step >= 4 ? 1 : 0, transition: `opacity 1s ${ease}` }}>
         <div className="celestial-divider-line" />
         <span className="celestial-divider-star">✦</span>
         <div className="celestial-divider-line" />

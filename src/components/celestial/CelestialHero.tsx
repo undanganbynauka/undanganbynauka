@@ -125,17 +125,49 @@ function CoverShootingStar() {
   );
 }
 
+/* ── Easing constant ── */
+const EASE = "cubic-bezier(0.42, 0, 0.58, 1)";
+
 /* ── Main Hero ── */
 
 export function CelestialHero({ onOpen }: { onOpen?: () => void }) {
   const [guestName, setGuestName] = useState("");
   const [mounted, setMounted] = useState(false);
+  const [step, setStep] = useState(0);
 
   useEffect(() => {
     setMounted(true);
     const params = new URLSearchParams(window.location.search);
     const name = params.get("to");
     if (name) setGuestName(decodeURIComponent(name));
+
+    // Step-based animation chain
+    const timers: ReturnType<typeof setTimeout>[] = [];
+
+    // step 1: Shooting star phase (CoverShootingStar handles visuals independently)
+    timers.push(setTimeout(() => setStep(1), 400));
+
+    // step 2: "The Wedding of" fade in — 0.8s after mounted
+    timers.push(setTimeout(() => setStep(2), 800));
+
+    // step 3: "Ali" fade in from below — 0.8s after step 2
+    timers.push(setTimeout(() => setStep(3), 1600));
+
+    // step 4: "&" with gold glow fade in — 0.6s after step 3
+    timers.push(setTimeout(() => setStep(4), 2200));
+
+    // step 5: "Lyla" fade in from below — 0.6s after step 4
+    timers.push(setTimeout(() => setStep(5), 2800));
+
+    // step 6: Date fade in — 0.6s after step 5
+    timers.push(setTimeout(() => setStep(6), 3400));
+
+    // step 7: "Buka Undangan" button with breathing glow — 0.8s after step 6
+    timers.push(setTimeout(() => setStep(7), 4200));
+
+    return () => {
+      timers.forEach((t) => clearTimeout(t));
+    };
   }, []);
 
   return (
@@ -201,16 +233,9 @@ export function CelestialHero({ onOpen }: { onOpen?: () => void }) {
         </p>
       )}
 
-      {/* Names */}
-      <div
-        style={{
-          position: "relative",
-          textAlign: "center",
-          opacity: mounted ? 1 : 0,
-          transform: mounted ? "translateY(0)" : "translateY(20px)",
-          transition: "opacity 2s ease 0.5s, transform 2s ease 0.5s",
-        }}
-      >
+      {/* Names section — each element animated independently by step */}
+      <div style={{ position: "relative", textAlign: "center" }}>
+        {/* "The Wedding of" — step 2 */}
         <p
           style={{
             fontFamily: "var(--font-inter)",
@@ -220,10 +245,15 @@ export function CelestialHero({ onOpen }: { onOpen?: () => void }) {
             textTransform: "uppercase",
             color: "var(--cel-text-dim)",
             marginBottom: "1rem",
+            opacity: step >= 2 ? 1 : 0,
+            transform: step >= 2 ? "translateY(0)" : "translateY(10px)",
+            transition: `opacity 1s ${EASE}, transform 1s ${EASE}`,
           }}
         >
           The Wedding of
         </p>
+
+        {/* "Ali" — step 3: fade in from below */}
         <h1
           style={{
             fontFamily: "var(--font-cormorant)",
@@ -234,10 +264,42 @@ export function CelestialHero({ onOpen }: { onOpen?: () => void }) {
             lineHeight: 1.2,
             marginBottom: "0.5rem",
             textShadow: "0 2px 20px rgba(0,0,0,0.4)",
+            opacity: step >= 3 ? 1 : 0,
+            transform: step >= 3 ? "translateY(0)" : "translateY(20px)",
+            transition: `opacity 1s ${EASE}, transform 1s ${EASE}`,
           }}
         >
-          Ali <span style={{ color: "var(--cel-accent)", fontWeight: 400 }}>&amp;</span> Lyla
+          Ali{" "}
+          {/* "&" — step 4: fade in with gold glow */}
+          <span
+            style={{
+              color: "var(--cel-accent)",
+              fontWeight: 400,
+              opacity: step >= 4 ? 1 : 0,
+              textShadow: step >= 4
+                ? "0 0 18px rgba(201,169,110,0.6), 0 0 40px rgba(201,169,110,0.25)"
+                : "none",
+              transition: `opacity 0.8s ${EASE}, text-shadow 1.5s ${EASE}`,
+              display: "inline-block",
+              transform: step >= 4 ? "scale(1)" : "scale(0.8)",
+            }}
+          >
+            &amp;
+          </span>{" "}
+          {/* "Lyla" — step 5: fade in from below */}
+          <span
+            style={{
+              opacity: step >= 5 ? 1 : 0,
+              transform: step >= 5 ? "translateY(0)" : "translateY(20px)",
+              display: "inline-block",
+              transition: `opacity 1s ${EASE}, transform 1s ${EASE}`,
+            }}
+          >
+            Lyla
+          </span>
         </h1>
+
+        {/* Date — step 6: fade in */}
         <p
           style={{
             fontFamily: "var(--font-inter)",
@@ -245,13 +307,16 @@ export function CelestialHero({ onOpen }: { onOpen?: () => void }) {
             fontWeight: 400,
             letterSpacing: "0.15em",
             color: "var(--cel-text-muted)",
+            opacity: step >= 6 ? 1 : 0,
+            transform: step >= 6 ? "translateY(0)" : "translateY(10px)",
+            transition: `opacity 1s ${EASE}, transform 1s ${EASE}`,
           }}
         >
           05 . 07 . 2026
         </p>
       </div>
 
-      {/* Open button — small, rectangular */}
+      {/* Open button — step 7: fade in with breathing glow */}
       {onOpen && (
         <button
           onClick={onOpen}
@@ -269,9 +334,10 @@ export function CelestialHero({ onOpen }: { onOpen?: () => void }) {
             letterSpacing: "0.15em",
             textTransform: "uppercase",
             cursor: "pointer",
-            transition: "all 0.4s ease",
-            opacity: mounted ? 1 : 0,
-            animation: "cel-glow-pulse 4s ease-in-out infinite",
+            opacity: step >= 7 ? 1 : 0,
+            transform: step >= 7 ? "translateY(0)" : "translateY(10px)",
+            transition: `opacity 1s ${EASE}, transform 1s ${EASE}, background 0.4s ease, box-shadow 0.4s ease`,
+            animation: step >= 7 ? "cel-glow-pulse 4s ease-in-out infinite" : "none",
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = "rgba(201, 169, 110, 0.1)";

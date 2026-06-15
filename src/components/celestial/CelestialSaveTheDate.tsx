@@ -30,14 +30,14 @@ export function CelestialSaveTheDate() {
     // Step 3: "Ali" appears (1.8s)
     timers.push(setTimeout(() => setStep(3), 1800));
 
-    // Step 4: "&" gold glow (2.6s)
-    timers.push(setTimeout(() => setStep(4), 2600));
+    // Step 4: "&" gold glow (3.2s)
+    timers.push(setTimeout(() => setStep(4), 3200));
 
-    // Step 5: "Lyla" appears (3.3s)
-    timers.push(setTimeout(() => setStep(5), 3300));
+    // Step 5: "Lyla" appears (4.2s)
+    timers.push(setTimeout(() => setStep(5), 4200));
 
-    // Step 6: Date appears (4.2s)
-    timers.push(setTimeout(() => setStep(6), 4200));
+    // Step 6: Date appears (5.4s)
+    timers.push(setTimeout(() => setStep(6), 5400));
 
     return () => timers.forEach(clearTimeout);
   }, [visible]);

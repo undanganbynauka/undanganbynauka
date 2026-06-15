@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 
 export function CelestialHero({ onOpen }: { onOpen?: () => void }) {
   const [guestName, setGuestName] = useState("");
@@ -23,66 +23,47 @@ export function CelestialHero({ onOpen }: { onOpen?: () => void }) {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        background: "linear-gradient(180deg, #0B1026 0%, #162044 50%, #1A2555 100%)",
         overflow: "hidden",
       }}
     >
-      {/* Moon */}
+      {/* Cover image — full bleed, cover fit */}
       <div
         style={{
           position: "absolute",
-          top: "8%",
-          right: "15%",
-          width: "80px",
-          height: "80px",
-          borderRadius: "50%",
-          background: "radial-gradient(circle at 35% 35%, #F5E6C8 0%, #E8D5A8 40%, rgba(201, 169, 110, 0.2) 70%, transparent 100%)",
-          boxShadow: "0 0 60px rgba(201, 169, 110, 0.15), 0 0 120px rgba(201, 169, 110, 0.08)",
+          inset: 0,
+          backgroundImage: "url('/celestial/cover.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center center",
+          backgroundRepeat: "no-repeat",
           opacity: mounted ? 1 : 0,
           transition: "opacity 2s ease",
         }}
       />
 
-      {/* Constellation lines - decorative */}
-      <svg
+      {/* Dark overlay — so text is readable */}
+      <div
         style={{
           position: "absolute",
-          top: "10%",
-          left: "5%",
-          width: "120px",
-          height: "120px",
-          opacity: mounted ? 0.15 : 0,
-          transition: "opacity 3s ease 0.5s",
+          inset: 0,
+          background: "linear-gradient(180deg, rgba(11,16,38,0.45) 0%, rgba(11,16,38,0.30) 40%, rgba(11,16,38,0.50) 70%, rgba(11,16,38,0.75) 100%)",
+          opacity: mounted ? 1 : 0,
+          transition: "opacity 2s ease 0.3s",
         }}
-        viewBox="0 0 120 120"
-        fill="none"
-        stroke="rgba(201, 169, 110, 0.5)"
-        strokeWidth="0.5"
-      >
-        <circle cx="20" cy="20" r="1.5" fill="rgba(201, 169, 110, 0.5)" />
-        <circle cx="60" cy="10" r="1" fill="rgba(201, 169, 110, 0.5)" />
-        <circle cx="100" cy="30" r="1.5" fill="rgba(201, 169, 110, 0.5)" />
-        <circle cx="50" cy="50" r="1" fill="rgba(201, 169, 110, 0.5)" />
-        <circle cx="80" cy="70" r="1.5" fill="rgba(201, 169, 110, 0.5)" />
-        <circle cx="30" cy="80" r="1" fill="rgba(201, 169, 110, 0.5)" />
-        <line x1="20" y1="20" x2="60" y2="10" />
-        <line x1="60" y1="10" x2="100" y2="30" />
-        <line x1="60" y1="10" x2="50" y2="50" />
-        <line x1="50" y1="50" x2="80" y2="70" />
-        <line x1="50" y1="50" x2="30" y2="80" />
-      </svg>
+      />
 
+      {/* Content */}
       {/* Guest name */}
       {guestName && (
         <p
           style={{
+            position: "relative",
             fontFamily: "var(--font-inter)",
             fontSize: "0.6875rem",
             fontWeight: 400,
             letterSpacing: "0.15em",
             color: "var(--cel-accent)",
             marginBottom: "2rem",
-            opacity: mounted ? 0.8 : 0,
+            opacity: mounted ? 0.9 : 0,
             transition: "opacity 1.5s ease 0.3s",
           }}
         >
@@ -93,6 +74,7 @@ export function CelestialHero({ onOpen }: { onOpen?: () => void }) {
       {/* Names */}
       <div
         style={{
+          position: "relative",
           textAlign: "center",
           opacity: mounted ? 1 : 0,
           transform: mounted ? "translateY(0)" : "translateY(20px)",
@@ -121,6 +103,7 @@ export function CelestialHero({ onOpen }: { onOpen?: () => void }) {
             letterSpacing: "0.04em",
             lineHeight: 1.2,
             marginBottom: "0.5rem",
+            textShadow: "0 2px 20px rgba(0,0,0,0.4)",
           }}
         >
           Ali <span style={{ color: "var(--cel-accent)", fontWeight: 400 }}>&amp;</span> Lyla
@@ -143,6 +126,7 @@ export function CelestialHero({ onOpen }: { onOpen?: () => void }) {
         <button
           onClick={onOpen}
           style={{
+            position: "relative",
             marginTop: "3rem",
             padding: "0.75rem 2.5rem",
             border: "1px solid var(--cel-accent)",

@@ -214,9 +214,9 @@ export function CelestialClosing() {
         <div
           style={{
             position: "relative",
-            width: "70px",
-            height: "70px",
-            margin: "0 auto 2rem",
+            width: "110px",
+            height: "110px",
+            margin: "0 auto 2.5rem",
             opacity: step >= 3 ? 1 : 0,
             transform: step >= 3 ? "scale(1) translateY(0)" : "scale(0.95) translateY(5px)",
             transition: `opacity 1.5s ${easeInOut}, transform 1.5s ${easeInOut}`,
@@ -406,7 +406,7 @@ export function CelestialClosing() {
         {/* ── 11. Nauka Logo ── */}
         <div
           style={{
-            opacity: step >= 11 ? 0.45 : 0,
+            opacity: step >= 11 ? 0.8 : 0,
             transform: step >= 11 ? "translateY(0)" : "translateY(10px)",
             transition: `opacity 1.2s ${easeInOut}, transform 1.2s ${easeInOut}`,
           }}
@@ -415,10 +415,10 @@ export function CelestialClosing() {
             src="/nauka-logo-new.png"
             alt="Undangan by Nauka"
             style={{
-              width: "4.5rem",
+              width: "5.5rem",
               height: "auto",
-              filter: "brightness(0.8) grayscale(0.15)",
-              opacity: 0.6,
+              filter: "brightness(0.9) grayscale(0.05)",
+              opacity: 0.8,
             }}
           />
         </div>

@@ -403,11 +403,12 @@ export function CelestialClosing() {
           05 Juli 2026
         </p>
 
-        {/* ── 11. Nauka Logo ── */}
+        {/* ── 11. Nauka Logo (watermark) ── */}
         <div
           style={{
-            opacity: step >= 11 ? 1 : 0,
-            transform: step >= 11 ? "translateY(0)" : "translateY(10px)",
+            marginTop: "3rem",
+            opacity: step >= 11 ? 0.2 : 0,
+            transform: step >= 11 ? "translateY(0)" : "translateY(8px)",
             transition: `opacity 1.2s ${easeInOut}, transform 1.2s ${easeInOut}`,
           }}
         >
@@ -415,10 +416,9 @@ export function CelestialClosing() {
             src="/nauka-logo-new.png"
             alt="Undangan by Nauka"
             style={{
-              width: "6rem",
+              width: "4rem",
               height: "auto",
               filter: "invert(1) brightness(0.85)",
-              opacity: 1,
             }}
           />
         </div>

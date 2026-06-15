@@ -40,6 +40,25 @@ export function CelestialBrideGroom() {
       className="celestial-section"
       style={{ background: "var(--cel-midnight)", padding: "3rem 1.5rem 5rem" }}
     >
+      {/* Opening invitation text */}
+      <p
+        style={{
+          fontFamily: "var(--font-inter)",
+          fontSize: "0.6875rem",
+          fontWeight: 400,
+          color: "var(--cel-text-dim)",
+          lineHeight: 2,
+          textAlign: "center",
+          maxWidth: "16rem",
+          marginBottom: "2.5rem",
+          opacity: step >= 1 ? 1 : 0,
+          transform: step >= 1 ? "translateY(0)" : "translateY(12px)",
+          transition: `opacity 1s ${ease}, transform 1s ${ease}`,
+        }}
+      >
+        Dengan penuh rasa bahagia, kami mengundang Bapak/Ibu untuk hadir serta memberikan doa restu pada hari bahagia kami
+      </p>
+
       {/* Groom */}
       <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
         <div

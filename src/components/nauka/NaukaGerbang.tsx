@@ -5,12 +5,31 @@ import Image from "next/image";
 
 export function NaukaGerbang() {
   const [loaded, setLoaded] = useState(false);
+  const [taglineLetters, setTaglineLetters] = useState<number>(0);
+
+  const tagline = "Menghadirkan keindahan dalam kesederhanaan";
 
   useEffect(() => {
-    // Trigger entrance animation after mount
     const t = setTimeout(() => setLoaded(true), 100);
     return () => clearTimeout(t);
   }, []);
+
+  // Staggered letter reveal for tagline
+  useEffect(() => {
+    if (!loaded) return;
+    const totalLetters = tagline.length;
+    let count = 0;
+    const interval = setInterval(() => {
+      count += 2;
+      if (count >= totalLetters) {
+        setTaglineLetters(totalLetters);
+        clearInterval(interval);
+      } else {
+        setTaglineLetters(count);
+      }
+    }, 25);
+    return () => clearInterval(interval);
+  }, [loaded]);
 
   return (
     <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#0a0a0a]">
@@ -35,12 +54,12 @@ export function NaukaGerbang() {
 
       {/* Main content */}
       <div className="relative z-10 flex flex-col items-center text-center px-6">
-        {/* Logo */}
+        {/* Logo with glow pulse */}
         <div
-          className="relative h-16 w-44 md:h-24 md:w-64 lg:h-28 lg:w-72"
+          className="nauka-glow-pulse relative h-16 w-44 md:h-24 md:w-64 lg:h-28 lg:w-72"
           style={{
             opacity: loaded ? 1 : 0,
-            transform: loaded ? "translateY(0)" : "translateY(16px)",
+            transform: loaded ? "translateY(0) scale(1)" : "translateY(16px) scale(0.95)",
             transition: "opacity 1.4s ease, transform 1.4s ease",
           }}
         >
@@ -55,44 +74,52 @@ export function NaukaGerbang() {
           />
         </div>
 
-        {/* Tagline */}
+        {/* Tagline — staggered letter reveal */}
         <p
           className="mt-6 text-base font-light leading-relaxed tracking-[0.08em] text-[#8a8578] md:text-lg lg:text-xl"
-          style={{
-            fontFamily: "var(--font-cormorant)",
-            opacity: loaded ? 1 : 0,
-            transform: loaded ? "translateY(0)" : "translateY(12px)",
-            transition: "opacity 1.4s ease 0.4s, transform 1.4s ease 0.4s",
-          }}
+          style={{ fontFamily: "var(--font-cormorant)", minHeight: "1.8em" }}
         >
-          Menghadirkan keindahan dalam kesederhanaan
+          {tagline.split("").map((char, i) => (
+            <span
+              key={i}
+              style={{
+                opacity: i < taglineLetters ? 1 : 0,
+                transform: i < taglineLetters ? "translateY(0)" : "translateY(6px)",
+                filter: i < taglineLetters ? "blur(0)" : "blur(4px)",
+                transition: "opacity 0.4s ease, transform 0.4s ease, filter 0.4s ease",
+                display: char === " " ? "inline" : "inline-block",
+              }}
+            >
+              {char === " " ? "\u00A0" : char}
+            </span>
+          ))}
         </p>
 
-        {/* Gold line separator */}
+        {/* Gold line separator — with shimmer */}
         <div
           className="mt-8 flex items-center gap-3"
           style={{
             opacity: loaded ? 1 : 0,
-            transition: "opacity 1.2s ease 0.8s",
+            transition: "opacity 1.2s ease 1.5s",
           }}
         >
-          <span className="h-px w-10 bg-[#c9a96e]/25 md:w-14" />
-          <span className="h-1 w-1 rounded-full bg-[#c9a96e]/40" />
-          <span className="h-px w-10 bg-[#c9a96e]/25 md:w-14" />
+          <span className="h-px w-10 nauka-line-shimmer md:w-14" />
+          <span className="nauka-breathe h-1.5 w-1.5 rounded-full bg-[#c9a96e]/50" />
+          <span className="h-px w-10 nauka-line-shimmer md:w-14" />
         </div>
 
-        {/* Scroll hint */}
+        {/* Scroll hint — bounce */}
         <div
-          className="mt-16 flex flex-col items-center gap-2"
+          className="nauka-scroll-bounce mt-16 flex flex-col items-center gap-2"
           style={{
             opacity: loaded ? 1 : 0,
-            transition: "opacity 1.2s ease 1.2s",
+            transition: "opacity 1.2s ease 2s",
           }}
         >
           <span className="text-[10px] tracking-[0.3em] uppercase text-[#8a8578]/60">
             Scroll
           </span>
-          <div className="h-8 w-px bg-gradient-to-b from-[#c9a96e]/30 to-transparent" />
+          <div className="h-8 w-px bg-gradient-to-b from-[#c9a96e]/40 to-transparent" />
         </div>
       </div>
     </section>

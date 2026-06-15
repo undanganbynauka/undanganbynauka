@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Cormorant_Garamond, Playfair_Display, Lora, Amiri, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import "./sacred.css";
+import "./nauka.css";
 
 const inter = Inter({
   variable: "--font-inter",

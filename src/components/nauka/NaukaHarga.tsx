@@ -78,12 +78,13 @@ export function NaukaHarga() {
       className="relative bg-[#0a0a0a] px-6 py-24 md:py-32"
     >
       <div className="mx-auto max-w-3xl">
-        {/* Section heading */}
+        {/* Section heading — shimmer */}
         <h2
-          className="mb-4 text-center text-2xl tracking-[0.15em] text-[#f5f0e8] md:text-3xl lg:text-4xl"
+          className={`nauka-shimmer mb-4 text-center text-2xl tracking-[0.15em] md:text-3xl lg:text-4xl ${
+            visible ? "opacity-100" : "opacity-0"
+          }`}
           style={{
             fontFamily: "var(--font-cormorant)",
-            opacity: visible ? 1 : 0,
             transform: visible ? "translateY(0)" : "translateY(12px)",
             transition: "opacity 0.8s ease, transform 0.8s ease",
           }}
@@ -97,9 +98,9 @@ export function NaukaHarga() {
             transition: "opacity 0.8s ease 0.2s",
           }}
         >
-          <span className="h-px w-8 bg-[#c9a96e]/25" />
-          <span className="h-1 w-1 rounded-full bg-[#c9a96e]/40" />
-          <span className="h-px w-8 bg-[#c9a96e]/25" />
+          <span className="h-px w-8 nauka-line-shimmer" />
+          <span className="nauka-breathe h-1 w-1 rounded-full bg-[#c9a96e]/50" />
+          <span className="h-px w-8 nauka-line-shimmer" />
         </div>
 
         {/* Price cards */}
@@ -112,14 +113,17 @@ export function NaukaHarga() {
           }}
         >
           {/* Basic */}
-          <div className="rounded-2xl border border-[#1a1a1a] bg-[#0c0c0c] p-8 text-center">
+          <div className="rounded-2xl border border-[#1a1a1a] bg-[#0c0c0c] p-8 text-center transition-all duration-500 hover:border-[#8a8578]/20">
             <span className="text-xs tracking-[0.2em] uppercase text-[#8a8578]">
               Basic
             </span>
             <div className="mt-3">
               <span
-                className="text-4xl font-light text-[#f5f0e8] md:text-5xl"
-                style={{ fontFamily: "var(--font-cormorant)" }}
+                className="inline-block text-4xl font-light text-[#f5f0e8] md:text-5xl"
+                style={{
+                  fontFamily: "var(--font-cormorant)",
+                  animation: visible ? "nauka-price-in 0.8s ease 0.5s both" : "none",
+                }}
               >
                 75rb
               </span>
@@ -127,8 +131,8 @@ export function NaukaHarga() {
           </div>
 
           {/* Premium */}
-          <div className="relative rounded-2xl border border-[#c9a96e]/20 bg-[#0c0c0c] p-8 text-center">
-            <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#c9a96e]/10 px-4 py-1 text-[10px] tracking-[0.2em] uppercase text-[#c9a96e] border border-[#c9a96e]/15">
+          <div className="relative rounded-2xl border border-[#c9a96e]/20 bg-[#0c0c0c] p-8 text-center transition-all duration-500 hover:border-[#c9a96e]/35 hover:shadow-[0_0_30px_rgba(201,169,110,0.06)]">
+            <span className="nauka-breathe absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#c9a96e]/10 px-4 py-1 text-[10px] tracking-[0.2em] uppercase text-[#c9a96e] border border-[#c9a96e]/15">
               Rekomendasi
             </span>
             <span className="text-xs tracking-[0.2em] uppercase text-[#8a8578]">
@@ -136,8 +140,11 @@ export function NaukaHarga() {
             </span>
             <div className="mt-3">
               <span
-                className="text-4xl font-light text-[#c9a96e] md:text-5xl"
-                style={{ fontFamily: "var(--font-cormorant)" }}
+                className="nauka-shimmer inline-block text-4xl font-light md:text-5xl"
+                style={{
+                  fontFamily: "var(--font-cormorant)",
+                  animation: visible ? "nauka-price-in 0.8s ease 0.7s both" : "none",
+                }}
               >
                 99rb
               </span>
@@ -164,7 +171,7 @@ export function NaukaHarga() {
           {features.map((feat, i) => (
             <div
               key={i}
-              className={`grid grid-cols-3 px-5 py-3 ${
+              className={`grid grid-cols-3 px-5 py-3 transition-colors duration-300 hover:bg-[#111] ${
                 i < features.length - 1 ? "border-b border-[#1a1a1a]" : ""
               } ${feat.highlight ? "bg-[#c9a96e]/[0.03]" : ""}`}
             >

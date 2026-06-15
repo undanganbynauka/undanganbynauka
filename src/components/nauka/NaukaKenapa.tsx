@@ -77,12 +77,13 @@ export function NaukaKenapa() {
       className="relative bg-[#0a0a0a] px-6 py-24 md:py-32"
     >
       <div className="mx-auto max-w-4xl">
-        {/* Section heading */}
+        {/* Section heading — shimmer */}
         <h2
-          className="mb-4 text-center text-2xl tracking-[0.15em] text-[#f5f0e8] md:text-3xl lg:text-4xl"
+          className={`nauka-shimmer mb-4 text-center text-2xl tracking-[0.15em] md:text-3xl lg:text-4xl ${
+            visible ? "opacity-100" : "opacity-0"
+          }`}
           style={{
             fontFamily: "var(--font-cormorant)",
-            opacity: visible ? 1 : 0,
             transform: visible ? "translateY(0)" : "translateY(12px)",
             transition: "opacity 0.8s ease, transform 0.8s ease",
           }}
@@ -96,9 +97,9 @@ export function NaukaKenapa() {
             transition: "opacity 0.8s ease 0.2s",
           }}
         >
-          <span className="h-px w-8 bg-[#c9a96e]/25" />
-          <span className="h-1 w-1 rounded-full bg-[#c9a96e]/40" />
-          <span className="h-px w-8 bg-[#c9a96e]/25" />
+          <span className="h-px w-8 nauka-line-shimmer" />
+          <span className="nauka-breathe h-1 w-1 rounded-full bg-[#c9a96e]/50" />
+          <span className="h-px w-8 nauka-line-shimmer" />
         </div>
 
         {/* Points grid */}
@@ -106,18 +107,18 @@ export function NaukaKenapa() {
           {points.map((point, i) => (
             <div
               key={i}
-              className="group rounded-xl border border-[#c9a96e]/10 bg-[#0f0f0f] p-6 transition-all duration-500 hover:border-[#c9a96e]/25 hover:bg-[#111111]"
+              className="group rounded-xl border border-[#c9a96e]/10 bg-[#0f0f0f] p-6 transition-all duration-500 hover:border-[#c9a96e]/25 hover:bg-[#111111] hover:shadow-[0_0_20px_rgba(201,169,110,0.05)]"
               style={{
                 opacity: visible ? 1 : 0,
                 transform: visible ? "translateY(0)" : "translateY(16px)",
                 transition: `opacity 0.7s ease ${0.15 + i * 0.1}s, transform 0.7s ease ${0.15 + i * 0.1}s`,
               }}
             >
-              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg border border-[#c9a96e]/15 bg-[#c9a96e]/5 text-[#c9a96e]">
+              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg border border-[#c9a96e]/15 bg-[#c9a96e]/5 text-[#c9a96e] transition-all duration-500 group-hover:scale-110 group-hover:border-[#c9a96e]/30 group-hover:bg-[#c9a96e]/10">
                 {point.icon}
               </div>
               <h3
-                className="mb-2 text-lg font-medium tracking-wide text-[#f5f0e8]"
+                className="mb-2 text-lg font-medium tracking-wide text-[#f5f0e8] transition-colors duration-500 group-hover:text-[#c9a96e]"
                 style={{ fontFamily: "var(--font-cormorant)" }}
               >
                 {point.title}

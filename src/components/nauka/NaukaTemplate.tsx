@@ -11,7 +11,6 @@ const templates = [
     desc: "Nuansa islami yang sopan dan menyejukkan. Dilengkapi nasyid pilihan dan doa-doa penuh keberkahan.",
     route: "/sacred",
     preview: "/sacred/arch.png",
-    accent: "#c9a96e",
   },
   {
     id: "universal",
@@ -20,7 +19,6 @@ const templates = [
     desc: "Cocok untuk semua kalangan. Desain yang elegan tanpa batasan afiliasi — indah untuk siapa saja.",
     route: "/celestial",
     preview: "/celestial/moon.png",
-    accent: "#7ba7cc",
   },
 ];
 
@@ -49,12 +47,13 @@ export function NaukaTemplate() {
       className="relative bg-[#070707] px-6 py-24 md:py-32"
     >
       <div className="mx-auto max-w-5xl">
-        {/* Section heading */}
+        {/* Section heading — shimmer */}
         <h2
-          className="mb-4 text-center text-2xl tracking-[0.15em] text-[#f5f0e8] md:text-3xl lg:text-4xl"
+          className={`nauka-shimmer mb-4 text-center text-2xl tracking-[0.15em] md:text-3xl lg:text-4xl ${
+            visible ? "opacity-100" : "opacity-0"
+          }`}
           style={{
             fontFamily: "var(--font-cormorant)",
-            opacity: visible ? 1 : 0,
             transform: visible ? "translateY(0)" : "translateY(12px)",
             transition: "opacity 0.8s ease, transform 0.8s ease",
           }}
@@ -68,9 +67,9 @@ export function NaukaTemplate() {
             transition: "opacity 0.8s ease 0.2s",
           }}
         >
-          <span className="h-px w-8 bg-[#c9a96e]/25" />
-          <span className="h-1 w-1 rounded-full bg-[#c9a96e]/40" />
-          <span className="h-px w-8 bg-[#c9a96e]/25" />
+          <span className="h-px w-8 nauka-line-shimmer" />
+          <span className="nauka-breathe h-1 w-1 rounded-full bg-[#c9a96e]/50" />
+          <span className="h-px w-8 nauka-line-shimmer" />
         </div>
 
         {/* Template cards */}
@@ -78,7 +77,7 @@ export function NaukaTemplate() {
           {templates.map((tpl, i) => (
             <div
               key={tpl.id}
-              className="group relative overflow-hidden rounded-2xl border border-[#1a1a1a] bg-[#0c0c0c] transition-all duration-500 hover:border-[#c9a96e]/20"
+              className="group relative overflow-hidden rounded-2xl border border-[#1a1a1a] bg-[#0c0c0c] transition-all duration-700 hover:border-[#c9a96e]/25 hover:shadow-[0_0_40px_rgba(201,169,110,0.06)]"
               style={{
                 opacity: visible ? 1 : 0,
                 transform: visible ? "translateY(0)" : "translateY(20px)",
@@ -92,7 +91,7 @@ export function NaukaTemplate() {
                   <img
                     src={tpl.preview}
                     alt={tpl.label}
-                    className="h-32 w-auto object-contain opacity-60 transition-all duration-700 group-hover:scale-105 group-hover:opacity-80 md:h-40"
+                    className="h-32 w-auto object-contain opacity-60 transition-all duration-700 group-hover:scale-110 group-hover:opacity-80 md:h-40"
                   />
                 </div>
                 {/* Gradient overlay at bottom */}
@@ -104,7 +103,7 @@ export function NaukaTemplate() {
                 {/* Label + Tagline */}
                 <div className="mb-3 flex items-center gap-3">
                   <h3
-                    className="text-2xl tracking-wider text-[#f5f0e8] md:text-3xl"
+                    className="nauka-shimmer text-2xl tracking-wider md:text-3xl"
                     style={{ fontFamily: "var(--font-cormorant)" }}
                   >
                     {tpl.label}
@@ -137,9 +136,15 @@ export function NaukaTemplate() {
                   ))}
                 </div>
 
-                {/* Price */}
-                <div className="mb-6">
-                  <span className="text-3xl font-light text-[#f5f0e8]" style={{ fontFamily: "var(--font-cormorant)" }}>
+                {/* Price — animated entrance */}
+                <div className="mb-6" key={`${tpl.id}-${activeTier[tpl.id]}`}>
+                  <span
+                    className="inline-block text-3xl font-light text-[#f5f0e8]"
+                    style={{
+                      fontFamily: "var(--font-cormorant)",
+                      animation: "nauka-price-in 0.5s ease forwards",
+                    }}
+                  >
                     {activeTier[tpl.id] === "basic" ? "75rb" : "99rb"}
                   </span>
                 </div>
@@ -147,7 +152,7 @@ export function NaukaTemplate() {
                 {/* CTA */}
                 <Link
                   href={tpl.route}
-                  className="inline-flex items-center gap-2 rounded-full border border-[#c9a96e]/20 bg-[#c9a96e]/5 px-6 py-2.5 text-sm tracking-widest text-[#c9a96e] transition-all duration-500 hover:border-[#c9a96e]/40 hover:bg-[#c9a96e]/10 hover:tracking-[0.2em]"
+                  className="nauka-cta-glow inline-flex items-center gap-2 rounded-full border border-[#c9a96e]/20 bg-[#c9a96e]/5 px-6 py-2.5 text-sm tracking-widest text-[#c9a96e] transition-all duration-500 hover:border-[#c9a96e]/40 hover:bg-[#c9a96e]/10 hover:tracking-[0.2em]"
                   style={{ fontFamily: "var(--font-cormorant)" }}
                 >
                   Lihat Contoh

@@ -51,7 +51,7 @@ export function BrideGroomSection() {
           transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}`,
         }}>
           <Image src="/sacred/groom-avatar.png" alt="Ali Rahman" width={140} height={140}
-            style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top center" }} />
+            style={{ width: "100%", height: "100%", objectFit: "contain" }} />
         </div>
         <p style={{
           fontFamily: "var(--font-jakarta)", fontSize: "0.5625rem", fontWeight: 500,
@@ -129,7 +129,7 @@ export function BrideGroomSection() {
           transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}`,
         }}>
           <Image src="/sacred/bride-avatar.png" alt="Lyla Azzahra" width={140} height={140}
-            style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top center" }} />
+            style={{ width: "100%", height: "100%", objectFit: "contain" }} />
         </div>
         <p style={{
           fontFamily: "var(--font-jakarta)", fontSize: "0.5625rem", fontWeight: 500,

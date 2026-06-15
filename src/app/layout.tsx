@@ -45,20 +45,23 @@ const amiri = Amiri({
 });
 
 export const metadata: Metadata = {
-  title: "Undangan by Nauka — Ali & Lyla",
+  title: "Nauka — Undangan Digital yang Elegan",
   description:
-    "Undangan pernikahan dengan penuh kehangatan. Tenang, suci, dan bermakna.",
+    "Undangan pernikahan digital syar'i & universal. Tanpa foto tetap elegan, animasi sinematik, nasyid pilihan. Satu link, semua tamu.",
   keywords: [
     "undangan digital",
     "undangan pernikahan",
+    "undangan online",
     "wedding invitation",
     "nauka",
+    "undangan syar'i",
+    "undangan elegan",
   ],
   authors: [{ name: "Nauka" }],
   openGraph: {
-    title: "Undangan by Nauka — Ali & Lyla",
+    title: "Nauka — Undangan Digital yang Elegan",
     description:
-      "Undangan pernikahan dengan penuh kehangatan. Tenang, suci, dan bermakna.",
+      "Undangan pernikahan digital syar'i & universal. Tanpa foto tetap elegan, animasi sinematik, nasyid pilihan.",
     type: "website",
   },
 };

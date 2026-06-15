@@ -40,38 +40,60 @@ export function StarField() {
 }
 
 export function ShootingStar() {
-  const [visible, setVisible] = useState(false);
+  const [shootingStars, setShootingStars] = useState<Array<{ id: number; top: number; left: number; angle: number }>>([]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setVisible(true);
-      setTimeout(() => setVisible(false), 1500);
-    }, 8000 + Math.random() * 7000);
-    return () => clearInterval(interval);
+    let counter = 0;
+    const scheduleNext = () => {
+      const delay = 6000 + Math.random() * 9000; // 6-15 seconds
+      return setTimeout(() => {
+        counter++;
+        const star = {
+          id: counter,
+          top: 5 + Math.random() * 35,
+          left: 10 + Math.random() * 50,
+          angle: 25 + Math.random() * 20, // 25-45 degree angle
+        };
+        setShootingStars((prev) => [...prev, star]);
+        // Remove after animation ends
+        setTimeout(() => {
+          setShootingStars((prev) => prev.filter((s) => s.id !== star.id));
+        }, 1500);
+        scheduleNext();
+      }, delay);
+    };
+    const timeout = scheduleNext();
+    return () => clearTimeout(timeout);
   }, []);
 
-  if (!visible) return null;
-
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: `${10 + Math.random() * 30}%`,
-        left: `${5 + Math.random() * 40}%`,
-        zIndex: 1,
-        pointerEvents: "none",
-      }}
-    >
-      <div
-        style={{
-          width: "2px",
-          height: "2px",
-          borderRadius: "50%",
-          background: "#fff",
-          boxShadow: "0 0 6px 2px rgba(255,255,255,0.6), -30px 0 15px 1px rgba(255,255,255,0.2), -60px 0 25px 1px rgba(255,255,255,0.1)",
-          animation: "cel-shooting 1.5s linear forwards",
-        }}
-      />
+    <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 10, overflow: "hidden" }}>
+      {shootingStars.map((star) => (
+        <div
+          key={star.id}
+          style={{
+            position: "absolute",
+            top: `${star.top}%`,
+            left: `${star.left}%`,
+          }}
+        >
+          <div
+            style={{
+              width: "3px",
+              height: "3px",
+              borderRadius: "50%",
+              background: "#fff",
+              boxShadow:
+                "0 0 8px 3px rgba(255,255,255,0.7), " +
+                "-20px 0 12px 1px rgba(201,169,110,0.3), " +
+                "-40px 0 20px 1px rgba(255,255,255,0.2), " +
+                "-60px 0 28px 0px rgba(255,255,255,0.1)",
+              animation: `cel-shooting 1.5s linear forwards`,
+              transform: `rotate(${star.angle}deg)`,
+            }}
+          />
+        </div>
+      ))}
     </div>
   );
 }

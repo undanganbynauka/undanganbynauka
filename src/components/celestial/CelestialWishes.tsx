@@ -53,6 +53,8 @@ export function CelestialWishes() {
   const [newWish, setNewWish] = useState({ name: "", message: "" });
   const [submitting, setSubmitting] = useState(false);
   const [newlyAddedIds, setNewlyAddedIds] = useState<Set<string>>(new Set());
+  const [showSparkle, setShowSparkle] = useState(false);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -72,12 +74,12 @@ export function CelestialWishes() {
   useEffect(() => {
     if (!visible) return;
     const timers = [
-      setTimeout(() => setStep(0), 100),   // shooting star
-      setTimeout(() => setStep(1), 1600),  // light spread
-      setTimeout(() => setStep(2), 2400),  // subtitle "Doa & Restu"
-      setTimeout(() => setStep(3), 3000),  // title "Ucapan & Doa"
-      setTimeout(() => setStep(4), 3800),  // form
-      setTimeout(() => setStep(5), 4600),  // wishes list
+      setTimeout(() => setStep(0), 100),
+      setTimeout(() => setStep(1), 1600),
+      setTimeout(() => setStep(2), 2400),
+      setTimeout(() => setStep(3), 3000),
+      setTimeout(() => setStep(4), 3800),
+      setTimeout(() => setStep(5), 4600),
     ];
     return () => timers.forEach(clearTimeout);
   }, [visible]);
@@ -97,7 +99,7 @@ export function CelestialWishes() {
     }
   }, []);
 
-  // Subscribe to Supabase Realtime (only if configured)
+  // Subscribe to Supabase Realtime
   useEffect(() => {
     fetchWishes();
 
@@ -115,7 +117,6 @@ export function CelestialWishes() {
             return [newEntry, ...prev];
           });
           setNewlyAddedIds((prev) => new Set(prev).add(newEntry.id));
-          // Auto-scroll to top when new wish arrives
           setTimeout(() => {
             if (scrollRef.current) {
               scrollRef.current.scrollTo({ top: 0, behavior: "smooth" });
@@ -127,7 +128,7 @@ export function CelestialWishes() {
               next.delete(newEntry.id);
               return next;
             });
-          }, 1500);
+          }, 2500);
         }
       )
       .subscribe();
@@ -136,6 +137,11 @@ export function CelestialWishes() {
       supabase.removeChannel(channel);
     };
   }, [fetchWishes]);
+
+  const triggerSparkle = () => {
+    setShowSparkle(true);
+    setTimeout(() => setShowSparkle(false), 2000);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -149,13 +155,18 @@ export function CelestialWishes() {
         body: JSON.stringify({ name: newWish.name, message: newWish.message }),
       });
       if (res.ok) {
+        const savedName = newWish.name.trim();
+        const savedMessage = newWish.message.trim();
         setNewWish({ name: "", message: "" });
-        // If Supabase not configured, add locally
+
+        // Trigger emotional sparkle
+        triggerSparkle();
+
         if (!isSupabaseConfigured) {
           const localWish: Wish = {
             id: `local-${Date.now()}`,
-            name: newWish.name.trim(),
-            message: newWish.message.trim(),
+            name: savedName,
+            message: savedMessage,
             created_at: new Date().toISOString(),
           };
           setWishes((prev) => [localWish, ...prev]);
@@ -171,7 +182,7 @@ export function CelestialWishes() {
               next.delete(localWish.id);
               return next;
             });
-          }, 1500);
+          }, 2500);
         }
       }
     } catch {
@@ -182,6 +193,18 @@ export function CelestialWishes() {
   };
 
   const easeInOut = "cubic-bezier(0.42, 0, 0.58, 1)";
+
+  // Shared focus/blur handlers with warm glow
+  const handleFocus = (field: string, e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFocusedField(field);
+    e.currentTarget.style.borderColor = "rgba(201, 169, 110, 0.4)";
+    e.currentTarget.style.boxShadow = "0 0 16px rgba(201, 169, 110, 0.12)";
+  };
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFocusedField(null);
+    e.currentTarget.style.borderColor = "var(--cel-border)";
+    e.currentTarget.style.boxShadow = "none";
+  };
 
   return (
     <section
@@ -228,6 +251,37 @@ export function CelestialWishes() {
         ))}
       </div>
 
+      {/* Emotional sparkle burst on submit */}
+      {showSparkle && (
+        <div style={{
+          position: "absolute", top: "30%", left: "50%", pointerEvents: "none", zIndex: 10,
+          transform: "translate(-50%, -50%)",
+        }}>
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={`sp-${i}`} style={{
+              position: "absolute",
+              width: "3px", height: "3px", borderRadius: "50%",
+              background: "rgba(201,169,110,0.7)",
+              animation: `celWishSparkleBurst 1.5s ease-out ${i * 0.08}s forwards`,
+              transform: `rotate(${i * 45}deg)`,
+            }}>
+              <div style={{
+                width: "3px", height: "3px", borderRadius: "50%",
+                background: "rgba(201,169,110,0.6)",
+              }} />
+            </div>
+          ))}
+          {/* Soft glow center */}
+          <div style={{
+            width: "30px", height: "30px", borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(201,169,110,0.2) 0%, transparent 70%)",
+            animation: "celWishGlowBurst 1.5s ease-out forwards",
+            position: "absolute",
+            top: "-15px", left: "-15px",
+          }} />
+        </div>
+      )}
+
       {/* Section heading */}
       <p
         style={{
@@ -272,8 +326,10 @@ export function CelestialWishes() {
           gap: "0.75rem",
           marginBottom: "2rem",
           opacity: step >= 4 ? 1 : 0,
-          transform: step >= 4 ? "translateY(0) scale(1)" : "translateY(15px) scale(0.98)",
-          transition: `opacity 0.8s ${easeInOut}, transform 0.8s ${easeInOut}`,
+          transform: step >= 4
+            ? focusedField ? "translateY(0) scale(1.005)" : "translateY(0) scale(1)"
+            : "translateY(15px) scale(0.98)",
+          transition: `opacity 0.8s ${easeInOut}, transform 0.5s ${easeInOut}`,
         }}
       >
         <input
@@ -291,16 +347,10 @@ export function CelestialWishes() {
             fontFamily: "var(--font-inter)",
             fontSize: "0.75rem",
             outline: "none",
-            transition: "border-color 0.3s ease, box-shadow 0.3s ease",
+            transition: "border-color 0.4s ease, box-shadow 0.4s ease",
           }}
-          onFocus={(e) => {
-            e.target.style.borderColor = "var(--cel-accent)";
-            e.target.style.boxShadow = "0 0 12px rgba(201, 169, 110, 0.15)";
-          }}
-          onBlur={(e) => {
-            e.target.style.borderColor = "var(--cel-border)";
-            e.target.style.boxShadow = "none";
-          }}
+          onFocus={(e) => handleFocus("name", e)}
+          onBlur={handleBlur}
         />
         <textarea
           placeholder="Tulis ucapan & doa..."
@@ -318,16 +368,10 @@ export function CelestialWishes() {
             fontSize: "0.75rem",
             outline: "none",
             resize: "none",
-            transition: "border-color 0.3s ease, box-shadow 0.3s ease",
+            transition: "border-color 0.4s ease, box-shadow 0.4s ease",
           }}
-          onFocus={(e) => {
-            e.target.style.borderColor = "var(--cel-accent)";
-            e.target.style.boxShadow = "0 0 12px rgba(201, 169, 110, 0.15)";
-          }}
-          onBlur={(e) => {
-            e.target.style.borderColor = "var(--cel-border)";
-            e.target.style.boxShadow = "none";
-          }}
+          onFocus={(e) => handleFocus("message", e)}
+          onBlur={handleBlur}
         />
         <button
           type="submit"
@@ -354,7 +398,7 @@ export function CelestialWishes() {
         </button>
       </form>
 
-      {/* Wishes List */}
+      {/* Wishes List — live feed feel */}
       <div
         ref={scrollRef}
         className="cel-wishes-scroll"
@@ -379,9 +423,14 @@ export function CelestialWishes() {
               className="celestial-card"
               style={{
                 padding: "1rem 1.25rem",
-                animation: isNew ? "celWishSlideIn 0.6s ease-out, celWishGlow 1.5s ease-out" : "none",
-                borderColor: isNew ? "var(--cel-accent)" : undefined,
-                transition: "border-color 0.5s ease",
+                animation: isNew
+                  ? "celWishSlideIn 0.8s ease-out, celWishGlow 2.5s ease-out"
+                  : "none",
+                borderColor: isNew ? "rgba(201,169,110,0.3)" : undefined,
+                background: isNew
+                  ? "rgba(201, 169, 110, 0.04)"
+                  : "var(--cel-glass)",
+                transition: "border-color 0.8s ease, background 0.8s ease",
               }}
             >
               <div
@@ -392,7 +441,12 @@ export function CelestialWishes() {
                   marginBottom: "0.5rem",
                 }}
               >
-                <span style={{ fontSize: "0.625rem" }}>⭐</span>
+                {/* Small star with subtle pulse for new wishes */}
+                <span style={{
+                  fontSize: "0.625rem",
+                  display: "inline-block",
+                  animation: isNew ? "celWishNewPulse 1.5s ease-in-out infinite" : "none",
+                }}>⭐</span>
                 <span
                   style={{
                     fontFamily: "var(--font-inter)",
@@ -432,11 +486,11 @@ export function CelestialWishes() {
       </div>
 
       {/* Inline keyframes & scrollbar styling */}
-      <style jsx>{`
+      <style>{`
         @keyframes celWishSlideIn {
           from {
             opacity: 0;
-            transform: translateY(-15px) scale(0.97);
+            transform: translateY(-12px) scale(0.97);
           }
           to {
             opacity: 1;
@@ -445,11 +499,29 @@ export function CelestialWishes() {
         }
         @keyframes celWishGlow {
           0% {
-            box-shadow: 0 0 20px rgba(201, 169, 110, 0.25);
+            box-shadow: 0 0 24px rgba(201, 169, 110, 0.2);
           }
           100% {
             box-shadow: none;
           }
+        }
+        @keyframes celWishNewPulse {
+          0%, 100% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.15); opacity: 0.7; }
+        }
+        @keyframes celWishSparkleBurst {
+          0% {
+            transform: rotate(var(--rot, 0deg)) translateY(0);
+            opacity: 0.8;
+          }
+          100% {
+            transform: rotate(var(--rot, 0deg)) translateY(-25px);
+            opacity: 0;
+          }
+        }
+        @keyframes celWishGlowBurst {
+          0% { transform: scale(0.5); opacity: 0.6; }
+          100% { transform: scale(3); opacity: 0; }
         }
         .cel-wishes-scroll {
           scrollbar-width: thin;

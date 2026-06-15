@@ -6,6 +6,8 @@ export function CelestialRSVP() {
   const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
   const [visible, setVisible] = useState(false);
   const [step, setStep] = useState(-1);
+  const [btnPressed, setBtnPressed] = useState(false);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -37,7 +39,21 @@ export function CelestialRSVP() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("loading");
+    setBtnPressed(true);
+    setTimeout(() => setBtnPressed(false), 300);
     setTimeout(() => setStatus("success"), 1500);
+  };
+
+  // Shared input focus/blur handlers
+  const handleFocus = (field: string, e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setFocusedField(field);
+    e.currentTarget.style.borderColor = "rgba(201, 169, 110, 0.4)";
+    e.currentTarget.style.boxShadow = "0 0 16px rgba(201, 169, 110, 0.12)";
+  };
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setFocusedField(null);
+    e.currentTarget.style.borderColor = "var(--cel-border)";
+    e.currentTarget.style.boxShadow = "none";
   };
 
   return (
@@ -101,9 +117,18 @@ export function CelestialRSVP() {
       {status === "success" ? (
         <div style={{
           textAlign: "center", maxWidth: "18rem",
-          opacity: 1, animation: "cel-fade-in 0.6s ease-out",
+          animation: "celRsvpSuccessFade 1.2s ease-out",
         }}>
-          <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>✨</div>
+          {/* Soft sparkle burst */}
+          <div style={{ position: "relative", display: "inline-block", marginBottom: "1rem" }}>
+            <span style={{ fontSize: "2rem", display: "inline-block", animation: "celRsvpHeartPulse 2s ease-in-out infinite" }}>✨</span>
+            {/* Subtle glow ring */}
+            <div style={{
+              position: "absolute", inset: "-8px", borderRadius: "50%",
+              border: "1px solid rgba(201,169,110,0.15)",
+              animation: "celRsvpGlowRing 2s ease-out forwards",
+            }} />
+          </div>
           <p style={{
             fontFamily: "var(--font-cormorant)", fontSize: "1.125rem", color: "var(--cel-text)",
             marginBottom: "0.5rem",
@@ -121,6 +146,8 @@ export function CelestialRSVP() {
           maxWidth: "20rem", width: "100%", display: "flex", flexDirection: "column", gap: "1rem",
           opacity: step >= 4 ? 1 : 0, transform: step >= 4 ? "translateY(0)" : "translateY(20px)",
           transition: `opacity 0.8s ${easeInOut}, transform 0.8s ${easeInOut}`,
+          // Subtle scale-up when any field is focused
+          transform: focusedField ? "scale(1.005)" : "scale(1)",
         }}>
           <input
             type="text"
@@ -131,7 +158,10 @@ export function CelestialRSVP() {
               borderRadius: "12px", background: "var(--cel-glass)",
               color: "var(--cel-text)", fontFamily: "var(--font-inter)",
               fontSize: "0.75rem", outline: "none",
+              transition: "border-color 0.4s ease, box-shadow 0.4s ease, background 0.4s ease",
             }}
+            onFocus={(e) => handleFocus("name", e)}
+            onBlur={handleBlur}
           />
           <select
             required
@@ -141,7 +171,10 @@ export function CelestialRSVP() {
               borderRadius: "12px", background: "var(--cel-glass)",
               color: "var(--cel-text-dim)", fontFamily: "var(--font-inter)",
               fontSize: "0.75rem", outline: "none",
+              transition: "border-color 0.4s ease, box-shadow 0.4s ease",
             }}
+            onFocus={(e) => handleFocus("attendance", e)}
+            onBlur={handleBlur}
           >
             <option value="" disabled>Konfirmasi Kehadiran</option>
             <option value="hadir">Hadir</option>
@@ -158,7 +191,10 @@ export function CelestialRSVP() {
               borderRadius: "12px", background: "var(--cel-glass)",
               color: "var(--cel-text)", fontFamily: "var(--font-inter)",
               fontSize: "0.75rem", outline: "none",
+              transition: "border-color 0.4s ease, box-shadow 0.4s ease",
             }}
+            onFocus={(e) => handleFocus("guests", e)}
+            onBlur={handleBlur}
           />
           <button
             type="submit"
@@ -171,12 +207,29 @@ export function CelestialRSVP() {
               textTransform: "uppercase", cursor: "pointer",
               transition: "all 0.3s ease",
               opacity: status === "loading" ? 0.6 : 1,
+              transform: btnPressed ? "scale(0.96)" : "scale(1)",
             }}
           >
             Kirim
           </button>
         </form>
       )}
+
+      {/* Keyframes */}
+      <style>{`
+        @keyframes celRsvpSuccessFade {
+          from { opacity: 0; transform: translateY(8px) scale(0.97); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes celRsvpHeartPulse {
+          0%, 100% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.1); opacity: 0.85; }
+        }
+        @keyframes celRsvpGlowRing {
+          0% { transform: scale(0.5); opacity: 0.6; }
+          100% { transform: scale(2); opacity: 0; }
+        }
+      `}</style>
     </section>
   );
 }

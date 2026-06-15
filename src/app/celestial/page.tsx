@@ -15,6 +15,7 @@ import { CelestialAmplopDigital } from "@/components/celestial/CelestialAmplopDi
 import { CelestialClosing } from "@/components/celestial/CelestialClosing";
 import { CelestialNav } from "@/components/celestial/CelestialNav";
 import { CelestialMusic } from "@/components/celestial/CelestialMusic";
+import { CelestialSectionReveal } from "@/components/celestial/CelestialSectionReveal";
 
 type Phase = "gate" | "opening" | "inside";
 
@@ -54,14 +55,14 @@ export default function CelestialPage() {
           }}
         >
           <CelestialSaveTheDate />
-          <CelestialCountdown />
-          <CelestialBrideGroom />
-          <CelestialEvent />
-          <CelestialJourney />
-          <CelestialRSVP />
-          <CelestialWishes />
-          <CelestialAmplopDigital />
-          <CelestialClosing />
+          <CelestialSectionReveal><CelestialCountdown /></CelestialSectionReveal>
+          <CelestialSectionReveal><CelestialBrideGroom /></CelestialSectionReveal>
+          <CelestialSectionReveal><CelestialEvent /></CelestialSectionReveal>
+          <CelestialSectionReveal><CelestialJourney /></CelestialSectionReveal>
+          <CelestialSectionReveal><CelestialRSVP /></CelestialSectionReveal>
+          <CelestialSectionReveal><CelestialWishes /></CelestialSectionReveal>
+          <CelestialSectionReveal><CelestialAmplopDigital /></CelestialSectionReveal>
+          <CelestialSectionReveal><CelestialClosing /></CelestialSectionReveal>
           <CelestialNav />
         </div>
       )}

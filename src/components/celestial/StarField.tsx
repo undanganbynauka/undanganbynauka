@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 export function StarField() {
   const [stars, setStars] = useState<Array<{ id: number; x: number; y: number; size: number; delay: number; duration: number }>>([]);
+  const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
     const generated = Array.from({ length: 80 }, (_, i) => ({
@@ -17,24 +18,44 @@ export function StarField() {
     setStars(generated);
   }, []);
 
+  // Subtle parallax — stars move slower than scroll
+  const handleScroll = useCallback(() => {
+    setScrollY(window.scrollY);
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
+
+  // Parallax factor: stars move at 15% of scroll speed (very subtle)
+  const parallaxOffset = scrollY * 0.15;
+
   return (
     <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0, overflow: "hidden" }}>
-      {stars.map((star) => (
-        <div
-          key={star.id}
-          style={{
-            position: "absolute",
-            left: `${star.x}%`,
-            top: `${star.y}%`,
-            width: `${star.size}px`,
-            height: `${star.size}px`,
-            borderRadius: "50%",
-            background: star.size > 1.5 ? "rgba(201, 169, 110, 0.8)" : "rgba(255, 255, 255, 0.7)",
-            animation: `cel-twinkle ${star.duration}s ease-in-out ${star.delay}s infinite`,
-            boxShadow: star.size > 1.5 ? "0 0 4px rgba(201, 169, 110, 0.4)" : "none",
-          }}
-        />
-      ))}
+      <div style={{
+        transform: `translateY(-${parallaxOffset}px)`,
+        transition: "transform 0.1s linear",
+        position: "absolute",
+        inset: 0,
+      }}>
+        {stars.map((star) => (
+          <div
+            key={star.id}
+            style={{
+              position: "absolute",
+              left: `${star.x}%`,
+              top: `${star.y}%`,
+              width: `${star.size}px`,
+              height: `${star.size}px`,
+              borderRadius: "50%",
+              background: star.size > 1.5 ? "rgba(201, 169, 110, 0.8)" : "rgba(255, 255, 255, 0.7)",
+              animation: `cel-twinkle ${star.duration}s ease-in-out ${star.delay}s infinite`,
+              boxShadow: star.size > 1.5 ? "0 0 4px rgba(201, 169, 110, 0.4)" : "none",
+            }}
+          />
+        ))}
+      </div>
     </div>
   );
 }

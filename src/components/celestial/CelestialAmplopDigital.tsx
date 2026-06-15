@@ -67,7 +67,7 @@ export function CelestialAmplopDigital() {
         opacity: visible ? 1 : 0,
         transition: `opacity 0.8s ${ease} 0.2s`,
       }}>
-        Doa restu Anda merupakan karunia yang sangat berarti bagi kami. Namun jika memberi adalah ungkapan tanda kasih, Anda dapat melalui:
+        Setiap doa dan perhatian dari Bapak/Ibu menjadi sesuatu yang sangat kami syukuri
       </p>
 
       {!showAccounts ? (

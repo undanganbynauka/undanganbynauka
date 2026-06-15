@@ -3,58 +3,16 @@
 import React, { useEffect, useRef, useState } from "react";
 
 const features = [
-  {
-    name: "Doa & Ucapan",
-    basic: "Maks. 20 orang",
-    premium: "Tanpa batas",
-    highlight: true,
-  },
-  {
-    name: "Masa Aktif",
-    basic: "H+30",
-    premium: "H+90",
-  },
-  {
-    name: "Input Tamu",
-    basic: "Isi sendiri",
-    premium: "Isi sendiri / Terima jadi",
-  },
-  {
-    name: "BGM",
-    basic: "Default",
-    premium: "Library pilihan",
-  },
-  {
-    name: "Custom URL",
-    basic: "nauka.id/inv/abc123",
-    premium: "nauka.id/nama-pasangan",
-  },
-  {
-    name: "RSVP",
-    basic: "✓",
-    premium: "✓",
-  },
-  {
-    name: "Amplop Digital",
-    basic: "✓",
-    premium: "✓",
-  },
-  {
-    name: "Jumlah Tamu",
-    basic: "Tanpa batas",
-    premium: "Tanpa batas",
-  },
-  {
-    name: "Support",
-    basic: "WhatsApp",
-    premium: "Prioritas + revisi minor",
-  },
-  {
-    name: "Analitik",
-    basic: "—",
-    premium: "✓",
-    highlight: true,
-  },
+  { name: "Doa & Ucapan", basic: "Maks. 20 orang", premium: "Tanpa batas", highlight: true },
+  { name: "Masa Aktif", basic: "H+30", premium: "H+90" },
+  { name: "Input Tamu", basic: "Isi sendiri", premium: "Isi sendiri / Terima jadi" },
+  { name: "BGM", basic: "Default", premium: "Library pilihan" },
+  { name: "Custom URL", basic: "nauka.id/inv/abc123", premium: "nauka.id/nama-pasangan" },
+  { name: "RSVP", basic: "✓", premium: "✓" },
+  { name: "Amplop Digital", basic: "✓", premium: "✓" },
+  { name: "Jumlah Tamu", basic: "Tanpa batas", premium: "Tanpa batas" },
+  { name: "Support", basic: "WhatsApp", premium: "Prioritas + revisi minor" },
+  { name: "Analitik", basic: "—", premium: "✓", highlight: true },
 ];
 
 export function NaukaHarga() {
@@ -75,32 +33,60 @@ export function NaukaHarga() {
   return (
     <section
       ref={ref}
-      className="relative bg-[#0a0a0a] px-6 py-24 md:py-32"
+      className="nauka-grain relative"
+      style={{
+        background: "#0B1120",
+        padding: "90px 24px",
+      }}
     >
-      <div className="mx-auto max-w-3xl">
-        {/* Section heading — shimmer */}
+      {/* Ambient glow — top left */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: visible
+            ? "linear-gradient(45deg, rgba(201,169,110,0.025) 0%, transparent 40%)"
+            : "none",
+          transition: "background 1.8s ease",
+        }}
+      />
+
+      <div className="relative z-10 mx-auto max-w-[680px]">
+        {/* Section title */}
         <h2
-          className={`nauka-shimmer mb-4 text-center text-2xl tracking-[0.15em] md:text-3xl lg:text-4xl ${
-            visible ? "opacity-100" : "opacity-0"
-          }`}
           style={{
             fontFamily: "var(--font-cormorant)",
-            transform: visible ? "translateY(0)" : "translateY(12px)",
-            transition: "opacity 0.8s ease, transform 0.8s ease",
+            fontSize: "28px",
+            fontWeight: 400,
+            lineHeight: 1.4,
+            letterSpacing: "0.08em",
+            color: "rgba(255,255,255,0.92)",
+            textAlign: "center",
+            marginBottom: "12px",
+            opacity: visible ? 1 : 0,
+            transform: visible ? "translateY(0)" : "translateY(20px)",
+            transition: "opacity 1.4s ease-out, transform 1.4s ease-out",
           }}
         >
           Harga
         </h2>
+
+        {/* Divider */}
         <div
           className="mx-auto mb-14 flex items-center justify-center gap-3"
           style={{
             opacity: visible ? 1 : 0,
-            transition: "opacity 0.8s ease 0.2s",
+            transition: "opacity 1.2s ease-out 0.2s",
           }}
         >
-          <span className="h-px w-8 nauka-line-shimmer" />
-          <span className="nauka-breathe h-1 w-1 rounded-full bg-[#c9a96e]/50" />
-          <span className="h-px w-8 nauka-line-shimmer" />
+          <span style={{ height: "1px", width: "32px", background: "rgba(255,255,255,0.18)" }} />
+          <span style={{
+            height: "3px",
+            width: "3px",
+            borderRadius: "50%",
+            background: "rgba(201,169,110,0.6)",
+            animation: "nauka-breathe 3s ease-in-out infinite",
+          }} />
+          <span style={{ height: "1px", width: "32px", background: "rgba(255,255,255,0.18)" }} />
         </div>
 
         {/* Price cards */}
@@ -108,21 +94,40 @@ export function NaukaHarga() {
           className="mb-12 grid gap-6 md:grid-cols-2"
           style={{
             opacity: visible ? 1 : 0,
-            transform: visible ? "translateY(0)" : "translateY(16px)",
-            transition: "opacity 0.8s ease 0.3s, transform 0.8s ease 0.3s",
+            transform: visible ? "translateY(0)" : "translateY(20px)",
+            transition: "opacity 1.4s ease-out 0.3s, transform 1.4s ease-out 0.3s",
           }}
         >
           {/* Basic */}
-          <div className="rounded-2xl border border-[#1a1a1a] bg-[#0c0c0c] p-8 text-center transition-all duration-500 hover:border-[#8a8578]/20">
-            <span className="text-xs tracking-[0.2em] uppercase text-[#8a8578]">
+          <div
+            style={{
+              borderRadius: "16px",
+              border: "1px solid rgba(255,255,255,0.06)",
+              background: "rgba(255,255,255,0.02)",
+              padding: "32px",
+              textAlign: "center",
+            }}
+          >
+            <span
+              style={{
+                fontFamily: "var(--font-inter)",
+                fontSize: "11px",
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                color: "rgba(255,255,255,0.45)",
+              }}
+            >
               Basic
             </span>
-            <div className="mt-3">
+            <div style={{ marginTop: "12px" }}>
               <span
-                className="inline-block text-4xl font-light text-[#f5f0e8] md:text-5xl"
                 style={{
                   fontFamily: "var(--font-cormorant)",
-                  animation: visible ? "nauka-price-in 0.8s ease 0.5s both" : "none",
+                  fontSize: "40px",
+                  fontWeight: 300,
+                  color: "rgba(255,255,255,0.92)",
+                  display: "inline-block",
+                  animation: visible ? "nauka-price-in 1.2s ease-out 0.5s both" : "none",
                 }}
               >
                 75rb
@@ -131,19 +136,56 @@ export function NaukaHarga() {
           </div>
 
           {/* Premium */}
-          <div className="relative rounded-2xl border border-[#c9a96e]/20 bg-[#0c0c0c] p-8 text-center transition-all duration-500 hover:border-[#c9a96e]/35 hover:shadow-[0_0_30px_rgba(201,169,110,0.06)]">
-            <span className="nauka-breathe absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#c9a96e]/10 px-4 py-1 text-[10px] tracking-[0.2em] uppercase text-[#c9a96e] border border-[#c9a96e]/15">
+          <div
+            style={{
+              borderRadius: "16px",
+              border: "1px solid rgba(201,169,110,0.12)",
+              background: "rgba(201,169,110,0.03)",
+              padding: "32px",
+              textAlign: "center",
+              position: "relative",
+            }}
+          >
+            <span
+              style={{
+                position: "absolute",
+                top: "-12px",
+                left: "50%",
+                transform: "translateX(-50%)",
+                padding: "4px 16px",
+                borderRadius: "100px",
+                border: "1px solid rgba(201,169,110,0.12)",
+                background: "rgba(11,17,32,0.9)",
+                fontFamily: "var(--font-inter)",
+                fontSize: "10px",
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                color: "rgba(201,169,110,0.7)",
+                animation: "nauka-breathe 3s ease-in-out infinite",
+              }}
+            >
               Rekomendasi
             </span>
-            <span className="text-xs tracking-[0.2em] uppercase text-[#8a8578]">
+            <span
+              style={{
+                fontFamily: "var(--font-inter)",
+                fontSize: "11px",
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                color: "rgba(255,255,255,0.45)",
+              }}
+            >
               Premium
             </span>
-            <div className="mt-3">
+            <div style={{ marginTop: "12px" }}>
               <span
-                className="nauka-shimmer inline-block text-4xl font-light md:text-5xl"
                 style={{
                   fontFamily: "var(--font-cormorant)",
-                  animation: visible ? "nauka-price-in 0.8s ease 0.7s both" : "none",
+                  fontSize: "40px",
+                  fontWeight: 300,
+                  color: "rgba(201,169,110,0.85)",
+                  display: "inline-block",
+                  animation: visible ? "nauka-price-in 1.2s ease-out 0.7s both" : "none",
                 }}
               >
                 99rb
@@ -154,30 +196,46 @@ export function NaukaHarga() {
 
         {/* Comparison table */}
         <div
-          className="overflow-hidden rounded-xl border border-[#1a1a1a] bg-[#0c0c0c]"
           style={{
+            borderRadius: "12px",
+            border: "1px solid rgba(255,255,255,0.06)",
+            background: "rgba(255,255,255,0.02)",
+            overflow: "hidden",
             opacity: visible ? 1 : 0,
-            transform: visible ? "translateY(0)" : "translateY(16px)",
-            transition: "opacity 0.8s ease 0.5s, transform 0.8s ease 0.5s",
+            transform: visible ? "translateY(0)" : "translateY(20px)",
+            transition: "opacity 1.4s ease-out 0.5s, transform 1.4s ease-out 0.5s",
           }}
         >
           {/* Table header */}
-          <div className="grid grid-cols-3 border-b border-[#1a1a1a] bg-[#0a0a0a] px-5 py-3">
-            <span className="text-xs tracking-[0.1em] uppercase text-[#8a8578]">Fitur</span>
-            <span className="text-center text-xs tracking-[0.1em] uppercase text-[#8a8578]">Basic</span>
-            <span className="text-center text-xs tracking-[0.1em] uppercase text-[#c9a96e]">Premium</span>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr 1fr",
+              padding: "12px 20px",
+              borderBottom: "1px solid rgba(255,255,255,0.06)",
+              background: "rgba(255,255,255,0.02)",
+            }}
+          >
+            <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)" }}>Fitur</span>
+            <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", textAlign: "center" }}>Basic</span>
+            <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(201,169,110,0.6)", textAlign: "center" }}>Premium</span>
           </div>
           {/* Rows */}
           {features.map((feat, i) => (
             <div
               key={i}
-              className={`grid grid-cols-3 px-5 py-3 transition-colors duration-300 hover:bg-[#111] ${
-                i < features.length - 1 ? "border-b border-[#1a1a1a]" : ""
-              } ${feat.highlight ? "bg-[#c9a96e]/[0.03]" : ""}`}
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr 1fr",
+                padding: "12px 20px",
+                borderBottom: i < features.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none",
+                background: feat.highlight ? "rgba(201,169,110,0.02)" : "transparent",
+                transition: "background 0.3s ease",
+              }}
             >
-              <span className="text-sm text-[#f5f0e8]/80">{feat.name}</span>
-              <span className="text-center text-sm text-[#8a8578]">{feat.basic}</span>
-              <span className="text-center text-sm text-[#c9a96e]/80">{feat.premium}</span>
+              <span style={{ fontFamily: "var(--font-inter)", fontSize: "13px", color: "rgba(255,255,255,0.72)" }}>{feat.name}</span>
+              <span style={{ fontFamily: "var(--font-inter)", fontSize: "13px", color: "rgba(255,255,255,0.45)", textAlign: "center" }}>{feat.basic}</span>
+              <span style={{ fontFamily: "var(--font-inter)", fontSize: "13px", color: "rgba(201,169,110,0.65)", textAlign: "center" }}>{feat.premium}</span>
             </div>
           ))}
         </div>

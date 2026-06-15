@@ -1,90 +1,81 @@
-/* Nauka Landing Page Animations */
+/* Nauka Design System — Global Animations */
 
-/* === Shimmer effect for gold text === */
-@keyframes nauka-shimmer {
-  0%, 100% {
-    background-position: -200% center;
-  }
-  50% {
-    background-position: 200% center;
-  }
+/* === Grain/Noise Texture Overlay === */
+.nauka-grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  z-index: 1;
 }
 
-.nauka-shimmer {
-  background: linear-gradient(
-    90deg,
-    #c9a96e 0%,
-    #e8d5a8 25%,
-    #c9a96e 50%,
-    #e8d5a8 75%,
-    #c9a96e 100%
-  );
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: nauka-shimmer 4s ease-in-out infinite;
-}
-
-/* === Gentle glow pulse for gold elements === */
-@keyframes nauka-glow-pulse {
-  0%, 100% {
-    filter: drop-shadow(0 0 2px rgba(201, 169, 110, 0.1));
-  }
-  50% {
-    filter: drop-shadow(0 0 8px rgba(201, 169, 110, 0.25));
-  }
-}
-
-.nauka-glow-pulse {
-  animation: nauka-glow-pulse 3s ease-in-out infinite;
-}
-
-/* === Scroll indicator bounce === */
-@keyframes nauka-scroll-bounce {
+/* === Slow Drift — for ambient elements === */
+@keyframes nauka-drift {
   0%, 100% {
     transform: translateY(0);
-    opacity: 0.6;
   }
   50% {
-    transform: translateY(6px);
-    opacity: 1;
+    transform: translateY(-6px);
   }
 }
 
-.nauka-scroll-bounce {
-  animation: nauka-scroll-bounce 2s ease-in-out infinite;
-}
-
-/* === Breathing opacity for subtle elements === */
-@keyframes nauka-breathe {
-  0%, 100% {
-    opacity: 0.6;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-.nauka-breathe {
-  animation: nauka-breathe 3s ease-in-out infinite;
-}
-
-/* === Letter reveal stagger — used via inline styles === */
-@keyframes nauka-letter-in {
+/* === Fade In + TranslateY — primary entrance === */
+@keyframes nauka-fade-up {
   0% {
     opacity: 0;
-    transform: translateY(8px);
-    filter: blur(4px);
+    transform: translateY(20px);
   }
   100% {
     opacity: 1;
     transform: translateY(0);
-    filter: blur(0);
   }
 }
 
-/* === Gold line shimmer === */
+/* === Fade In + TranslateY (larger) — for taglines === */
+@keyframes nauka-fade-up-lg {
+  0% {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === Scroll Indicator Float === */
+@keyframes nauka-scroll-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+/* === Slow Opacity Reveal === */
+@keyframes nauka-reveal {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* === Breathing Dot === */
+@keyframes nauka-breathe {
+  0%, 100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* === Gold Line Shimmer — slow and subtle === */
 @keyframes nauka-line-shimmer {
   0% {
     background-position: -100% 0;
@@ -94,69 +85,24 @@
   }
 }
 
-.nauka-line-shimmer {
-  background: linear-gradient(
-    90deg,
-    rgba(201, 169, 110, 0.25) 0%,
-    rgba(201, 169, 110, 0.6) 50%,
-    rgba(201, 169, 110, 0.25) 100%
-  );
-  background-size: 200% 100%;
-  animation: nauka-line-shimmer 3s ease-in-out infinite;
-}
-
-/* === CTA button glow === */
-@keyframes nauka-cta-glow {
+/* === Ambient Glow Pulse — top only === */
+@keyframes nauka-ambient-pulse {
   0%, 100% {
-    box-shadow: 0 0 0px rgba(201, 169, 110, 0);
+    opacity: 0.03;
   }
   50% {
-    box-shadow: 0 0 30px rgba(201, 169, 110, 0.12);
+    opacity: 0.06;
   }
 }
 
-.nauka-cta-glow {
-  animation: nauka-cta-glow 3s ease-in-out infinite;
-}
-
-/* === Card subtle float on hover === */
-@keyframes nauka-float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-3px);
-  }
-}
-
-/* === Price counter entrance === */
+/* === Price Entrance — soft scale + fade === */
 @keyframes nauka-price-in {
   0% {
     opacity: 0;
-    transform: scale(0.8);
-    filter: blur(8px);
-  }
-  60% {
-    opacity: 1;
-    transform: scale(1.05);
-    filter: blur(0);
+    transform: scale(0.92);
   }
   100% {
     opacity: 1;
     transform: scale(1);
-    filter: blur(0);
-  }
-}
-
-/* === Icon subtle spin on hover === */
-@keyframes nauka-icon-wiggle {
-  0%, 100% {
-    transform: rotate(0deg);
-  }
-  25% {
-    transform: rotate(-5deg);
-  }
-  75% {
-    transform: rotate(5deg);
   }
 }

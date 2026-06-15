@@ -36,43 +36,43 @@ export function CelestialClosing() {
 
     // 1. Slow atmospheric fade (bg + overlay already transitioning via CSS)
     // 2. Particles appear very softly
-    timers.push(setTimeout(() => setStep(1), 400));
+    timers.push(setTimeout(() => setStep(1), 300));
 
     // 3. Shooting star — opening gesture
-    timers.push(setTimeout(() => setStep(2), 1200));
+    timers.push(setTimeout(() => setStep(2), 900));
 
     // 4. Shooting star fades, light spreads
-    timers.push(setTimeout(() => setStep(3), 2700));
+    timers.push(setTimeout(() => setStep(3), 2200));
 
     // 5. Crescent moon appears (very slow, 1.8s transition)
-    timers.push(setTimeout(() => setStep(4), 3500));
+    timers.push(setTimeout(() => setStep(4), 3000));
 
     // 6. Doa line 1 — first breath
-    timers.push(setTimeout(() => setStep(5), 5500));
+    timers.push(setTimeout(() => setStep(5), 4800));
 
     // 7. Doa line 2
-    timers.push(setTimeout(() => setStep(6), 7500));
+    timers.push(setTimeout(() => setStep(6), 6400));
 
     // 8. Doa line 3
-    timers.push(setTimeout(() => setStep(7), 9500));
+    timers.push(setTimeout(() => setStep(7), 8000));
 
     // 9. Author attribution
-    timers.push(setTimeout(() => setStep(8), 11000));
+    timers.push(setTimeout(() => setStep(8), 9200));
 
     // 10. Ornamental divider
-    timers.push(setTimeout(() => setStep(9), 12000));
+    timers.push(setTimeout(() => setStep(9), 10100));
 
     // 11. Couple names — focal point
-    timers.push(setTimeout(() => setStep(10), 13200));
+    timers.push(setTimeout(() => setStep(10), 11200));
 
     // 12. Date
-    timers.push(setTimeout(() => setStep(11), 14500));
+    timers.push(setTimeout(() => setStep(11), 12300));
 
     // 13. Rekening / Gift section
-    timers.push(setTimeout(() => setStep(12), 15800));
+    timers.push(setTimeout(() => setStep(12), 13400));
 
     // 14. Nauka logo — final element
-    timers.push(setTimeout(() => setStep(13), 17500));
+    timers.push(setTimeout(() => setStep(13), 14000));
 
     return () => timers.forEach(clearTimeout);
   }, [visible]);
@@ -628,7 +628,7 @@ export function CelestialClosing() {
         <div
           style={{
             marginTop: "4rem",
-            opacity: step >= 13 ? 0.3 : 0,
+            opacity: step >= 13 ? 0.5 : 0,
             transform: step >= 13 ? "translateY(0)" : "translateY(6px)",
             transition: `opacity 2s ${easeCinematic}, transform 2s ${easeCinematic}`,
           }}

@@ -4,9 +4,11 @@ import React, { useState, useEffect, useRef } from "react";
 
 export function CountdownSection() {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-  const [visible, setVisible] = useState(false);
+  const [bannerVisible, setBannerVisible] = useState(false);
+  const [textVisible, setTextVisible] = useState(false);
   const [countdownVisible, setCountdownVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
   const countdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -26,19 +28,31 @@ export function CountdownSection() {
     return () => clearInterval(id);
   }, []);
 
-  // Observer for the banner area
+  // Observer for the section / banner image
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
     const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting && !visible) setVisible(true); },
-      { threshold: 0.15 }
+      ([entry]) => { if (entry.isIntersecting && !bannerVisible) setBannerVisible(true); },
+      { threshold: 0.1 }
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [visible]);
+  }, [bannerVisible]);
 
-  // Separate observer for the countdown content area
+  // Observer for the banner text area — triggers staggered letter reveal
+  useEffect(() => {
+    const el = textRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting && !textVisible) setTextVisible(true); },
+      { threshold: 0.3 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [textVisible]);
+
+  // Observer for the countdown content area
   useEffect(() => {
     const el = countdownRef.current;
     if (!el) return;
@@ -58,7 +72,7 @@ export function CountdownSection() {
     { label: "Detik", value: timeLeft.seconds },
   ];
 
-  // Staggered letter reveal helper
+  // Staggered letter reveal helper — uses textVisible state
   const renderLetters = (
     text: string,
     baseDelay: number,
@@ -69,8 +83,8 @@ export function CountdownSection() {
         key={i}
         style={{
           display: "inline-block",
-          opacity: visible ? 1 : 0,
-          transform: visible ? "translateY(0)" : "translateY(10px)",
+          opacity: textVisible ? 1 : 0,
+          transform: textVisible ? "translateY(0)" : "translateY(10px)",
           transition: `opacity 0.6s ${ease} ${baseDelay + i * delayPerChar}s, transform 0.6s ${ease} ${baseDelay + i * delayPerChar}s`,
           whiteSpace: char === " " ? "pre" : undefined,
         }}
@@ -98,8 +112,8 @@ export function CountdownSection() {
         height: "100vh",
         marginLeft: "calc(-50vw + 50%)",
         overflow: "hidden",
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(15px)",
+        opacity: bannerVisible ? 1 : 0,
+        transform: bannerVisible ? "translateY(0)" : "translateY(15px)",
         transition: `opacity 1s ${ease}, transform 1s ${ease}`,
       }}>
         <img
@@ -123,33 +137,36 @@ export function CountdownSection() {
           background: "linear-gradient(to top, rgba(250,247,242,0.9) 0%, rgba(250,247,242,0.3) 50%, transparent 100%)",
           pointerEvents: "none",
         }} />
-        {/* Text at bottom-right — staggered letter reveal */}
-        <div style={{
-          position: "absolute",
-          bottom: "3.5rem",
-          right: "1.5rem",
-          textAlign: "right",
-          zIndex: 2,
-        }}>
+        {/* Text at bottom-right — has its own IntersectionObserver */}
+        <div
+          ref={textRef}
+          style={{
+            position: "absolute",
+            bottom: "3.5rem",
+            right: "1.5rem",
+            textAlign: "right",
+            zIndex: 2,
+          }}
+        >
           <p style={{
             fontFamily: "var(--font-cormorant)", fontSize: "0.8125rem", fontWeight: 400,
             fontStyle: "italic", color: "#6F6F6F", letterSpacing: "0.06em",
             marginBottom: "0.625rem", margin: 0,
           }}>
-            {renderLetters("The Wedding of", 0.3, 0.035)}
+            {renderLetters("The Wedding of", 0.2, 0.035)}
           </p>
           <h2 style={{
             fontFamily: "var(--font-cormorant)", fontSize: "1.75rem", fontWeight: 500,
             color: "#2E2E2E", letterSpacing: "0.02em",
             marginBottom: "0.625rem",
           }}>
-            {renderLetters("Ali & Lyla", 0.85, 0.05)}
+            {renderLetters("Ali & Lyla", 0.7, 0.05)}
           </h2>
           <p style={{
             fontFamily: "var(--font-jakarta)", fontSize: "0.625rem", fontWeight: 400,
             color: "#8A8A8A", letterSpacing: "0.1em",
-            opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(8px)",
-            transition: `opacity 0.7s ${ease} 1.4s, transform 0.7s ${ease} 1.4s`,
+            opacity: textVisible ? 1 : 0, transform: textVisible ? "translateY(0)" : "translateY(8px)",
+            transition: `opacity 0.7s ${ease} 1.2s, transform 0.7s ${ease} 1.2s`,
           }}>
             Ahad, 5 Juli 2026
           </p>

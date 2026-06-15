@@ -5,6 +5,7 @@ import React, { useState, useRef, useCallback, useEffect } from "react";
 const AMBIENT_SOUNDS = [
   { key: "water", file: "/assets/sounds/water-stream.mp3", emoji: "💧" },
   { key: "birds", file: "/assets/sounds/morning-birds.mp3", emoji: "🌤️" },
+  { key: "crickets", file: "/assets/sounds/night-crickets.mp3", emoji: "🌛" },
 ];
 
 // Fade in audio over ~2 seconds

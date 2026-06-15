@@ -5,7 +5,9 @@ import React, { useState, useEffect, useRef } from "react";
 export function CountdownSection() {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [visible, setVisible] = useState(false);
+  const [countdownVisible, setCountdownVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
+  const countdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const target = new Date("2026-12-05T08:00:00+07:00").getTime();
@@ -24,6 +26,7 @@ export function CountdownSection() {
     return () => clearInterval(id);
   }, []);
 
+  // Observer for the banner area
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
@@ -34,6 +37,18 @@ export function CountdownSection() {
     observer.observe(el);
     return () => observer.disconnect();
   }, [visible]);
+
+  // Separate observer for the countdown content area
+  useEffect(() => {
+    const el = countdownRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting && !countdownVisible) setCountdownVisible(true); },
+      { threshold: 0.2 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [countdownVisible]);
 
   const ease = "cubic-bezier(0.25, 0.1, 0.25, 1)";
   const units = [
@@ -141,49 +156,51 @@ export function CountdownSection() {
         </div>
       </div>
 
-      {/* Content below image */}
-      <div style={{
-        padding: "3rem 1.5rem 4rem",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        width: "100%",
-      }}>
-
-      <p style={{
-        fontFamily: "var(--font-jakarta)", fontSize: "0.6875rem", fontWeight: 400,
-        letterSpacing: "0.15em", textTransform: "uppercase", color: "#8A8A8A",
-        marginBottom: "0.5rem",
-        opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(15px)",
-        transition: `opacity 1s ${ease} 1.6s, transform 1s ${ease} 1.6s`,
-      }}>
-        Menghitung Hari
-      </p>
-      <h2 style={{
-        fontFamily: "var(--font-cormorant)", fontSize: "1.75rem", fontWeight: 500,
-        color: "#2E2E2E", marginBottom: "2rem",
-        opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(15px)",
-        transition: `opacity 1s ${ease} 1.7s, transform 1s ${ease} 1.7s`,
-      }}>
-        Countdown
-      </h2>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "0.75rem", maxWidth: "20rem", width: "100%" }}>
-        {units.map((u, i) => (
-          <div key={u.label} style={{
-            background: "rgba(125, 110, 99, 0.04)", border: "1px solid rgba(125, 110, 99, 0.12)",
-            borderRadius: "16px", padding: "1.25rem 0.5rem", textAlign: "center",
-            opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(20px)",
-            transition: `opacity 0.8s ${ease} ${1.8 + i * 0.1}s, transform 0.8s ${ease} ${1.8 + i * 0.1}s`,
-          }}>
-            <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.75rem", fontWeight: 500, color: "#2E2E2E", lineHeight: 1, marginBottom: "0.375rem" }}>
-              {String(u.value).padStart(2, "0")}
-            </p>
-            <p style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.5625rem", fontWeight: 400, letterSpacing: "0.08em", textTransform: "uppercase", color: "#8A8A8A" }}>
-              {u.label}
-            </p>
-          </div>
-        ))}
-      </div>
+      {/* Content below image — separate scroll trigger */}
+      <div
+        ref={countdownRef}
+        style={{
+          padding: "3rem 1.5rem 4rem",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          width: "100%",
+        }}
+      >
+        <p style={{
+          fontFamily: "var(--font-jakarta)", fontSize: "0.6875rem", fontWeight: 400,
+          letterSpacing: "0.15em", textTransform: "uppercase", color: "#8A8A8A",
+          marginBottom: "0.5rem",
+          opacity: countdownVisible ? 1 : 0, transform: countdownVisible ? "translateY(0)" : "translateY(15px)",
+          transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}`,
+        }}>
+          Menghitung Hari
+        </p>
+        <h2 style={{
+          fontFamily: "var(--font-cormorant)", fontSize: "1.75rem", fontWeight: 500,
+          color: "#2E2E2E", marginBottom: "2rem",
+          opacity: countdownVisible ? 1 : 0, transform: countdownVisible ? "translateY(0)" : "translateY(15px)",
+          transition: `opacity 0.8s ${ease} 0.1s, transform 0.8s ${ease} 0.1s`,
+        }}>
+          Countdown
+        </h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "0.75rem", maxWidth: "20rem", width: "100%" }}>
+          {units.map((u, i) => (
+            <div key={u.label} style={{
+              background: "rgba(125, 110, 99, 0.04)", border: "1px solid rgba(125, 110, 99, 0.12)",
+              borderRadius: "16px", padding: "1.25rem 0.5rem", textAlign: "center",
+              opacity: countdownVisible ? 1 : 0, transform: countdownVisible ? "translateY(0) scale(1)" : "translateY(20px) scale(0.95)",
+              transition: `opacity 0.7s ${ease} ${0.15 + i * 0.1}s, transform 0.7s ${ease} ${0.15 + i * 0.1}s`,
+            }}>
+              <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.75rem", fontWeight: 500, color: "#2E2E2E", lineHeight: 1, marginBottom: "0.375rem" }}>
+                {String(u.value).padStart(2, "0")}
+              </p>
+              <p style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.5625rem", fontWeight: 400, letterSpacing: "0.08em", textTransform: "uppercase", color: "#8A8A8A" }}>
+                {u.label}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

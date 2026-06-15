@@ -117,8 +117,8 @@ export function SoundToggle() {
         disabled={isSoundLoading}
         style={{
           position: "fixed",
-          bottom: "3.5rem",
-          right: "1rem",
+          bottom: "1rem",
+          right: "3.5rem",
           width: "40px",
           height: "40px",
           borderRadius: "50%",
@@ -150,8 +150,8 @@ export function SoundToggle() {
           onClick={() => setShowPicker(!showPicker)}
           style={{
             position: "fixed",
-            bottom: "3.5rem",
-            right: "3.25rem",
+            bottom: "1rem",
+            right: "6.75rem",
             width: "32px",
             height: "32px",
             borderRadius: "50%",
@@ -179,8 +179,8 @@ export function SoundToggle() {
         <div
           style={{
             position: "fixed",
-            bottom: "6rem",
-            right: "1rem",
+            bottom: "3.5rem",
+            right: "3.5rem",
             background: "rgba(255, 255, 255, 0.9)",
             backdropFilter: "blur(16px)",
             WebkitBackdropFilter: "blur(16px)",

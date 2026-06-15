@@ -23,10 +23,10 @@ export function CelestialBrideGroom() {
     const timers = [
       setTimeout(() => setStep(1), 200),
       setTimeout(() => setStep(2), 500),
-      setTimeout(() => setStep(3), 900),
-      setTimeout(() => setStep(4), 1300),
-      setTimeout(() => setStep(5), 1700),
-      setTimeout(() => setStep(6), 2100),
+      setTimeout(() => setStep(3), 800),
+      setTimeout(() => setStep(4), 1200),
+      setTimeout(() => setStep(5), 1500),
+      setTimeout(() => setStep(6), 1900),
     ];
     return () => timers.forEach(clearTimeout);
   }, [visible]);
@@ -40,64 +40,56 @@ export function CelestialBrideGroom() {
       className="celestial-section"
       style={{ background: "var(--cel-midnight)", padding: "3rem 1.5rem 5rem" }}
     >
-      {/* ── Groom: Initial left, name right ── */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "flex-start",
-          gap: "1.25rem",
-          maxWidth: "20rem",
-          width: "100%",
-          marginBottom: "2.5rem",
-          opacity: step >= 1 ? 1 : 0,
-          transform: step >= 1 ? "translateY(0)" : "translateY(20px)",
-          transition: `opacity 1s ${ease}, transform 1s ${ease}`,
-        }}
-      >
-        {/* Initial A */}
-        <p
+      {/* Groom */}
+      <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
+        <div
           style={{
+            width: "100px",
+            height: "100px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            margin: "0 auto 1rem",
+            opacity: step >= 1 ? 1 : 0,
+            transform: step >= 1 ? "translateY(0)" : "translateY(15px)",
+            transition: `opacity 1s ${ease}, transform 1s ${ease}`,
+          }}
+        >
+          <p style={{
             fontFamily: "var(--font-cormorant)",
             fontSize: "4.5rem",
             fontWeight: 300,
             color: "var(--cel-text)",
             lineHeight: 1,
             textShadow: "0 0 20px rgba(201, 169, 110, 0.12), 0 0 40px rgba(201, 169, 110, 0.05)",
-            flexShrink: 0,
-            letterSpacing: "0.02em",
-          }}
-        >
-          A
-        </p>
-        {/* Name & parent */}
-        <div style={{ paddingTop: "0.625rem" }}>
-          <h3
-            style={{
-              fontFamily: "var(--font-cormorant)",
-              fontSize: "1.375rem",
-              fontWeight: 400,
-              color: "var(--cel-text)",
-              letterSpacing: "0.03em",
-              marginBottom: "0.5rem",
-              lineHeight: 1.2,
-            }}
-          >
-            Ali Rahman
-          </h3>
-          <p
-            style={{
-              fontFamily: "var(--font-inter)",
-              fontSize: "0.625rem",
-              color: "var(--cel-text-dim)",
-              lineHeight: 1.7,
-              opacity: step >= 2 ? 0.8 : 0,
-              transform: step >= 2 ? "translateY(0)" : "translateY(8px)",
-              transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}`,
-            }}
-          >
-            Putra dari<br />Bapak Hendri &amp; Ibu Ningsih
+          }}>
+            A
           </p>
         </div>
+        <h3 style={{
+          fontFamily: "var(--font-cormorant)",
+          fontSize: "1.5rem",
+          fontWeight: 400,
+          color: "var(--cel-text)",
+          letterSpacing: "0.03em",
+          marginBottom: "0.5rem",
+          opacity: step >= 2 ? 1 : 0,
+          transform: step >= 2 ? "translateY(0)" : "translateY(12px)",
+          transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}`,
+        }}>
+          Ali Rahman
+        </h3>
+        <p style={{
+          fontFamily: "var(--font-inter)",
+          fontSize: "0.625rem",
+          color: "var(--cel-text-dim)",
+          lineHeight: 1.7,
+          opacity: step >= 3 ? 0.8 : 0,
+          transform: step >= 3 ? "translateY(0)" : "translateY(8px)",
+          transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}`,
+        }}>
+          Putra dari<br />Bapak Hendri &amp; Ibu Ningsih
+        </p>
       </div>
 
       {/* Divider — & */}
@@ -108,83 +100,73 @@ export function CelestialBrideGroom() {
           justifyContent: "center",
           gap: "1rem",
           marginBottom: "2.5rem",
-          opacity: step >= 3 ? 1 : 0,
+          opacity: step >= 4 ? 1 : 0,
           transition: `opacity 1s ${ease}`,
         }}
       >
         <div style={{ width: "2.5rem", height: "0.5px", background: "var(--cel-accent)", opacity: 0.3 }} />
-        <span
-          style={{
-            fontFamily: "var(--font-cormorant)",
-            fontSize: "0.875rem",
-            fontWeight: 400,
-            color: "var(--cel-accent)",
-            opacity: 0.6,
-          }}
-        >
+        <span style={{
+          fontFamily: "var(--font-cormorant)",
+          fontSize: "0.875rem",
+          fontWeight: 400,
+          color: "var(--cel-accent)",
+          opacity: 0.6,
+        }}>
           &amp;
         </span>
         <div style={{ width: "2.5rem", height: "0.5px", background: "var(--cel-accent)", opacity: 0.3 }} />
       </div>
 
-      {/* ── Bride: Initial right, name left ── */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "flex-start",
-          gap: "1.25rem",
-          maxWidth: "20rem",
-          width: "100%",
-          flexDirection: "row-reverse",
-          opacity: step >= 4 ? 1 : 0,
-          transform: step >= 4 ? "translateY(0)" : "translateY(20px)",
-          transition: `opacity 1s ${ease}, transform 1s ${ease}`,
-        }}
-      >
-        {/* Initial L */}
-        <p
+      {/* Bride */}
+      <div style={{ textAlign: "center" }}>
+        <div
           style={{
+            width: "100px",
+            height: "100px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            margin: "0 auto 1rem",
+            opacity: step >= 5 ? 1 : 0,
+            transform: step >= 5 ? "translateY(0)" : "translateY(15px)",
+            transition: `opacity 1s ${ease}, transform 1s ${ease}`,
+          }}
+        >
+          <p style={{
             fontFamily: "var(--font-cormorant)",
             fontSize: "4.5rem",
             fontWeight: 300,
             color: "var(--cel-text)",
             lineHeight: 1,
             textShadow: "0 0 20px rgba(201, 169, 110, 0.12), 0 0 40px rgba(201, 169, 110, 0.05)",
-            flexShrink: 0,
-            letterSpacing: "0.02em",
-          }}
-        >
-          L
-        </p>
-        {/* Name & parent */}
-        <div style={{ paddingTop: "0.625rem", textAlign: "right" }}>
-          <h3
-            style={{
-              fontFamily: "var(--font-cormorant)",
-              fontSize: "1.375rem",
-              fontWeight: 400,
-              color: "var(--cel-text)",
-              letterSpacing: "0.03em",
-              marginBottom: "0.5rem",
-              lineHeight: 1.2,
-            }}
-          >
-            Lyla Azzahra
-          </h3>
-          <p
-            style={{
-              fontFamily: "var(--font-inter)",
-              fontSize: "0.625rem",
-              color: "var(--cel-text-dim)",
-              lineHeight: 1.7,
-              opacity: step >= 5 ? 0.8 : 0,
-              transform: step >= 5 ? "translateY(0)" : "translateY(8px)",
-              transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}`,
-            }}
-          >
-            Putri dari<br />Bapak Yusuf &amp; Ibu Rahayu
+          }}>
+            L
           </p>
         </div>
+        <h3 style={{
+          fontFamily: "var(--font-cormorant)",
+          fontSize: "1.5rem",
+          fontWeight: 400,
+          color: "var(--cel-text)",
+          letterSpacing: "0.03em",
+          marginBottom: "0.5rem",
+          opacity: step >= 5 ? 1 : 0,
+          transform: step >= 5 ? "translateY(0)" : "translateY(12px)",
+          transition: `opacity 0.8s ${ease} 0.1s, transform 0.8s ${ease} 0.1s`,
+        }}>
+          Lyla Azzahra
+        </h3>
+        <p style={{
+          fontFamily: "var(--font-inter)",
+          fontSize: "0.625rem",
+          color: "var(--cel-text-dim)",
+          lineHeight: 1.7,
+          opacity: step >= 6 ? 0.8 : 0,
+          transform: step >= 6 ? "translateY(0)" : "translateY(8px)",
+          transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}`,
+        }}>
+          Putri dari<br />Bapak Yusuf &amp; Ibu Rahayu
+        </p>
       </div>
     </section>
   );

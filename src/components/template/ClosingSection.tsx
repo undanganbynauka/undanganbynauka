@@ -148,8 +148,8 @@ export function ClosingSection() {
           opacity: showLogo ? 0.7 : 0, transform: showLogo ? "translateY(0)" : "translateY(6px)",
           transition: `opacity 1.5s ${ease}, transform 1.5s ${ease}`,
         }}>
-          <Image src="/nauka-logo.png" alt="Nauka" width={48} height={48}
-            style={{ width: "48px", height: "auto", filter: "brightness(0.35) sepia(0.12)" }} />
+          <Image src="/nauka-logo.png" alt="Nauka" width={72} height={72}
+            style={{ width: "72px", height: "auto", filter: "brightness(0.55) sepia(0.12)" }} />
         </div>
       </div>
     </section>

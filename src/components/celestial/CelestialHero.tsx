@@ -251,20 +251,20 @@ export function CelestialHero({ onOpen }: { onOpen?: () => void }) {
         </p>
       </div>
 
-      {/* Open button */}
+      {/* Open button — small, rectangular */}
       {onOpen && (
         <button
           onClick={onOpen}
           style={{
             position: "relative",
-            marginTop: "3rem",
-            padding: "0.75rem 2.5rem",
+            marginTop: "2.5rem",
+            padding: "0.5rem 1.25rem",
             border: "1px solid var(--cel-accent)",
-            borderRadius: "9999px",
+            borderRadius: "4px",
             background: "transparent",
             color: "var(--cel-accent)",
             fontFamily: "var(--font-inter)",
-            fontSize: "0.6875rem",
+            fontSize: "0.5rem",
             fontWeight: 400,
             letterSpacing: "0.15em",
             textTransform: "uppercase",

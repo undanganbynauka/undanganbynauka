@@ -6,7 +6,6 @@ import { StarField, ShootingStar } from "@/components/celestial/StarField";
 import { CelestialHero } from "@/components/celestial/CelestialHero";
 import { CelestialSaveTheDate } from "@/components/celestial/CelestialSaveTheDate";
 import { CelestialCountdown } from "@/components/celestial/CelestialCountdown";
-import { CelestialIntro } from "@/components/celestial/CelestialIntro";
 import { CelestialBrideGroom } from "@/components/celestial/CelestialBrideGroom";
 import { CelestialEvent } from "@/components/celestial/CelestialEvent";
 import { CelestialJourney } from "@/components/celestial/CelestialJourney";
@@ -55,7 +54,6 @@ export default function CelestialPage() {
         >
           <CelestialSaveTheDate />
           <CelestialCountdown />
-          <CelestialIntro />
           <CelestialBrideGroom />
           <CelestialEvent />
           <CelestialJourney />

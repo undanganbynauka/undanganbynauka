@@ -18,32 +18,30 @@ export function CelestialSaveTheDate() {
     return () => observer.disconnect();
   }, [visible]);
 
-  // Step-based text animation chain
+  // Step-based text animation chain — same breathing as Cover
   useEffect(() => {
     if (!visible) return;
     const timers: ReturnType<typeof setTimeout>[] = [];
 
-    // Step 1: Image fades in (0s — handled by visible)
     // Step 2: "The Wedding of" (0.8s)
     timers.push(setTimeout(() => setStep(2), 800));
 
-    // Step 3: "Ali" appears (1.8s)
-    timers.push(setTimeout(() => setStep(3), 1800));
+    // Step 3: "Ali" appears (1.6s)
+    timers.push(setTimeout(() => setStep(3), 1600));
 
-    // Step 4: "&" gold glow (3.2s)
-    timers.push(setTimeout(() => setStep(4), 3200));
+    // Step 4: "&" gold glow (2.2s)
+    timers.push(setTimeout(() => setStep(4), 2200));
 
-    // Step 5: "Lyla" appears (4.2s)
-    timers.push(setTimeout(() => setStep(5), 4200));
+    // Step 5: "Lyla" appears (2.8s)
+    timers.push(setTimeout(() => setStep(5), 2800));
 
-    // Step 6: Date appears (5.4s)
-    timers.push(setTimeout(() => setStep(6), 5400));
+    // Step 6: Date appears (3.4s)
+    timers.push(setTimeout(() => setStep(6), 3400));
 
     return () => timers.forEach(clearTimeout);
   }, [visible]);
 
-  const ease = "cubic-bezier(0.25, 0.1, 0.25, 1)";
-  const easeInOut = "cubic-bezier(0.42, 0, 0.58, 1)";
+  const EASE = "cubic-bezier(0.42, 0, 0.58, 1)";
 
   return (
     <section
@@ -75,7 +73,7 @@ export function CelestialSaveTheDate() {
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
             opacity: visible ? 1 : 0,
-            transition: `opacity 1.5s ${ease}`,
+            transition: `opacity 1.5s ${EASE}`,
           }}
         />
 
@@ -86,7 +84,7 @@ export function CelestialSaveTheDate() {
             inset: 0,
             background: "rgba(11, 16, 38, 0.35)",
             opacity: visible ? 1 : 0,
-            transition: `opacity 1.5s ${ease} 0.2s`,
+            transition: `opacity 1.5s ${EASE} 0.2s`,
           }}
         />
 
@@ -127,7 +125,7 @@ export function CelestialSaveTheDate() {
               marginBottom: "0.75rem",
               opacity: step >= 2 ? 1 : 0,
               transform: step >= 2 ? "translateY(0)" : "translateY(10px)",
-              transition: `opacity 0.8s ${easeInOut}, transform 0.8s ${easeInOut}`,
+              transition: `opacity 1s ${EASE}, transform 1s ${EASE}`,
             }}
           >
             The Wedding of
@@ -152,8 +150,8 @@ export function CelestialSaveTheDate() {
               style={{
                 display: "inline-block",
                 opacity: step >= 3 ? 1 : 0,
-                transform: step >= 3 ? "translateY(0)" : "translateY(15px)",
-                transition: `opacity 0.8s ${easeInOut}, transform 0.8s ${easeInOut}`,
+                transform: step >= 3 ? "translateY(0)" : "translateY(20px)",
+                transition: `opacity 1s ${EASE}, transform 1s ${EASE}`,
               }}
             >
               Ali
@@ -165,8 +163,8 @@ export function CelestialSaveTheDate() {
                 fontWeight: 400,
                 display: "inline-block",
                 opacity: step >= 4 ? 1 : 0,
-                transform: step >= 4 ? "scale(1)" : "scale(0.7)",
-                transition: `opacity 0.6s ${easeInOut}, transform 0.6s ${easeInOut}`,
+                transform: step >= 4 ? "scale(1)" : "scale(0.8)",
+                transition: `opacity 0.8s ${EASE}, transform 0.8s ${EASE}`,
                 animation: step >= 4 ? "celSaveAmpGlow 4s ease-in-out infinite" : "none",
               }}
             >
@@ -177,8 +175,8 @@ export function CelestialSaveTheDate() {
               style={{
                 display: "inline-block",
                 opacity: step >= 5 ? 1 : 0,
-                transform: step >= 5 ? "translateY(0)" : "translateY(15px)",
-                transition: `opacity 0.8s ${easeInOut}, transform 0.8s ${easeInOut}`,
+                transform: step >= 5 ? "translateY(0)" : "translateY(20px)",
+                transition: `opacity 1s ${EASE}, transform 1s ${EASE}`,
               }}
             >
               Lyla
@@ -194,8 +192,8 @@ export function CelestialSaveTheDate() {
               letterSpacing: "0.18em",
               color: "var(--cel-text-dim)",
               opacity: step >= 6 ? 1 : 0,
-              transform: step >= 6 ? "translateY(0)" : "translateY(8px)",
-              transition: `opacity 0.8s ${easeInOut}, transform 0.8s ${easeInOut}`,
+              transform: step >= 6 ? "translateY(0)" : "translateY(10px)",
+              transition: `opacity 1s ${EASE}, transform 1s ${EASE}`,
             }}
           >
             5 Desember 2026

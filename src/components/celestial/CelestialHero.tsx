@@ -227,7 +227,7 @@ export function CelestialHero({ onOpen }: { onOpen?: () => void }) {
         <h1
           style={{
             fontFamily: "var(--font-cormorant)",
-            fontSize: "3rem",
+            fontSize: "2.25rem",
             fontWeight: 300,
             color: "var(--cel-text)",
             letterSpacing: "0.04em",

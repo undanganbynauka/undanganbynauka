@@ -93,12 +93,12 @@ export function CelestialSaveTheDate() {
           <p
             style={{
               fontFamily: "var(--font-inter)",
-              fontSize: "0.4375rem",
+              fontSize: "0.5625rem",
               fontWeight: 400,
               letterSpacing: "0.25em",
               textTransform: "uppercase",
               color: "var(--cel-accent)",
-              marginBottom: "0.625rem",
+              marginBottom: "0.75rem",
               opacity: visible ? 1 : 0,
               transform: visible ? "translateY(0)" : "translateY(10px)",
               transition: `opacity 1s ${ease} 0.3s, transform 1s ${ease} 0.3s`,
@@ -111,13 +111,13 @@ export function CelestialSaveTheDate() {
           <h2
             style={{
               fontFamily: "var(--font-cormorant)",
-              fontSize: "1.75rem",
+              fontSize: "2.25rem",
               fontWeight: 300,
               color: "var(--cel-text)",
               letterSpacing: "0.03em",
               lineHeight: 1.1,
               textAlign: "left",
-              marginBottom: "0.625rem",
+              marginBottom: "0.75rem",
               textShadow: "0 2px 20px rgba(0,0,0,0.5), 0 0 40px rgba(11,16,38,0.4)",
               opacity: visible ? 1 : 0,
               transform: visible ? "translateY(0)" : "translateY(12px)",
@@ -131,7 +131,7 @@ export function CelestialSaveTheDate() {
           <p
             style={{
               fontFamily: "var(--font-inter)",
-              fontSize: "0.5rem",
+              fontSize: "0.625rem",
               fontWeight: 400,
               letterSpacing: "0.18em",
               color: "var(--cel-text-dim)",

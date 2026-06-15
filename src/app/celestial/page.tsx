@@ -4,6 +4,7 @@ import React, { useState, useCallback } from "react";
 import "@/app/celestial.css";
 import { StarField, ShootingStar } from "@/components/celestial/StarField";
 import { CelestialHero } from "@/components/celestial/CelestialHero";
+import { CelestialSaveTheDate } from "@/components/celestial/CelestialSaveTheDate";
 import { CelestialCountdown } from "@/components/celestial/CelestialCountdown";
 import { CelestialIntro } from "@/components/celestial/CelestialIntro";
 import { CelestialBrideGroom } from "@/components/celestial/CelestialBrideGroom";
@@ -52,6 +53,7 @@ export default function CelestialPage() {
             transition: "opacity 1.8s cubic-bezier(0.4, 0, 0.2, 1) 0.6s",
           }}
         >
+          <CelestialSaveTheDate />
           <CelestialCountdown />
           <CelestialIntro />
           <CelestialBrideGroom />

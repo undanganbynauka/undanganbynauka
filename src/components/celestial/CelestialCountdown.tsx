@@ -144,7 +144,7 @@ export function CelestialCountdown() {
         <div className="celestial-divider-line" />
       </div>
 
-      {/* Ar-Rum quote */}
+      {/* Quote */}
       <div style={{
         textAlign: "center", maxWidth: "18rem",
         opacity: step >= 4 ? 1 : 0, transform: step >= 4 ? "translateY(0)" : "translateY(12px)",
@@ -153,16 +153,47 @@ export function CelestialCountdown() {
         <p style={{
           fontFamily: "var(--font-cormorant)", fontSize: "0.8125rem", fontWeight: 400,
           fontStyle: "italic", color: "var(--cel-text)", lineHeight: 2, letterSpacing: "0.02em",
-          marginBottom: "1rem",
         }}>
-          &ldquo;Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu pasangan hidup dari jenismu sendiri, supaya kamu merasa tenteram kepadanya.&rdquo;
+          Setiap langkah dalam hidup membawa cerita, dan pada titik tertentu, dua perjalanan yang berbeda dipertemukan untuk berjalan ke arah yang sama.
         </p>
-        <p style={{
-          fontFamily: "var(--font-inter)", fontSize: "0.5rem", fontWeight: 400,
-          letterSpacing: "0.1em", color: "var(--cel-text-dim)",
-        }}>
-          QS. Ar-Rum: 21
-        </p>
+      </div>
+
+      {/* Save The Date button */}
+      <div style={{
+        marginTop: "2rem",
+        opacity: step >= 4 ? 1 : 0,
+        transition: `opacity 1s ${ease} 0.3s`,
+      }}>
+        <button
+          onClick={() => {
+            const start = new Date("2026-07-05T08:00:00+07:00");
+            const end = new Date("2026-07-05T14:00:00+07:00");
+            const gcal = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=Wedding+Ali+%26+Lyla&dates=${start.toISOString().replace(/[-:]/g,"").replace(/\.\d{3}/,"")}/${end.toISOString().replace(/[-:]/g,"").replace(/\.\d{3}/,"")}&details=The+Wedding+of+Ali+%26+Lyla&location=Gedung+Auditorium+Koni,+Jakarta+Pusat`;
+            window.open(gcal, "_blank");
+          }}
+          style={{
+            padding: "0.5rem 1.25rem",
+            border: "1px solid var(--cel-accent)",
+            borderRadius: "4px",
+            background: "transparent",
+            color: "var(--cel-accent)",
+            fontFamily: "var(--font-inter)",
+            fontSize: "0.5rem",
+            fontWeight: 400,
+            letterSpacing: "0.15em",
+            textTransform: "uppercase",
+            cursor: "pointer",
+            transition: "all 0.4s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "rgba(201, 169, 110, 0.1)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "transparent";
+          }}
+        >
+          Save The Date
+        </button>
       </div>
 
       <style>{`

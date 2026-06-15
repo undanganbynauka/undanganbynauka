@@ -44,7 +44,7 @@ export function ClosingSection() {
   const ease = "cubic-bezier(0.25, 0.1, 0.25, 1)";
 
   return (
-    <section ref={sectionRef} id="doa" style={{
+    <section ref={sectionRef} id="closing" style={{
       position: "relative", background: "#F7F3EE",
       display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
       padding: "0", minHeight: "100vh",

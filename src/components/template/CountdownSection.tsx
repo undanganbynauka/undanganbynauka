@@ -46,7 +46,7 @@ export function CountdownSection() {
   return (
     <section
       ref={sectionRef}
-      id="countdown"
+      id="home"
       style={{
         position: "relative",
         display: "flex",

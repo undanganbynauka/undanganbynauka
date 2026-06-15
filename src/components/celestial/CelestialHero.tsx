@@ -235,7 +235,7 @@ export function CelestialHero({ onOpen }: { onOpen?: () => void }) {
 
       {/* Names section — each element animated independently by step */}
       <div style={{ position: "relative", textAlign: "center" }}>
-        {/* "The Wedding of" — step 2 */}
+        {/* "The Wedding of" — step 2: cinematic opening entrance */}
         <p
           style={{
             fontFamily: "var(--font-inter)",
@@ -247,13 +247,13 @@ export function CelestialHero({ onOpen }: { onOpen?: () => void }) {
             marginBottom: "1rem",
             opacity: step >= 2 ? 1 : 0,
             transform: step >= 2 ? "translateY(0)" : "translateY(10px)",
-            transition: `opacity 1s ${EASE}, transform 1s ${EASE}`,
+            transition: `opacity 600ms ${EASE} 200ms, transform 600ms ${EASE} 200ms`,
           }}
         >
           The Wedding of
         </p>
 
-        {/* "Ali" — step 3: fade in from below */}
+        {/* "Ali" — step 3: fade in with emotional breathing glow */}
         <h1
           style={{
             fontFamily: "var(--font-cormorant)",
@@ -269,8 +269,16 @@ export function CelestialHero({ onOpen }: { onOpen?: () => void }) {
             transition: `opacity 1s ${EASE}, transform 1s ${EASE}`,
           }}
         >
-          Ali{" "}
-          {/* "&" — step 4: fade in with gold glow */}
+          {/* "Ali" — subtle glow breathing, 8s cycle */}
+          <span
+            style={{
+              display: "inline-block",
+              animation: step >= 3 ? "celHeroNameBreath 8s ease-in-out 1.5s infinite" : "none",
+            }}
+          >
+            Ali
+          </span>{" "}
+          {/* "&" — step 4: fade in with gold glow + breathing */}
           <span
             style={{
               color: "var(--cel-accent)",
@@ -282,17 +290,19 @@ export function CelestialHero({ onOpen }: { onOpen?: () => void }) {
               transition: `opacity 0.8s ${EASE}, text-shadow 1.5s ${EASE}`,
               display: "inline-block",
               transform: step >= 4 ? "scale(1)" : "scale(0.8)",
+              animation: step >= 4 ? "celHeroAmpGlow 6s ease-in-out 2s infinite" : "none",
             }}
           >
             &amp;
           </span>{" "}
-          {/* "Lyla" — step 5: fade in from below */}
+          {/* "Lyla" — subtle glow breathing, 10s cycle (different from Ali for organic feel) */}
           <span
             style={{
               opacity: step >= 5 ? 1 : 0,
               transform: step >= 5 ? "translateY(0)" : "translateY(20px)",
               display: "inline-block",
               transition: `opacity 1s ${EASE}, transform 1s ${EASE}`,
+              animation: step >= 5 ? "celHeroNameBreath 10s ease-in-out 2.5s infinite" : "none",
             }}
           >
             Lyla
@@ -316,7 +326,7 @@ export function CelestialHero({ onOpen }: { onOpen?: () => void }) {
         </p>
       </div>
 
-      {/* Open button — step 7: fade in with breathing glow */}
+      {/* Open button — step 7: cinematic entrance + idle float + hover glow */}
       {onOpen && (
         <button
           onClick={onOpen}
@@ -336,14 +346,22 @@ export function CelestialHero({ onOpen }: { onOpen?: () => void }) {
             cursor: "pointer",
             opacity: step >= 7 ? 1 : 0,
             transform: step >= 7 ? "translateY(0)" : "translateY(10px)",
-            transition: `opacity 1s ${EASE}, transform 1s ${EASE}, background 0.4s ease, box-shadow 0.4s ease`,
-            animation: step >= 7 ? "cel-glow-pulse 4s ease-in-out infinite" : "none",
+            transition: `opacity 800ms ${EASE}, transform 800ms ${EASE}, background 0.4s ease, box-shadow 0.5s ease, border-color 0.4s ease`,
+            animation: step >= 7 ? "celHeroBtnFloat 5s ease-in-out 1.5s infinite, cel-glow-pulse 4s ease-in-out infinite" : "none",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = "rgba(201, 169, 110, 0.1)";
+            const el = e.currentTarget;
+            el.style.background = "rgba(201, 169, 110, 0.08)";
+            el.style.boxShadow = "0 0 20px rgba(201,169,110,0.15), 0 0 40px rgba(201,169,110,0.06)";
+            el.style.transform = "scale(1.03)";
+            el.style.borderColor = "rgba(201,169,110,0.5)";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.background = "transparent";
+            const el = e.currentTarget;
+            el.style.background = "transparent";
+            el.style.boxShadow = "none";
+            el.style.transform = "scale(1)";
+            el.style.borderColor = "var(--cel-accent)";
           }}
         >
           Buka Undangan

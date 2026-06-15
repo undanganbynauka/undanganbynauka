@@ -41,8 +41,8 @@ function fadeOut(audio: HTMLAudioElement, onComplete?: () => void) {
 export function SoundToggle() {
   const [isSoundOn, setIsSoundOn] = useState(false);
   const [isSoundLoading, setIsSoundLoading] = useState(false);
-  const [showPicker, setShowPicker] = useState(false);
-  const [activeSound, setActiveSound] = useState(AMBIENT_SOUNDS[0].key);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [cycleCount, setCycleCount] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Initialize audio
@@ -66,8 +66,6 @@ export function SoundToggle() {
     const sound = AMBIENT_SOUNDS.find((s) => s.key === soundKey);
     if (!sound) return;
 
-    setActiveSound(soundKey);
-
     const startPlay = () => {
       audio.src = sound.file;
       setIsSoundLoading(true);
@@ -89,8 +87,6 @@ export function SoundToggle() {
     } else {
       startPlay();
     }
-
-    setShowPicker(false);
   }, [isSoundOn]);
 
   const toggleSound = useCallback(() => {
@@ -103,119 +99,71 @@ export function SoundToggle() {
         setIsSoundOn(false);
       });
     } else {
-      playSound(activeSound);
+      playSound(AMBIENT_SOUNDS[activeIndex].key);
     }
-  }, [isSoundOn, activeSound, playSound]);
+  }, [isSoundOn, activeIndex, playSound]);
+
+  // Long press / double click to cycle sound
+  const handleContextMenu = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    const nextIndex = (activeIndex + 1) % AMBIENT_SOUNDS.length;
+    setActiveIndex(nextIndex);
+    setCycleCount((c) => c + 1);
+    if (isSoundOn) {
+      playSound(AMBIENT_SOUNDS[nextIndex].key);
+    }
+  }, [activeIndex, isSoundOn, playSound]);
 
   const accent = "#7D6A52";
+  const currentEmoji = AMBIENT_SOUNDS[activeIndex].emoji;
 
   return (
-    <>
-      {/* Main toggle button */}
-      <button
-        onClick={toggleSound}
-        disabled={isSoundLoading}
-        style={{
-          position: "fixed",
-          bottom: "1rem",
-          right: "3.5rem",
-          width: "40px",
-          height: "40px",
-          borderRadius: "50%",
-          border: `1px solid ${accent}33`,
-          background: "rgba(255, 255, 255, 0.6)",
-          backdropFilter: "blur(12px)",
-          WebkitBackdropFilter: "blur(12px)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          cursor: isSoundLoading ? "wait" : "pointer",
-          transition: "all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1)",
-          zIndex: 60,
-          boxShadow: isSoundOn
-            ? `0 2px 10px rgba(125, 106, 82, 0.15)`
-            : "0 1px 3px rgba(0,0,0,0.04)",
-          opacity: isSoundLoading ? 0.6 : 1,
-        }}
-        title={isSoundOn ? "Matikan suara" : "Putar suara"}
+    <button
+      onClick={toggleSound}
+      onContextMenu={handleContextMenu}
+      disabled={isSoundLoading}
+      style={{
+        position: "fixed",
+        bottom: "3.5rem",
+        right: "1rem",
+        width: "40px",
+        height: "40px",
+        borderRadius: "50%",
+        border: `1px solid ${accent}33`,
+        background: "rgba(255, 255, 255, 0.6)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        cursor: isSoundLoading ? "wait" : "pointer",
+        transition: "all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1)",
+        zIndex: 60,
+        boxShadow: isSoundOn
+          ? `0 2px 10px rgba(125, 106, 82, 0.15)`
+          : "0 1px 3px rgba(0,0,0,0.04)",
+        opacity: isSoundLoading ? 0.6 : 1,
+      }}
+      title={isSoundOn ? "Matikan suara" : "Putar suara"}
+    >
+      {/* Music note icon with slash when OFF */}
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke={accent}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       >
-        <span style={{ fontSize: "1rem", lineHeight: 1 }}>
-          🎵
-        </span>
-      </button>
-
-      {/* Sound picker — small expand button */}
-      {isSoundOn && (
-        <button
-          onClick={() => setShowPicker(!showPicker)}
-          style={{
-            position: "fixed",
-            bottom: "1rem",
-            right: "6.75rem",
-            width: "32px",
-            height: "32px",
-            borderRadius: "50%",
-            border: `1px solid ${accent}22`,
-            background: "rgba(255, 255, 255, 0.5)",
-            backdropFilter: "blur(12px)",
-            WebkitBackdropFilter: "blur(12px)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: "pointer",
-            transition: "all 0.3s ease",
-            zIndex: 60,
-            fontSize: "0.75rem",
-            color: accent,
-          }}
-          title="Ganti suara"
-        >
-          🎵
-        </button>
-      )}
-
-      {/* Picker popup — emojis only, no text */}
-      {showPicker && (
-        <div
-          style={{
-            position: "fixed",
-            bottom: "3.5rem",
-            right: "3.5rem",
-            background: "rgba(255, 255, 255, 0.9)",
-            backdropFilter: "blur(16px)",
-            WebkitBackdropFilter: "blur(16px)",
-            border: "1px solid rgba(125, 110, 99, 0.12)",
-            borderRadius: "12px",
-            padding: "0.5rem",
-            zIndex: 61,
-            display: "flex",
-            gap: "0.25rem",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-          }}
-        >
-          {AMBIENT_SOUNDS.map((sound) => (
-            <button
-              key={sound.key}
-              onClick={() => playSound(sound.key)}
-              style={{
-                width: "36px",
-                height: "36px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                border: "none",
-                background: activeSound === sound.key ? "rgba(125, 106, 82, 0.12)" : "transparent",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontSize: "1.125rem",
-                transition: "all 0.2s ease",
-              }}
-            >
-              {sound.emoji}
-            </button>
-          ))}
-        </div>
-      )}
-    </>
+        <path d="M9 18V5l12-2v13" />
+        <circle cx="6" cy="18" r="3" />
+        <circle cx="18" cy="16" r="3" />
+        {!isSoundOn && (
+          <line x1="2" y1="2" x2="22" y2="22" strokeWidth="2" />
+        )}
+      </svg>
+    </button>
   );
 }

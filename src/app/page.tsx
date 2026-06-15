@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
+import { SoundToggle } from "@/components/mood/SoundToggle";
 import { SacredHero } from "@/components/sacred/SacredHero";
 import { CountdownSection } from "@/components/template/CountdownSection";
 import { BismillahSection } from "@/components/template/BismillahSection";
@@ -61,6 +62,7 @@ export default function Home() {
           <AmplopDigitalSection />
           <ClosingSection />
           <FloatingNav />
+          <SoundToggle />
         </div>
       )}
     </main>

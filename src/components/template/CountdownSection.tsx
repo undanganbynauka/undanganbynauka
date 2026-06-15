@@ -43,6 +43,27 @@ export function CountdownSection() {
     { label: "Detik", value: timeLeft.seconds },
   ];
 
+  // Staggered letter reveal helper
+  const renderLetters = (
+    text: string,
+    baseDelay: number,
+    delayPerChar: number = 0.04
+  ) =>
+    text.split("").map((char, i) => (
+      <span
+        key={i}
+        style={{
+          display: "inline-block",
+          opacity: visible ? 1 : 0,
+          transform: visible ? "translateY(0)" : "translateY(10px)",
+          transition: `opacity 0.6s ${ease} ${baseDelay + i * delayPerChar}s, transform 0.6s ${ease} ${baseDelay + i * delayPerChar}s`,
+          whiteSpace: char === " " ? "pre" : undefined,
+        }}
+      >
+        {char === " " ? "\u00A0" : char}
+      </span>
+    ));
+
   return (
     <section
       ref={sectionRef}
@@ -87,7 +108,7 @@ export function CountdownSection() {
           background: "linear-gradient(to top, rgba(250,247,242,0.9) 0%, rgba(250,247,242,0.3) 50%, transparent 100%)",
           pointerEvents: "none",
         }} />
-        {/* Text at bottom-right */}
+        {/* Text at bottom-right — staggered letter reveal */}
         <div style={{
           position: "absolute",
           bottom: "3.5rem",
@@ -98,26 +119,22 @@ export function CountdownSection() {
           <p style={{
             fontFamily: "var(--font-cormorant)", fontSize: "0.8125rem", fontWeight: 400,
             fontStyle: "italic", color: "#6F6F6F", letterSpacing: "0.06em",
-            marginBottom: "0.625rem",
-            opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(10px)",
-            transition: `opacity 0.8s ${ease} 0.2s, transform 0.8s ${ease} 0.2s`,
+            marginBottom: "0.625rem", margin: 0,
           }}>
-            The Wedding of
+            {renderLetters("The Wedding of", 0.3, 0.035)}
           </p>
           <h2 style={{
             fontFamily: "var(--font-cormorant)", fontSize: "1.75rem", fontWeight: 500,
             color: "#2E2E2E", letterSpacing: "0.02em",
             marginBottom: "0.625rem",
-            opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(10px)",
-            transition: `opacity 0.8s ${ease} 0.35s, transform 0.8s ${ease} 0.35s`,
           }}>
-            Ali &amp; Lyla
+            {renderLetters("Ali & Lyla", 0.85, 0.05)}
           </h2>
           <p style={{
             fontFamily: "var(--font-jakarta)", fontSize: "0.625rem", fontWeight: 400,
             color: "#8A8A8A", letterSpacing: "0.1em",
-            opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(10px)",
-            transition: `opacity 0.8s ${ease} 0.5s, transform 0.8s ${ease} 0.5s`,
+            opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(8px)",
+            transition: `opacity 0.7s ${ease} 1.4s, transform 0.7s ${ease} 1.4s`,
           }}>
             Ahad, 5 Juli 2026
           </p>
@@ -138,7 +155,7 @@ export function CountdownSection() {
         letterSpacing: "0.15em", textTransform: "uppercase", color: "#8A8A8A",
         marginBottom: "0.5rem",
         opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(15px)",
-        transition: `opacity 1s ${ease}, transform 1s ${ease}`,
+        transition: `opacity 1s ${ease} 1.6s, transform 1s ${ease} 1.6s`,
       }}>
         Menghitung Hari
       </p>
@@ -146,7 +163,7 @@ export function CountdownSection() {
         fontFamily: "var(--font-cormorant)", fontSize: "1.75rem", fontWeight: 500,
         color: "#2E2E2E", marginBottom: "2rem",
         opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(15px)",
-        transition: `opacity 1s ${ease} 0.1s, transform 1s ${ease} 0.1s`,
+        transition: `opacity 1s ${ease} 1.7s, transform 1s ${ease} 1.7s`,
       }}>
         Countdown
       </h2>
@@ -156,7 +173,7 @@ export function CountdownSection() {
             background: "rgba(125, 110, 99, 0.04)", border: "1px solid rgba(125, 110, 99, 0.12)",
             borderRadius: "16px", padding: "1.25rem 0.5rem", textAlign: "center",
             opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(20px)",
-            transition: `opacity 0.8s ${ease} ${0.15 + i * 0.1}s, transform 0.8s ${ease} ${0.15 + i * 0.1}s`,
+            transition: `opacity 0.8s ${ease} ${1.8 + i * 0.1}s, transform 0.8s ${ease} ${1.8 + i * 0.1}s`,
           }}>
             <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.75rem", fontWeight: 500, color: "#2E2E2E", lineHeight: 1, marginBottom: "0.375rem" }}>
               {String(u.value).padStart(2, "0")}

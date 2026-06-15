@@ -2,6 +2,131 @@
 
 import React, { useState, useEffect } from "react";
 
+/* ── Tiny twinkling stars for the cover ── */
+function CoverStars() {
+  const [stars, setStars] = useState<
+    Array<{ id: number; x: number; y: number; size: number; delay: number; duration: number }>
+  >([]);
+
+  useEffect(() => {
+    const generated = Array.from({ length: 40 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: Math.random() * 1.8 + 0.5,
+      delay: Math.random() * 4,
+      duration: Math.random() * 3 + 2,
+    }));
+    setStars(generated);
+  }, []);
+
+  return (
+    <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
+      {stars.map((star) => (
+        <div
+          key={star.id}
+          style={{
+            position: "absolute",
+            left: `${star.x}%`,
+            top: `${star.y}%`,
+            width: `${star.size}px`,
+            height: `${star.size}px`,
+            borderRadius: "50%",
+            background: star.size > 1.2 ? "rgba(201, 169, 110, 0.9)" : "rgba(255, 255, 255, 0.8)",
+            boxShadow: star.size > 1.2 ? "0 0 6px rgba(201, 169, 110, 0.5)" : "0 0 3px rgba(255,255,255,0.3)",
+            animation: `cel-twinkle ${star.duration}s ease-in-out ${star.delay}s infinite`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+/* ── Shooting stars for the cover ── */
+function CoverShootingStar() {
+  const [shootingStars, setShootingStars] = useState<
+    Array<{ id: number; top: number; left: number; angle: number }>
+  >([]);
+
+  useEffect(() => {
+    let counter = 0;
+    let timeoutId: ReturnType<typeof setTimeout>;
+
+    const scheduleNext = () => {
+      const delay = 4000 + Math.random() * 6000; // 4-10 seconds (more frequent than inside)
+      timeoutId = setTimeout(() => {
+        counter++;
+        const star = {
+          id: counter,
+          top: 5 + Math.random() * 30,
+          left: 10 + Math.random() * 50,
+          angle: 25 + Math.random() * 25,
+        };
+        setShootingStars((prev) => [...prev, star]);
+        setTimeout(() => {
+          setShootingStars((prev) => prev.filter((s) => s.id !== star.id));
+        }, 1500);
+        scheduleNext();
+      }, delay);
+    };
+
+    // First one appears sooner
+    const firstDelay = 1500 + Math.random() * 3000;
+    const firstTimeout = setTimeout(() => {
+      counter++;
+      const star = {
+        id: counter,
+        top: 8 + Math.random() * 25,
+        left: 15 + Math.random() * 45,
+        angle: 30 + Math.random() * 20,
+      };
+      setShootingStars((prev) => [...prev, star]);
+      setTimeout(() => {
+        setShootingStars((prev) => prev.filter((s) => s.id !== star.id));
+      }, 1500);
+      scheduleNext();
+    }, firstDelay);
+
+    return () => {
+      clearTimeout(firstTimeout);
+      clearTimeout(timeoutId);
+    };
+  }, []);
+
+  return (
+    <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
+      {shootingStars.map((star) => (
+        <div
+          key={star.id}
+          style={{
+            position: "absolute",
+            top: `${star.top}%`,
+            left: `${star.left}%`,
+          }}
+        >
+          <div
+            style={{
+              width: "3px",
+              height: "3px",
+              borderRadius: "50%",
+              background: "#fff",
+              boxShadow:
+                "0 0 10px 4px rgba(255,255,255,0.8), " +
+                "-25px 0 15px 2px rgba(201,169,110,0.4), " +
+                "-50px 0 25px 2px rgba(255,255,255,0.25), " +
+                "-75px 0 35px 1px rgba(255,255,255,0.1)",
+              animation: "cel-shooting 1.5s linear forwards",
+              transform: `rotate(${star.angle}deg)`,
+            }}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ── Main Hero ── */
+
 export function CelestialHero({ onOpen }: { onOpen?: () => void }) {
   const [guestName, setGuestName] = useState("");
   const [mounted, setMounted] = useState(false);
@@ -45,11 +170,16 @@ export function CelestialHero({ onOpen }: { onOpen?: () => void }) {
         style={{
           position: "absolute",
           inset: 0,
-          background: "linear-gradient(180deg, rgba(11,16,38,0.45) 0%, rgba(11,16,38,0.30) 40%, rgba(11,16,38,0.50) 70%, rgba(11,16,38,0.75) 100%)",
+          background:
+            "linear-gradient(180deg, rgba(11,16,38,0.45) 0%, rgba(11,16,38,0.30) 40%, rgba(11,16,38,0.50) 70%, rgba(11,16,38,0.75) 100%)",
           opacity: mounted ? 1 : 0,
           transition: "opacity 2s ease 0.3s",
         }}
       />
+
+      {/* ★ Stars & Shooting stars layer ★ */}
+      <CoverStars />
+      <CoverShootingStar />
 
       {/* Content */}
       {/* Guest name */}

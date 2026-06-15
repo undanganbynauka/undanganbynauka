@@ -52,42 +52,33 @@ export function CelestialClosing() {
           transition: `opacity 1.2s ${ease}, transform 1.2s ${ease}`,
         }} />
 
-        {/* Doa */}
+        {/* Quote */}
         <p style={{
-          fontFamily: "var(--font-cormorant)", fontSize: "1.25rem", fontWeight: 400,
-          fontStyle: "italic", color: "var(--cel-text)", lineHeight: 2.2,
-          direction: "rtl", textAlign: "center", marginBottom: "1.5rem",
+          fontFamily: "var(--font-cormorant)", fontSize: "1rem", fontWeight: 400,
+          fontStyle: "italic", color: "var(--cel-text)", lineHeight: 2,
+          textAlign: "center", marginBottom: "0.75rem",
           opacity: step >= 2 ? 1 : 0, transform: step >= 2 ? "translateY(0)" : "translateY(20px)",
           transition: `opacity 1.2s ${ease}, transform 1.2s ${ease}`,
           letterSpacing: "0.02em",
         }}>
-          بَارَكَ اللهُ لَكُمَا وَبَارَكَ عَلَيْكُمَا وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ
+          &ldquo;Cinta bukan tentang saling memandang, tetapi tentang melihat ke arah yang sama.&rdquo;
         </p>
 
-        {/* Transliteration */}
+        {/* Author */}
         <p style={{
-          fontFamily: "var(--font-cormorant)", fontStyle: "italic", fontSize: "0.75rem", fontWeight: 400,
-          color: "var(--cel-text-dim)", lineHeight: 1.9, marginBottom: "1rem",
+          fontFamily: "var(--font-inter)", fontSize: "0.625rem", fontWeight: 400,
+          color: "var(--cel-accent)", lineHeight: 1.8, marginBottom: "2rem",
           opacity: step >= 3 ? 1 : 0, transform: step >= 3 ? "translateY(0)" : "translateY(15px)",
           transition: `opacity 1s ${ease}, transform 1s ${ease}`,
+          letterSpacing: "0.08em",
         }}>
-          Baarakallahu lakuma wa baaraka &lsquo;alaikuma wa jama&lsquo;a bainakuma fii khair
-        </p>
-
-        {/* Translation */}
-        <p style={{
-          fontFamily: "var(--font-inter)", fontSize: "0.6875rem", fontWeight: 400,
-          color: "var(--cel-text-muted)", lineHeight: 1.8, marginBottom: "2rem",
-          opacity: step >= 4 ? 1 : 0, transform: step >= 4 ? "translateY(0)" : "translateY(15px)",
-          transition: `opacity 1s ${ease}, transform 1s ${ease}`,
-        }}>
-          Semoga Allah memberkahimu berdua dan memberkai pernikahanmu, serta menghimpun kalian berdua dalam kebaikan.
+          &mdash; Antoine de Saint-Exup&eacute;ry
         </p>
 
         {/* Divider */}
         <div className="celestial-divider" style={{ justifyContent: "center", marginBottom: "2rem" }}>
           <div className="celestial-divider-line" style={{ opacity: step >= 5 ? 0.4 : 0, transition: "opacity 0.8s ease" }} />
-          <span style={{ color: "var(--cel-accent)", fontSize: "0.625rem", opacity: step >= 5 ? 0.5 : 0, transition: "opacity 0.6s ease 0.3s" }}>⚭</span>
+          <span style={{ color: "var(--cel-accent)", fontSize: "0.625rem", opacity: step >= 5 ? 0.5 : 0, transition: "opacity 0.6s ease 0.3s" }}>♥</span>
           <div className="celestial-divider-line" style={{ opacity: step >= 5 ? 0.4 : 0, transition: "opacity 0.8s ease" }} />
         </div>
 

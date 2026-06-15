@@ -4,20 +4,20 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 
 const JOURNEY_PHASES = [
   {
-    title: "Ta'aruf",
-    desc: "Sebuah pertemuan yang Allah pertemukan, bukan kebetulan melainkan takdir yang indah.",
+    title: "Pertemuan",
+    desc: "Sebuah awal sederhana yang perlahan menjadi bagian penting dari cerita kami.",
   },
   {
-    title: "Nadzor",
-    desc: "Melihat dengan hati yang jujur, memastikan bahwa ketenangan ada dalam pandangan pertama.",
+    title: "Mengenal",
+    desc: "Waktu membawa kami untuk saling memahami dan menemukan kenyamanan satu sama lain.",
   },
   {
-    title: "Khitbah",
-    desc: "Sebuah komitmen suci untuk menjaga hati, mempersiapkan langkah menuju ikatan yang halal.",
+    title: "Komitmen",
+    desc: "Tumbuh dari keyakinan yang sama untuk melangkah ke arah yang lebih serius.",
   },
   {
-    title: "Menikah",
-    desc: "Hari ketika dua perjalanan menjadi satu, dengan niat dan doa menuju ridha-Nya.",
+    title: "Hari Bahagia",
+    desc: "Hari ketika kami memulai perjalanan baru sebagai satu keluarga, dengan harapan yang sama untuk masa depan.",
   },
 ];
 

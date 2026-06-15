@@ -69,7 +69,6 @@ export function CelestialCountdown() {
   return (
     <section
       ref={sectionRef}
-      id="home"
       className="celestial-section"
       style={{
         background: "linear-gradient(180deg, #0F1530 0%, #1A2555 40%, #0F1530 100%)",

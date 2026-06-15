@@ -46,6 +46,7 @@ export function CelestialSaveTheDate() {
   return (
     <section
       ref={sectionRef}
+      id="home"
       className="celestial-section"
       style={{
         background: "#0F1530",

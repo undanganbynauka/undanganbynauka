@@ -28,10 +28,8 @@ export function SaveTheDateCard() {
       description: "Akad Nikah 08:00–10:00 WIB | Resepsi 11:00–14:00 WIB",
     };
 
-    // Try Google Calendar first
     const googleUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${event.start}/${event.end}&location=${encodeURIComponent(event.location)}&details=${encodeURIComponent(event.description)}`;
 
-    // Generate .ics file as fallback
     const icsContent = [
       "BEGIN:VCALENDAR",
       "VERSION:2.0",
@@ -46,7 +44,6 @@ export function SaveTheDateCard() {
       "END:VCALENDAR",
     ].join("\r\n");
 
-    // Try opening Google Calendar; if on mobile, offer .ics download
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
     if (isMobile) {
@@ -66,19 +63,109 @@ export function SaveTheDateCard() {
 
   const ease = "cubic-bezier(0.25, 0.1, 0.25, 1)";
 
+  // Staggered letter animation helper
+  const renderLetters = (
+    text: string,
+    baseDelay: number,
+    delayPerChar: number = 0.035
+  ) =>
+    text.split("").map((char, i) => (
+      <span
+        key={i}
+        style={{
+          display: "inline-block",
+          opacity: visible ? 1 : 0,
+          transform: visible ? "translateY(0)" : "translateY(12px)",
+          transition: `opacity 0.5s ${ease} ${baseDelay + i * delayPerChar}s, transform 0.5s ${ease} ${baseDelay + i * delayPerChar}s`,
+          whiteSpace: char === " " ? "pre" : undefined,
+        }}
+      >
+        {char === " " ? "\u00A0" : char}
+      </span>
+    ));
+
   return (
     <div
       ref={cardRef}
       style={{
         display: "flex",
-        justifyContent: "center",
-        padding: "0 1.5rem 3rem",
+        flexDirection: "column",
+        alignItems: "center",
+        padding: "2.5rem 1.5rem 3rem",
         background: "#FAF7F2",
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(20px)",
-        transition: `opacity 0.6s ${ease}, transform 0.6s ${ease}`,
+        gap: "1.25rem",
       }}
     >
+      {/* Decorative thin line */}
+      <div
+        style={{
+          width: visible ? "3rem" : "0rem",
+          height: "1px",
+          background: "rgba(125, 110, 99, 0.25)",
+          transition: `width 0.8s ${ease} 0.1s`,
+        }}
+      />
+
+      {/* "Save The Date" — staggered letter reveal */}
+      <p
+        style={{
+          fontFamily: "var(--font-cormorant)",
+          fontSize: "1.125rem",
+          fontWeight: 400,
+          fontStyle: "italic",
+          letterSpacing: "0.12em",
+          color: "#8E7E72",
+          margin: 0,
+          textAlign: "center",
+        }}
+      >
+        {renderLetters("Save The Date", 0.15)}
+      </p>
+
+      {/* Names — staggered, more dramatic */}
+      <p
+        style={{
+          fontFamily: "var(--font-cormorant)",
+          fontSize: "1.5rem",
+          fontWeight: 500,
+          color: "#2E2E2E",
+          letterSpacing: "0.04em",
+          margin: 0,
+          textAlign: "center",
+        }}
+      >
+        {renderLetters("Ali & Lyla", 0.6, 0.04)}
+      </p>
+
+      {/* Date — soft fade-in after names */}
+      <p
+        style={{
+          fontFamily: "var(--font-jakarta)",
+          fontSize: "0.625rem",
+          fontWeight: 400,
+          letterSpacing: "0.1em",
+          color: "#8A8A8A",
+          margin: 0,
+          textAlign: "center",
+          opacity: visible ? 1 : 0,
+          transform: visible ? "translateY(0)" : "translateY(8px)",
+          transition: `opacity 0.7s ${ease} 1.1s, transform 0.7s ${ease} 1.1s`,
+        }}
+      >
+        Ahad, 5 Juli 2026
+      </p>
+
+      {/* Decorative thin line */}
+      <div
+        style={{
+          width: visible ? "3rem" : "0rem",
+          height: "1px",
+          background: "rgba(125, 110, 99, 0.25)",
+          transition: `width 0.8s ${ease} 1.3s`,
+        }}
+      />
+
+      {/* Add to Calendar button */}
       <button
         onClick={handleAddCalendar}
         style={{
@@ -95,6 +182,8 @@ export function SaveTheDateCard() {
           cursor: "pointer",
           transition: "all 0.4s ease",
           outline: "none",
+          opacity: visible ? 1 : 0,
+          transform: visible ? "translateY(0)" : "translateY(8px)",
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.borderColor = "rgba(125, 110, 99, 0.2)";
@@ -105,7 +194,7 @@ export function SaveTheDateCard() {
           e.currentTarget.style.color = "#8A8A8A";
         }}
       >
-        Save The Date
+        Add to Calendar
       </button>
     </div>
   );

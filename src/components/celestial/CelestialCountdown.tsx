@@ -1,0 +1,103 @@
+"use client";
+
+import React, { useState, useEffect, useRef } from "react";
+
+export function CelestialCountdown() {
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [visible, setVisible] = useState(false);
+  const sectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const target = new Date("2026-07-05T08:00:00+07:00").getTime();
+    const tick = () => {
+      const diff = Math.max(0, target - Date.now());
+      setTimeLeft({
+        days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((diff / (1000 * 60)) % 60),
+        seconds: Math.floor((diff / 1000) % 60),
+      });
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting && !visible) setVisible(true); },
+      { threshold: 0.15 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [visible]);
+
+  const ease = "cubic-bezier(0.25, 0.1, 0.25, 1)";
+  const units = [
+    { label: "Hari", value: timeLeft.days },
+    { label: "Jam", value: timeLeft.hours },
+    { label: "Menit", value: timeLeft.minutes },
+    { label: "Detik", value: timeLeft.seconds },
+  ];
+
+  return (
+    <section ref={sectionRef} id="home" className="celestial-section" style={{ background: "linear-gradient(180deg, #1A2555 0%, #0F1530 100%)", padding: "5rem 1.5rem" }}>
+      <p style={{
+        fontFamily: "var(--font-inter)", fontSize: "0.625rem", fontWeight: 400,
+        letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--cel-accent)",
+        marginBottom: "0.75rem",
+        opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(15px)",
+        transition: `opacity 1s ${ease}, transform 1s ${ease}`,
+      }}>
+        Menghitung Hari
+      </p>
+      <h2 style={{
+        fontFamily: "var(--font-cormorant)", fontSize: "2rem", fontWeight: 300,
+        color: "var(--cel-text)", letterSpacing: "0.04em", marginBottom: "2.5rem",
+        opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(15px)",
+        transition: `opacity 1s ${ease} 0.1s, transform 1s ${ease} 0.1s`,
+      }}>
+        Countdown
+      </h2>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "0.75rem", maxWidth: "18rem", width: "100%" }}>
+        {units.map((u, i) => (
+          <div key={u.label} style={{
+            background: "var(--cel-glass)", border: "1px solid var(--cel-border)",
+            borderRadius: "16px", padding: "1.25rem 0.5rem", textAlign: "center",
+            opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(20px)",
+            transition: `opacity 0.8s ${ease} ${0.15 + i * 0.1}s, transform 0.8s ${ease} ${0.15 + i * 0.1}s`,
+          }}>
+            <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.75rem", fontWeight: 300, color: "var(--cel-text)", lineHeight: 1, marginBottom: "0.375rem" }}>
+              {String(u.value).padStart(2, "0")}
+            </p>
+            <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.5rem", fontWeight: 400, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--cel-text-dim)" }}>
+              {u.label}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      {/* Save the Date */}
+      <div style={{
+        marginTop: "3rem", textAlign: "center",
+        opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(15px)",
+        transition: `opacity 1s ${ease} 0.6s, transform 1s ${ease} 0.6s`,
+      }}>
+        <div className="celestial-divider" style={{ justifyContent: "center", marginBottom: "1.5rem" }}>
+          <div className="celestial-divider-line" />
+          <span className="celestial-divider-star">✦</span>
+          <div className="celestial-divider-line" />
+        </div>
+        <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.25rem", fontWeight: 400, color: "var(--cel-text)", letterSpacing: "0.03em", marginBottom: "0.5rem" }}>
+          Save The Date
+        </p>
+        <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.6875rem", color: "var(--cel-text-dim)", letterSpacing: "0.08em", lineHeight: 1.8 }}>
+          Ahad, 5 Juli 2026<br />
+          Gedung Auditorium Koni, Jakarta Pusat
+        </p>
+      </div>
+    </section>
+  );
+}

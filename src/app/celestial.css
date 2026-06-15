@@ -1,0 +1,138 @@
+/* ── NAUKA CELESTIAL — Midnight Blue Theme ── */
+
+:root {
+  --cel-midnight: #0B1026;
+  --cel-deep: #111836;
+  --cel-navy: #162044;
+  --cel-accent: #C9A96E;
+  --cel-accent-soft: rgba(201, 169, 110, 0.15);
+  --cel-accent-glow: rgba(201, 169, 110, 0.35);
+  --cel-text: #E8E4DC;
+  --cel-text-dim: #8B8FA8;
+  --cel-text-muted: #5A5E78;
+  --cel-star: rgba(255, 255, 255, 0.85);
+  --cel-border: rgba(201, 169, 110, 0.12);
+  --cel-glass: rgba(255, 255, 255, 0.04);
+  --cel-glass-strong: rgba(255, 255, 255, 0.08);
+}
+
+/* ── Starry Sky Background ── */
+
+@keyframes cel-twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+@keyframes cel-twinkle-slow {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes cel-shooting {
+  0% { transform: translateX(0) translateY(0); opacity: 1; }
+  70% { opacity: 1; }
+  100% { transform: translateX(300px) translateY(150px); opacity: 0; }
+}
+
+@keyframes cel-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes cel-glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(201, 169, 110, 0.1); }
+  50% { box-shadow: 0 0 40px rgba(201, 169, 110, 0.2); }
+}
+
+@keyframes cel-fade-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes cel-scale-in {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes nauka-fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Celestial Page ── */
+
+.celestial-page {
+  background: var(--cel-midnight);
+  color: var(--cel-text);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.celestial-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 30% 60%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 50% 10%, rgba(255,255,255,0.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 70% 40%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 90% 80%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 20% 90%, rgba(255,255,255,0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 60% 75%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 80% 15%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 40% 45%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 15% 55%, rgba(255,255,255,0.4) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+  animation: cel-twinkle-slow 8s ease-in-out infinite;
+}
+
+/* ── Section Base ── */
+
+.celestial-section {
+  position: relative;
+  z-index: 1;
+  padding: 4rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.celestial-section + .celestial-section {
+  border-top: 1px solid var(--cel-border);
+}
+
+/* ── Glass Card ── */
+
+.celestial-card {
+  background: var(--cel-glass);
+  border: 1px solid var(--cel-border);
+  border-radius: 20px;
+  padding: 2rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* ── Gold Divider ── */
+
+.celestial-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 2rem 0;
+}
+
+.celestial-divider-line {
+  width: 3rem;
+  height: 0.5px;
+  background: var(--cel-accent);
+  opacity: 0.4;
+}
+
+.celestial-divider-star {
+  color: var(--cel-accent);
+  font-size: 0.625rem;
+  opacity: 0.5;
+}

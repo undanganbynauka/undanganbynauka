@@ -628,7 +628,7 @@ export function CelestialClosing() {
         <div
           style={{
             marginTop: "4rem",
-            opacity: step >= 13 ? 0.15 : 0,
+            opacity: step >= 13 ? 0.3 : 0,
             transform: step >= 13 ? "translateY(0)" : "translateY(6px)",
             transition: `opacity 2s ${easeCinematic}, transform 2s ${easeCinematic}`,
           }}
@@ -639,7 +639,7 @@ export function CelestialClosing() {
             style={{
               width: "3.5rem",
               height: "auto",
-              filter: "invert(1) brightness(0.75)",
+              filter: "brightness(0) invert(1)",
             }}
           />
         </div>

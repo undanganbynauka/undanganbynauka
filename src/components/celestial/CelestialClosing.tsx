@@ -623,26 +623,6 @@ export function CelestialClosing() {
             )}
           </div>
         )}
-
-        {/* ── Nauka Logo — fading into the dark ── */}
-        <div
-          style={{
-            marginTop: "4rem",
-            opacity: step >= 13 ? 0.5 : 0,
-            transform: step >= 13 ? "translateY(0)" : "translateY(6px)",
-            transition: `opacity 2s ${easeCinematic}, transform 2s ${easeCinematic}`,
-          }}
-        >
-          <img
-            src="/nauka-logo-new.png"
-            alt="Undangan by Nauka"
-            style={{
-              width: "3.5rem",
-              height: "auto",
-              filter: "brightness(0) invert(1)",
-            }}
-          />
-        </div>
       </div>
 
       {/* ── Final Fade-to-Black — like film ending ── */}
@@ -675,6 +655,29 @@ export function CelestialClosing() {
           transition: `opacity 4s ${easeCinematic} 3s`,
         }}
       />
+
+      {/* ── Nauka Logo — on top of everything, bottom center ── */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: "1.5rem",
+          left: "50%",
+          transform: `translateX(-50%) ${step >= 13 ? "translateY(0)" : "translateY(6px)"}`,
+          opacity: step >= 13 ? 0.5 : 0,
+          transition: `opacity 2s ${easeCinematic}, transform 2s ${easeCinematic}`,
+          zIndex: 10,
+        }}
+      >
+        <img
+          src="/nauka-logo-new.png"
+          alt="Undangan by Nauka"
+          style={{
+            width: "3.5rem",
+            height: "auto",
+            filter: "brightness(0) invert(1)",
+          }}
+        />
+      </div>
 
       {/* ── Keyframes — slower, cinematic ── */}
       <style>{`

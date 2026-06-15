@@ -89,6 +89,93 @@ export function CelestialSaveTheDate() {
           }}
         />
 
+        {/* 1. Film grain overlay — cinematic texture */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            opacity: 0.06,
+            pointerEvents: "none",
+            backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")",
+            backgroundSize: "128px 128px",
+            animation: visible ? "celSaveGrainDrift 20s linear infinite" : "none",
+            zIndex: 2,
+          }}
+        />
+
+        {/* 2. Star field with parallax drift — mid depth */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            pointerEvents: "none",
+            zIndex: 3,
+          }}
+        >
+          {/* Cluster A — slow drift */}
+          <div style={{ position: "absolute", inset: 0, animation: visible ? "celSaveStarDriftA 60s linear infinite" : "none" }}>
+            {[
+              { t: 8, l: 12 }, { t: 15, l: 72 }, { t: 22, l: 45 },
+              { t: 35, l: 88 }, { t: 42, l: 28 }, { t: 55, l: 65 },
+              { t: 68, l: 18 }, { t: 75, l: 52 }, { t: 85, l: 80 },
+              { t: 12, l: 38 }, { t: 48, l: 95 }, { t: 62, l: 8 },
+              { t: 90, l: 42 }, { t: 28, l: 58 }, { t: 78, l: 33 },
+            ].map((s, i) => (
+              <div key={`sa${i}`} style={{
+                position: "absolute", top: `${s.t}%`, left: `${s.l}%`,
+                width: "1.5px", height: "1.5px", borderRadius: "50%",
+                background: "rgba(201,169,110,0.35)",
+                boxShadow: "0 0 2px rgba(201,169,110,0.15)",
+              }} />
+            ))}
+          </div>
+          {/* Cluster B — slightly different speed */}
+          <div style={{ position: "absolute", inset: 0, animation: visible ? "celSaveStarDriftB 80s linear infinite" : "none" }}>
+            {[
+              { t: 5, l: 20 }, { t: 18, l: 55 }, { t: 30, l: 82 },
+              { t: 44, l: 15 }, { t: 58, l: 70 }, { t: 72, l: 40 },
+              { t: 82, l: 90 }, { t: 92, l: 25 }, { t: 25, l: 62 },
+              { t: 65, l: 48 },
+            ].map((s, i) => (
+              <div key={`sb${i}`} style={{
+                position: "absolute", top: `${s.t}%`, left: `${s.l}%`,
+                width: "1px", height: "1px", borderRadius: "50%",
+                background: "rgba(180,190,220,0.3)",
+                boxShadow: "0 0 1.5px rgba(180,190,220,0.1)",
+              }} />
+            ))}
+          </div>
+        </div>
+
+        {/* 3. Foreground sparkle particles — closest to user */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            pointerEvents: "none",
+            zIndex: 4,
+          }}
+        >
+          {[
+            { t: 10, l: 22, d: 0 }, { t: 18, l: 78, d: 1.2 },
+            { t: 32, l: 50, d: 2.5 }, { t: 45, l: 85, d: 0.8 },
+            { t: 55, l: 15, d: 3.1 }, { t: 62, l: 68, d: 1.8 },
+            { t: 70, l: 35, d: 4.0 }, { t: 78, l: 92, d: 2.2 },
+            { t: 85, l: 48, d: 0.5 }, { t: 25, l: 60, d: 3.5 },
+            { t: 38, l: 8, d: 1.5 }, { t: 52, l: 40, d: 2.8 },
+            { t: 88, l: 72, d: 0.3 }, { t: 15, l: 45, d: 3.8 },
+            { t: 68, l: 55, d: 1.0 },
+          ].map((s, i) => (
+            <div key={`sp${i}`} style={{
+              position: "absolute", top: `${s.t}%`, left: `${s.l}%`,
+              width: "2px", height: "2px", borderRadius: "50%",
+              background: "rgba(201,169,110,0.5)",
+              opacity: 0,
+              animation: visible ? `celSaveSparkle 6s ease-in-out ${s.d}s infinite` : "none",
+            }} />
+          ))}
+        </div>
+
         {/* Bottom gradient fade into next section */}
         <div
           style={{
@@ -99,6 +186,7 @@ export function CelestialSaveTheDate() {
             height: "35%",
             background: "linear-gradient(to top, #0F1530 0%, rgba(15,21,48,0.5) 50%, transparent 100%)",
             pointerEvents: "none",
+            zIndex: 5,
           }}
         />
 
@@ -112,6 +200,7 @@ export function CelestialSaveTheDate() {
             display: "flex",
             flexDirection: "column",
             alignItems: "flex-start",
+            zIndex: 6,
           }}
         >
           {/* The Wedding of — step 2 */}
@@ -207,6 +296,31 @@ export function CelestialSaveTheDate() {
         @keyframes celSaveAmpGlow {
           0%, 100% { text-shadow: 0 0 12px rgba(201,169,110,0.4), 0 0 24px rgba(201,169,110,0.15); }
           50% { text-shadow: 0 0 20px rgba(201,169,110,0.7), 0 0 40px rgba(201,169,110,0.3), 0 0 60px rgba(201,169,110,0.1); }
+        }
+        /* Film grain — very slow drift */
+        @keyframes celSaveGrainDrift {
+          0% { transform: translate(0, 0); }
+          25% { transform: translate(-2px, 1px); }
+          50% { transform: translate(1px, -1px); }
+          75% { transform: translate(-1px, -2px); }
+          100% { transform: translate(0, 0); }
+        }
+        /* Star cluster A — slow diagonal drift */
+        @keyframes celSaveStarDriftA {
+          0% { transform: translate(0, 0); }
+          100% { transform: translate(-15px, -8px); }
+        }
+        /* Star cluster B — different speed parallax */
+        @keyframes celSaveStarDriftB {
+          0% { transform: translate(0, 0); }
+          100% { transform: translate(-10px, -12px); }
+        }
+        /* Sparkle — subtle opacity flicker */
+        @keyframes celSaveSparkle {
+          0%, 100% { opacity: 0; }
+          30% { opacity: 0.35; }
+          50% { opacity: 0.5; }
+          70% { opacity: 0.3; }
         }
       `}</style>
     </section>

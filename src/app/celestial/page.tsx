@@ -63,9 +63,11 @@ export default function CelestialPage() {
           <CelestialAmplopDigital />
           <CelestialClosing />
           <CelestialNav />
-          <CelestialMusic />
         </div>
       )}
+
+      {/* MUSIC — always visible */}
+      <CelestialMusic />
     </main>
   );
 }

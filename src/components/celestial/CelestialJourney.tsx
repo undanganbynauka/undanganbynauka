@@ -171,7 +171,7 @@ export function CelestialJourney() {
       timers.push(
         setTimeout(() => {
           setActivePhase(i);
-        }, phaseStart + i * 1300)
+        }, phaseStart + i * 2200)
       );
     });
 

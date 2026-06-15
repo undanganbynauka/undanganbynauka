@@ -573,6 +573,52 @@ export function CelestialClosing() {
                     </div>
                   </div>
                 ))}
+
+                {/* Kado Fisik */}
+                <div
+                  style={{
+                    background: "rgba(255,255,255,0.02)",
+                    border: "1px solid rgba(201,169,110,0.08)",
+                    borderRadius: "14px",
+                    padding: "0.875rem 1.125rem",
+                    transition: "all 0.4s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = "rgba(201,169,110,0.18)";
+                    e.currentTarget.style.background = "rgba(255,255,255,0.04)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = "rgba(201,169,110,0.08)";
+                    e.currentTarget.style.background = "rgba(255,255,255,0.02)";
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: "var(--font-inter)",
+                      fontSize: "0.5rem",
+                      fontWeight: 500,
+                      letterSpacing: "0.15em",
+                      textTransform: "uppercase",
+                      color: "var(--cel-accent)",
+                      marginBottom: "0.5rem",
+                      opacity: 0.8,
+                    }}
+                  >
+                    Kado Fisik
+                  </p>
+                  <p
+                    style={{
+                      fontFamily: "var(--font-inter)",
+                      fontSize: "0.6875rem",
+                      color: "var(--cel-text-dim)",
+                      lineHeight: 1.7,
+                      opacity: 0.8,
+                    }}
+                  >
+                    Lyla Azzahra<br />
+                    Kebon Jahe Kober 1, Jakarta Pusat
+                  </p>
+                </div>
               </div>
             )}
           </div>

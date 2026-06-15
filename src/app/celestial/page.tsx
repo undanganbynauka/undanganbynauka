@@ -11,7 +11,6 @@ import { CelestialEvent } from "@/components/celestial/CelestialEvent";
 import { CelestialJourney } from "@/components/celestial/CelestialJourney";
 import { CelestialRSVP } from "@/components/celestial/CelestialRSVP";
 import { CelestialWishes } from "@/components/celestial/CelestialWishes";
-import { CelestialAmplopDigital } from "@/components/celestial/CelestialAmplopDigital";
 import { CelestialClosing } from "@/components/celestial/CelestialClosing";
 import { CelestialNav } from "@/components/celestial/CelestialNav";
 import { CelestialMusic } from "@/components/celestial/CelestialMusic";
@@ -61,7 +60,6 @@ export default function CelestialPage() {
           <CelestialSectionReveal><CelestialJourney /></CelestialSectionReveal>
           <CelestialSectionReveal><CelestialRSVP /></CelestialSectionReveal>
           <CelestialSectionReveal><CelestialWishes /></CelestialSectionReveal>
-          <CelestialSectionReveal><CelestialAmplopDigital /></CelestialSectionReveal>
           <CelestialSectionReveal><CelestialClosing /></CelestialSectionReveal>
           <CelestialNav />
         </div>

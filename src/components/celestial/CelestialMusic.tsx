@@ -11,18 +11,16 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 export function CelestialMusic() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isReady, setIsReady] = useState(false);
-  const fadeRef = useRef<NodeJS.Timeout | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const fadeRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Initialize audio element once
   useEffect(() => {
     const audio = new Audio("/celestial/bgm.mp3");
     audio.loop = true;
     audio.volume = 0;
-    audio.preload = "auto";
+    audio.preload = "metadata"; // lighter preload
     audioRef.current = audio;
-
-    audio.addEventListener("canplaythrough", () => setIsReady(true), { once: true });
 
     return () => {
       audio.pause();
@@ -69,52 +67,46 @@ export function CelestialMusic() {
 
   const toggle = useCallback(() => {
     const audio = audioRef.current;
-    if (!audio || !isReady) return;
+    if (!audio || isLoading) return;
 
     if (isPlaying) {
       fadeOut();
       setIsPlaying(false);
     } else {
+      setIsLoading(true);
       audio.play().then(() => {
         fadeIn();
         setIsPlaying(true);
+        setIsLoading(false);
       }).catch(() => {
-        // Browser blocked autoplay — user needs to interact again
         setIsPlaying(false);
+        setIsLoading(false);
       });
     }
-  }, [isPlaying, isReady, fadeIn, fadeOut]);
+  }, [isPlaying, isLoading, fadeIn, fadeOut]);
 
   return (
     <>
       {/* CSS Animations */}
       <style>{`
-        @keyframes celestial-music-pulse {
+        @keyframes cel-music-pulse {
           0%, 100% { box-shadow: 0 0 0 0 rgba(201, 169, 110, 0.15), 0 1px 4px rgba(201, 169, 110, 0.08); }
           50% { box-shadow: 0 0 12px 2px rgba(201, 169, 110, 0.2), 0 1px 4px rgba(201, 169, 110, 0.08); }
         }
-        @keyframes celestial-music-ring {
+        @keyframes cel-music-ring {
           0% { transform: scale(1); opacity: 0.4; }
           100% { transform: scale(1.8); opacity: 0; }
         }
-        .celestial-music-btn {
-          animation: none;
-        }
-        .celestial-music-btn.playing {
-          animation: celestial-music-pulse 3s ease-in-out infinite;
-        }
-        .celestial-music-ring {
-          animation: celestial-music-ring 2s ease-out infinite;
-          pointer-events: none;
+        @keyframes cel-music-spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
         }
       `}</style>
 
       <button
         onClick={toggle}
-        className={`celestial-music-btn ${isPlaying ? "playing" : ""}`}
         aria-label={isPlaying ? "Pause music" : "Play music"}
-        title={isPlaying ? "Pause Music" : "Play Music"}
-        disabled={!isReady}
+        title={isPlaying ? "Pause Music" : isLoading ? "Loading..." : "Play Music"}
         style={{
           position: "fixed",
           bottom: "1rem",
@@ -129,23 +121,26 @@ export function CelestialMusic() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          cursor: isReady ? "pointer" : "default",
+          cursor: "pointer",
           zIndex: 56,
           transition: "all 0.3s ease",
-          boxShadow: "0 1px 4px rgba(201, 169, 110, 0.08)",
-          opacity: isReady ? 1 : 0.4,
+          boxShadow: isPlaying
+            ? "0 0 12px 2px rgba(201, 169, 110, 0.2), 0 1px 4px rgba(201, 169, 110, 0.08)"
+            : "0 1px 4px rgba(201, 169, 110, 0.08)",
           outline: "none",
+          animation: isPlaying ? "cel-music-pulse 3s ease-in-out infinite" : "none",
         }}
       >
         {/* Ripple ring when playing */}
         {isPlaying && (
           <span
-            className="celestial-music-ring"
             style={{
               position: "absolute",
               inset: 0,
               borderRadius: "50%",
               border: "1px solid rgba(201, 169, 110, 0.2)",
+              animation: "cel-music-ring 2s ease-out infinite",
+              pointerEvents: "none",
             }}
           />
         )}
@@ -160,6 +155,11 @@ export function CelestialMusic() {
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
+          style={{
+            transition: "all 0.3s ease",
+            opacity: isLoading ? 0.5 : 1,
+            animation: isLoading ? "cel-music-spin 1s linear infinite" : "none",
+          }}
         >
           {isPlaying ? (
             <>
@@ -170,7 +170,7 @@ export function CelestialMusic() {
             </>
           ) : (
             <>
-              {/* Music note — muted */}
+              {/* Music note — off */}
               <path d="M9 18V5l12-2v13" opacity="0.4" />
               <circle cx="6" cy="18" r="3" opacity="0.4" />
               <circle cx="18" cy="16" r="3" opacity="0.4" />

@@ -406,7 +406,7 @@ export function CelestialClosing() {
         {/* ── 11. Nauka Logo ── */}
         <div
           style={{
-            opacity: step >= 11 ? 0.8 : 0,
+            opacity: step >= 11 ? 1 : 0,
             transform: step >= 11 ? "translateY(0)" : "translateY(10px)",
             transition: `opacity 1.2s ${easeInOut}, transform 1.2s ${easeInOut}`,
           }}
@@ -415,10 +415,10 @@ export function CelestialClosing() {
             src="/nauka-logo-new.png"
             alt="Undangan by Nauka"
             style={{
-              width: "5.5rem",
+              width: "6rem",
               height: "auto",
-              filter: "brightness(0.9) grayscale(0.05)",
-              opacity: 0.8,
+              filter: "invert(1) brightness(0.85)",
+              opacity: 1,
             }}
           />
         </div>

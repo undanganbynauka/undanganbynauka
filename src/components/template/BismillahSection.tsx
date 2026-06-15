@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from "react";
 
 export function BismillahSection() {
   const [visible, setVisible] = useState(false);
-  const [step, setStep] = useState(0);
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -18,19 +17,6 @@ export function BismillahSection() {
     return () => observer.disconnect();
   }, [visible]);
 
-  useEffect(() => {
-    if (!visible) return;
-    const timers = [
-      setTimeout(() => setStep(1), 300),   // top divider
-      setTimeout(() => setStep(2), 800),   // quote
-      setTimeout(() => setStep(3), 1400),  // reference
-      setTimeout(() => setStep(4), 2000),  // bottom divider
-    ];
-    return () => timers.forEach(clearTimeout);
-  }, [visible]);
-
-  const ease = "cubic-bezier(0.25, 0.1, 0.25, 1)";
-
   return (
     <section ref={sectionRef} style={{
       position: "relative",
@@ -41,15 +27,15 @@ export function BismillahSection() {
       justifyContent: "center",
       minHeight: "60vh",
       background: "#FAF7F2",
+      opacity: visible ? 1 : 0,
+      transition: "opacity 600ms ease",
     }}>
       {/* Top divider */}
       <div style={{
         width: "80px",
         height: "0.5px",
         background: "#C8B28A",
-        opacity: step >= 1 ? 0.4 : 0,
-        transform: step >= 1 ? "scaleX(1)" : "scaleX(0)",
-        transition: `opacity 1s ${ease}, transform 1s ${ease}`,
+        opacity: 0.4,
         marginBottom: "2.5rem",
       }} />
 
@@ -63,9 +49,6 @@ export function BismillahSection() {
         textAlign: "center",
         lineHeight: 2,
         maxWidth: "18rem",
-        opacity: step >= 2 ? 1 : 0,
-        transform: step >= 2 ? "translateY(0)" : "translateY(15px)",
-        transition: `opacity 1.2s ${ease}, transform 1.2s ${ease}`,
         marginBottom: "1.25rem",
       }}>
         &ldquo;Mereka adalah pakaian bagimu,
@@ -80,9 +63,7 @@ export function BismillahSection() {
         letterSpacing: "0.1em",
         textTransform: "uppercase",
         color: "#8A8A8A",
-        opacity: step >= 3 ? 0.7 : 0,
-        transform: step >= 3 ? "translateY(0)" : "translateY(8px)",
-        transition: `opacity 1s ${ease}, transform 1s ${ease}`,
+        opacity: 0.7,
         marginBottom: "2.5rem",
       }}>
         QS. Al-Baqarah : 187
@@ -93,9 +74,7 @@ export function BismillahSection() {
         width: "80px",
         height: "0.5px",
         background: "#C8B28A",
-        opacity: step >= 4 ? 0.4 : 0,
-        transform: step >= 4 ? "scaleX(1)" : "scaleX(0)",
-        transition: `opacity 1s ${ease}, transform 1s ${ease}`,
+        opacity: 0.4,
       }} />
     </section>
   );

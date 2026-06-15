@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
-import { SoundToggle } from "@/components/mood/SoundToggle";
 import { SacredHero } from "@/components/sacred/SacredHero";
 import { CountdownSection } from "@/components/template/CountdownSection";
 import { BismillahSection } from "@/components/template/BismillahSection";
@@ -23,31 +22,31 @@ export default function Home() {
 
   const handleOpen = useCallback(() => {
     setPhase("opening");
-    setTimeout(() => setPhase("inside"), 2200);
+    setTimeout(() => setPhase("inside"), 800);
   }, []);
 
   return (
     <main className="sacred-page">
-      {/* HERO GATE — always rendered for smooth cross-fade */}
+      {/* HERO GATE — calm cross-fade */}
       <div
         style={{
           position: "fixed",
           inset: 0,
           zIndex: 50,
           pointerEvents: phase === "gate" ? "auto" : "none",
-          opacity: phase === "gate" ? 1 : phase === "opening" ? 0 : 0,
-          transition: "opacity 2s cubic-bezier(0.4, 0, 0.2, 1)",
+          opacity: phase === "gate" ? 1 : 0,
+          transition: "opacity 600ms ease",
         }}
       >
         <SacredHero onOpen={phase === "gate" ? handleOpen : undefined} />
       </div>
 
-      {/* INSIDE CONTENT — fades in while cover fades out */}
+      {/* INSIDE CONTENT — simple fade-in */}
       {phase !== "gate" && (
         <div
           style={{
             opacity: phase === "opening" ? 0 : 1,
-            transition: "opacity 1.8s cubic-bezier(0.4, 0, 0.2, 1) 0.6s",
+            transition: "opacity 600ms ease 200ms",
           }}
         >
           <CountdownSection />
@@ -62,7 +61,6 @@ export default function Home() {
           <AmplopDigitalSection />
           <ClosingSection />
           <FloatingNav />
-          <SoundToggle />
         </div>
       )}
     </main>

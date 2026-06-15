@@ -14,6 +14,7 @@ import { CelestialWishes } from "@/components/celestial/CelestialWishes";
 import { CelestialAmplopDigital } from "@/components/celestial/CelestialAmplopDigital";
 import { CelestialClosing } from "@/components/celestial/CelestialClosing";
 import { CelestialNav } from "@/components/celestial/CelestialNav";
+import { CelestialMusic } from "@/components/celestial/CelestialMusic";
 
 type Phase = "gate" | "opening" | "inside";
 
@@ -62,6 +63,7 @@ export default function CelestialPage() {
           <CelestialAmplopDigital />
           <CelestialClosing />
           <CelestialNav />
+          <CelestialMusic />
         </div>
       )}
     </main>

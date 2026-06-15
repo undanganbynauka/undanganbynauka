@@ -1,5 +1,4 @@
-/* ===== SACRED — Calm, Minimal, Formal-Intimate ===== */
-/* Sacred motion = hampir tidak terlihat sebagai animasi */
+/* ===== SACRED SILENCE WEDDING TEMPLATE ===== */
 
 :root {
   --sacred-ivory: #F8F4EE;
@@ -151,67 +150,122 @@
   pointer-events: none;
 }
 
-/* ===== COVER ENTRANCE ANIMATIONS — CALM ONLY ===== */
-/* Sacred = fade only. No zoom, no blur, no slide, no cinematic depth. */
+/* ===== COVER ENTRANCE ANIMATIONS ===== */
 
-/* 1. Background — no animation (static, calm) */
+/* 1. Background zoom-in */
+@keyframes sacred-bg-zoom {
+  from { transform: scale(1.05); }
+  to { transform: scale(1); }
+}
 .sacred-hero {
-  animation: none;
-  will-change: auto;
+  animation: sacred-bg-zoom 2.5s ease-out forwards;
+  will-change: transform;
 }
 
-/* 2. Top ornament (arch) — simple fade */
-@keyframes sacred-fade {
-  from { opacity: 0; }
-  to { opacity: 1; }
+/* 2. Top ornament (arch) */
+@keyframes sacred-arch-enter {
+  from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 .sacred-arch {
   opacity: 0;
-  animation: sacred-fade 600ms ease 200ms forwards;
+  animation: sacred-arch-enter 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) 0.3s forwards;
+  will-change: opacity, transform;
 }
 
-/* 3. Subtitle — simple fade */
+/* 3. Subtitle — "The Wedding Invitation Of" */
+@keyframes sacred-subtitle-enter {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 .sacred-hero-subtitle {
   opacity: 0;
-  animation: sacred-fade 600ms ease 400ms forwards;
+  animation: sacred-subtitle-enter 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) 0.8s forwards;
+  will-change: opacity, transform;
 }
 
-/* 4. Names — simple fade */
+/* 4. Names — blur + fade + slide */
+@keyframes sacred-names-enter {
+  from { opacity: 0; transform: translateY(20px); filter: blur(10px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
 .sacred-hero-title {
   opacity: 0;
-  animation: sacred-fade 700ms ease 600ms forwards;
+  animation: sacred-names-enter 1s cubic-bezier(0.25, 0.1, 0.25, 1) 1.2s forwards;
+  will-change: opacity, transform, filter;
 }
 
-/* 5. Date — simple fade */
+/* 5. Date — fade up */
+@keyframes sacred-date-enter {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 .sacred-hero-date {
   opacity: 0;
-  animation: sacred-fade 600ms ease 800ms forwards;
+  animation: sacred-date-enter 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) 1.8s forwards;
+  will-change: opacity, transform;
 }
 
 /* 5b. Recipient — same timing as date */
 .sacred-hero-recipient {
   opacity: 0;
-  animation: sacred-fade 600ms ease 800ms forwards;
+  animation: sacred-date-enter 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) 1.8s forwards;
+  will-change: opacity, transform;
 }
 
-/* 6. Open Invitation button — simple fade */
+/* 6. Open Invitation button */
+@keyframes sacred-button-enter {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 .sacred-hero-button {
   opacity: 0;
-  animation: sacred-fade 600ms ease 1000ms forwards;
+  animation: sacred-button-enter 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) 2.3s forwards;
+  will-change: opacity, transform;
 }
 
-/* Groom & Bride — simple fade, no slide */
+/* Groom & Bride slide in subtly */
+@keyframes sacred-groom-enter {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes sacred-bride-enter {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
 .sacred-groom {
   opacity: 0;
-  animation: sacred-fade 700ms ease 300ms forwards;
+  animation: sacred-groom-enter 1.2s cubic-bezier(0.25, 0.1, 0.25, 1) 0.5s forwards;
+  will-change: opacity, transform;
 }
 .sacred-bride {
   opacity: 0;
-  animation: sacred-fade 700ms ease 300ms forwards;
+  animation: sacred-bride-enter 1.2s cubic-bezier(0.25, 0.1, 0.25, 1) 0.5s forwards;
+  will-change: opacity, transform;
 }
 
-/* ===== GATE TRANSITION — simple cross-fade ===== */
-/* No perspective, no rotateX, no depth — just calm opacity transition */
+/* ===== END COVER ENTRANCE ANIMATIONS ===== */
+
+/* GATE OPEN ANIMATION */
+@keyframes gate-open {
+  0% {
+    opacity: 1;
+    transform: perspective(1200px) translateZ(0) rotateX(0deg);
+    transform-origin: top center;
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: perspective(1200px) translateZ(-80px) rotateX(-8deg);
+    transform-origin: top center;
+  }
+}
+
+.animate-gate-open {
+  animation: gate-open 1.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
 
 /* MOBILE */
 @media (max-width: 768px) {

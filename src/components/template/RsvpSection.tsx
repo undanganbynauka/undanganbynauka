@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 
 export function RsvpSection() {
   const [visible, setVisible] = useState(false);
+  const [step, setStep] = useState(0);
   const [formData, setFormData] = useState({ name: "", attendance: "", guests: "1" });
   const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -19,26 +20,36 @@ export function RsvpSection() {
     return () => observer.disconnect();
   }, [visible]);
 
+  useEffect(() => {
+    if (!visible) return;
+    const t = [setTimeout(() => setStep(1), 200), setTimeout(() => setStep(2), 500)];
+    return () => t.forEach(clearTimeout);
+  }, [visible]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("loading");
     setTimeout(() => setStatus("success"), 1500);
   };
 
+  const ease = "cubic-bezier(0.25, 0.1, 0.25, 1)";
+
   return (
     <section ref={sectionRef} id="rsvp" style={{
-      position: "relative", padding: "4.5rem 1.5rem",
+      position: "relative", padding: "4rem 1.5rem",
       display: "flex", flexDirection: "column", alignItems: "center", background: "#FAF7F2",
-      opacity: visible ? 1 : 0,
-      transition: "opacity 600ms ease",
     }}>
       <p style={{
         fontFamily: "var(--font-jakarta)", fontSize: "0.6875rem", fontWeight: 400,
         letterSpacing: "0.15em", textTransform: "uppercase", color: "#8A8A8A", marginBottom: "0.5rem",
+        opacity: step >= 1 ? 1 : 0, transform: step >= 1 ? "translateY(0)" : "translateY(15px)",
+        transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}`,
       }}>Konfirmasi Kehadiran</p>
       <h2 style={{
         fontFamily: "var(--font-cormorant)", fontSize: "1.75rem", fontWeight: 500,
         color: "#2E2E2E", marginBottom: "2rem",
+        opacity: step >= 1 ? 1 : 0, transform: step >= 1 ? "translateY(0)" : "translateY(15px)",
+        transition: `opacity 0.8s ${ease} 0.1s, transform 0.8s ${ease} 0.1s`,
       }}>RSVP</h2>
 
       {status === "success" ? (
@@ -47,7 +58,11 @@ export function RsvpSection() {
           <p style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.75rem", color: "#6F6F6F" }}>Konfirmasi kehadiran Anda telah kami terima.</p>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} style={{ maxWidth: "22rem", width: "100%" }}>
+        <form onSubmit={handleSubmit} style={{
+          maxWidth: "22rem", width: "100%",
+          opacity: step >= 2 ? 1 : 0, transform: step >= 2 ? "translateY(0)" : "translateY(20px)",
+          transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}`,
+        }}>
           <div style={{ marginBottom: "1rem" }}>
             <label style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.625rem", fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", color: "#8A8A8A", display: "block", marginBottom: "0.375rem" }}>Nama</label>
             <input type="text" required value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} style={{

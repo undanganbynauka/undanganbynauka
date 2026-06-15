@@ -35,7 +35,7 @@ export function CountdownSection() {
     return () => observer.disconnect();
   }, [visible]);
 
-  const ease = "ease";
+  const ease = "cubic-bezier(0.25, 0.1, 0.25, 1)";
   const units = [
     { label: "Hari", value: timeLeft.days },
     { label: "Jam", value: timeLeft.hours },
@@ -55,7 +55,7 @@ export function CountdownSection() {
         background: "#FAF7F2",
       }}
     >
-      {/* Full-bleed banner image */}
+      {/* Full-bleed banner image — fills entire viewport, no gap */}
       <div style={{
         position: "relative",
         width: "100vw",
@@ -63,7 +63,8 @@ export function CountdownSection() {
         marginLeft: "calc(-50vw + 50%)",
         overflow: "hidden",
         opacity: visible ? 1 : 0,
-        transition: `opacity 600ms ${ease}`,
+        transform: visible ? "translateY(0)" : "translateY(15px)",
+        transition: `opacity 1s ${ease}, transform 1s ${ease}`,
       }}>
         <img
           src="/sacred/countdown-top.png"
@@ -98,8 +99,8 @@ export function CountdownSection() {
             fontFamily: "var(--font-cormorant)", fontSize: "0.8125rem", fontWeight: 400,
             fontStyle: "italic", color: "#6F6F6F", letterSpacing: "0.06em",
             marginBottom: "0.625rem",
-            opacity: visible ? 1 : 0,
-            transition: `opacity 500ms ${ease} 200ms`,
+            opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(10px)",
+            transition: `opacity 0.8s ${ease} 0.2s, transform 0.8s ${ease} 0.2s`,
           }}>
             The Wedding of
           </p>
@@ -107,16 +108,16 @@ export function CountdownSection() {
             fontFamily: "var(--font-cormorant)", fontSize: "1.75rem", fontWeight: 500,
             color: "#2E2E2E", letterSpacing: "0.02em",
             marginBottom: "0.625rem",
-            opacity: visible ? 1 : 0,
-            transition: `opacity 500ms ${ease} 300ms`,
+            opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(10px)",
+            transition: `opacity 0.8s ${ease} 0.35s, transform 0.8s ${ease} 0.35s`,
           }}>
             Ali &amp; Lyla
           </h2>
           <p style={{
             fontFamily: "var(--font-jakarta)", fontSize: "0.625rem", fontWeight: 400,
             color: "#8A8A8A", letterSpacing: "0.1em",
-            opacity: visible ? 1 : 0,
-            transition: `opacity 500ms ${ease} 400ms`,
+            opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(10px)",
+            transition: `opacity 0.8s ${ease} 0.5s, transform 0.8s ${ease} 0.5s`,
           }}>
             Ahad, 5 Juli 2026
           </p>
@@ -125,7 +126,7 @@ export function CountdownSection() {
 
       {/* Content below image */}
       <div style={{
-        padding: "3.5rem 1.5rem 4.5rem",
+        padding: "3rem 1.5rem 4rem",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -136,24 +137,26 @@ export function CountdownSection() {
         fontFamily: "var(--font-jakarta)", fontSize: "0.6875rem", fontWeight: 400,
         letterSpacing: "0.15em", textTransform: "uppercase", color: "#8A8A8A",
         marginBottom: "0.5rem",
-        opacity: visible ? 1 : 0,
-        transition: `opacity 600ms ${ease} 100ms`,
+        opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(15px)",
+        transition: `opacity 1s ${ease}, transform 1s ${ease}`,
       }}>
         Menghitung Hari
       </p>
       <h2 style={{
         fontFamily: "var(--font-cormorant)", fontSize: "1.75rem", fontWeight: 500,
         color: "#2E2E2E", marginBottom: "2rem",
-        opacity: visible ? 1 : 0,
-        transition: `opacity 600ms ${ease} 200ms`,
+        opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(15px)",
+        transition: `opacity 1s ${ease} 0.1s, transform 1s ${ease} 0.1s`,
       }}>
         Countdown
       </h2>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "0.75rem", maxWidth: "20rem", width: "100%" }}>
-        {units.map((u) => (
+        {units.map((u, i) => (
           <div key={u.label} style={{
             background: "rgba(125, 110, 99, 0.04)", border: "1px solid rgba(125, 110, 99, 0.12)",
             borderRadius: "16px", padding: "1.25rem 0.5rem", textAlign: "center",
+            opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(20px)",
+            transition: `opacity 0.8s ${ease} ${0.15 + i * 0.1}s, transform 0.8s ${ease} ${0.15 + i * 0.1}s`,
           }}>
             <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.75rem", fontWeight: 500, color: "#2E2E2E", lineHeight: 1, marginBottom: "0.375rem" }}>
               {String(u.value).padStart(2, "0")}

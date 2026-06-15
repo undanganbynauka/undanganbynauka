@@ -48,9 +48,11 @@ function formatRelativeTime(dateStr: string): string {
 
 export function WishesSection() {
   const [visible, setVisible] = useState(false);
+  const [step, setStep] = useState(0);
   const [wishes, setWishes] = useState<Wish[]>(DUMMY_WISHES);
   const [newWish, setNewWish] = useState({ name: "", message: "" });
   const [submitting, setSubmitting] = useState(false);
+  const [newlyAddedIds, setNewlyAddedIds] = useState<Set<string>>(new Set());
   const sectionRef = useRef<HTMLDivElement>(null);
 
   // IntersectionObserver
@@ -63,6 +65,16 @@ export function WishesSection() {
     );
     observer.observe(el);
     return () => observer.disconnect();
+  }, [visible]);
+
+  // Step animation
+  useEffect(() => {
+    if (!visible) return;
+    const t = [
+      setTimeout(() => setStep(1), 200),
+      setTimeout(() => setStep(2), 500),
+    ];
+    return () => t.forEach(clearTimeout);
   }, [visible]);
 
   // Fetch initial wishes from Supabase
@@ -97,6 +109,14 @@ export function WishesSection() {
             if (prev.some((w) => w.id === newEntry.id)) return prev;
             return [newEntry, ...prev];
           });
+          setNewlyAddedIds((prev) => new Set(prev).add(newEntry.id));
+          setTimeout(() => {
+            setNewlyAddedIds((prev) => {
+              const next = new Set(prev);
+              next.delete(newEntry.id);
+              return next;
+            });
+          }, 600);
         }
       )
       .subscribe();
@@ -127,25 +147,31 @@ export function WishesSection() {
     }
   };
 
+  const ease = "cubic-bezier(0.25, 0.1, 0.25, 1)";
+
   return (
     <section ref={sectionRef} id="ucapan" style={{
-      position: "relative", padding: "4.5rem 1.5rem",
+      position: "relative", padding: "4rem 1.5rem",
       display: "flex", flexDirection: "column", alignItems: "center", background: "#FAF7F2",
-      opacity: visible ? 1 : 0,
-      transition: "opacity 600ms ease",
     }}>
       <p style={{
         fontFamily: "var(--font-jakarta)", fontSize: "0.6875rem", fontWeight: 400,
         letterSpacing: "0.15em", textTransform: "uppercase", color: "#8A8A8A", marginBottom: "0.5rem",
+        opacity: step >= 1 ? 1 : 0, transform: step >= 1 ? "translateY(0)" : "translateY(15px)",
+        transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}`,
       }}>Sampaikan doa dan harapan terbaik untuk kedua mempelai</p>
       <h2 style={{
         fontFamily: "var(--font-cormorant)", fontSize: "1.75rem", fontWeight: 500,
         color: "#2E2E2E", marginBottom: "2rem",
+        opacity: step >= 1 ? 1 : 0, transform: step >= 1 ? "translateY(0)" : "translateY(15px)",
+        transition: `opacity 0.8s ${ease} 0.1s, transform 0.8s ${ease} 0.1s`,
       }}>Ucapan &amp; Doa</h2>
 
       {/* Form */}
       <form onSubmit={handleSubmit} style={{
         maxWidth: "22rem", width: "100%", marginBottom: "2.5rem",
+        opacity: step >= 2 ? 1 : 0, transform: step >= 2 ? "translateY(0) scale(1)" : "translateY(15px) scale(0.98)",
+        transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}`,
       }}>
         <input
           type="text"
@@ -196,34 +222,51 @@ export function WishesSection() {
         paddingRight: "0.5rem",
         WebkitOverflowScrolling: "touch",
       }} className="wishes-scroll-container">
-        {wishes.map((w) => (
-          <div
-            key={w.id}
-            style={{
-              background: "rgba(125, 110, 99, 0.04)",
-              border: "1px solid rgba(125, 110, 99, 0.12)",
-              borderRadius: "16px",
-              padding: "1rem 1.25rem",
-              marginBottom: "0.75rem",
-            }}
-          >
-            <p style={{
-              fontFamily: "var(--font-cormorant)", fontSize: "0.9375rem", fontWeight: 500,
-              color: "#2E2E2E", marginBottom: "0.375rem",
-            }}>{w.name}</p>
-            <p style={{
-              fontFamily: "var(--font-jakarta)", fontSize: "0.75rem", color: "#6F6F6F",
-              lineHeight: 1.7, marginBottom: "0.375rem", whiteSpace: "pre-line",
-            }}>{w.message}</p>
-            <p style={{
-              fontFamily: "var(--font-jakarta)", fontSize: "0.5625rem", color: "#8A8A8A",
-            }}>{formatRelativeTime(w.created_at)}</p>
-          </div>
-        ))}
+        {wishes.map((w) => {
+          const isNew = newlyAddedIds.has(w.id);
+          return (
+            <div
+              key={w.id}
+              style={{
+                background: "rgba(125, 110, 99, 0.04)",
+                border: "1px solid rgba(125, 110, 99, 0.12)",
+                borderRadius: "16px",
+                padding: "1rem 1.25rem",
+                marginBottom: "0.75rem",
+                opacity: isNew ? 1 : 1,
+                transform: isNew ? "translateY(0)" : "translateY(0)",
+                transition: isNew ? `opacity 0.5s ease-out, transform 0.5s ease-out` : "none",
+                animation: isNew ? "wishSlideIn 0.5s ease-out" : "none",
+              }}
+            >
+              <p style={{
+                fontFamily: "var(--font-cormorant)", fontSize: "0.9375rem", fontWeight: 500,
+                color: "#2E2E2E", marginBottom: "0.375rem",
+              }}>{w.name}</p>
+              <p style={{
+                fontFamily: "var(--font-jakarta)", fontSize: "0.75rem", color: "#6F6F6F",
+                lineHeight: 1.7, marginBottom: "0.375rem", whiteSpace: "pre-line",
+              }}>{w.message}</p>
+              <p style={{
+                fontFamily: "var(--font-jakarta)", fontSize: "0.5625rem", color: "#8A8A8A",
+              }}>{formatRelativeTime(w.created_at)}</p>
+            </div>
+          );
+        })}
       </div>
 
-      {/* Scroll styling */}
-      <style>{`
+      {/* Inline keyframes for wish entry animation + scroll styling */}
+      <style jsx>{`
+        @keyframes wishSlideIn {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
         .wishes-scroll-container {
           scrollbar-width: thin;
           scrollbar-color: rgba(125, 110, 99, 0.25) transparent;

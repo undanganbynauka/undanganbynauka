@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 
 export function AmplopDigitalSection() {
   const [visible, setVisible] = useState(false);
+  const [step, setStep] = useState(0);
   const [revealed, setRevealed] = useState(false);
   const [showAli, setShowAli] = useState(false);
   const [showLyla, setShowLyla] = useState(false);
@@ -21,6 +22,14 @@ export function AmplopDigitalSection() {
     observer.observe(el);
     return () => observer.disconnect();
   }, [visible]);
+
+  useEffect(() => {
+    if (!visible) return;
+    const t = [setTimeout(() => setStep(1), 200), setTimeout(() => setStep(2), 500)];
+    return () => t.forEach(clearTimeout);
+  }, [visible]);
+
+  const ease = "cubic-bezier(0.25, 0.1, 0.25, 1)";
 
   const aliAccount = "1234567890";
   const lylaAccount = "1234567890";
@@ -53,22 +62,25 @@ export function AmplopDigitalSection() {
 
   return (
     <section ref={sectionRef} id="hadiah" style={{
-      position: "relative", padding: "4.5rem 1.5rem",
+      position: "relative", padding: "4rem 1.5rem",
       display: "flex", flexDirection: "column", alignItems: "center", background: "#FAF7F2",
-      opacity: visible ? 1 : 0,
-      transition: "opacity 600ms ease",
     }}>
       <p style={{
         fontFamily: "var(--font-jakarta)", fontSize: "0.6875rem", fontWeight: 400,
         letterSpacing: "0.15em", textTransform: "uppercase", color: "#8A8A8A", marginBottom: "0.5rem",
+        opacity: step >= 1 ? 1 : 0, transform: step >= 1 ? "translateY(0)" : "translateY(15px)",
+        transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}`,
       }}>Tanda Kasih</p>
       <h2 style={{
         fontFamily: "var(--font-cormorant)", fontSize: "1.75rem", fontWeight: 500,
         color: "#2E2E2E", marginBottom: "1rem",
+        opacity: step >= 1 ? 1 : 0, transform: step >= 1 ? "translateY(0)" : "translateY(15px)",
+        transition: `opacity 0.8s ${ease} 0.1s, transform 0.8s ${ease} 0.1s`,
       }}>Hadiah</h2>
       <p style={{
         fontFamily: "var(--font-jakarta)", fontSize: "0.75rem", color: "#6F6F6F",
-        textAlign: "center", lineHeight: 1.7, maxWidth: "18rem", marginBottom: "1.5rem", opacity: 0.8,
+        textAlign: "center", lineHeight: 1.7, maxWidth: "18rem", marginBottom: "1.5rem",
+        opacity: step >= 2 ? 0.8 : 0, transition: `opacity 0.8s ${ease}`,
       }}>
         Doa restu Anda merupakan karunia yang sangat berarti bagi kami. Namun jika Anda ingin memberikan tanda kasih, kami menyediakan informasi berikut.
       </p>
@@ -83,7 +95,7 @@ export function AmplopDigitalSection() {
             letterSpacing: "0.1em", textTransform: "uppercase", color: "#7D6A52",
             background: "rgba(125, 106, 82, 0.08)", border: "1px solid rgba(125, 106, 82, 0.2)",
             borderRadius: "999px", padding: "0.625rem 1.5rem", cursor: "pointer",
-            transition: "all 0.3s ease",
+            opacity: step >= 2 ? 1 : 0, transition: "all 0.3s ease",
           }}
         >
           Lihat
@@ -91,8 +103,9 @@ export function AmplopDigitalSection() {
       ) : (
         <div style={{
           maxWidth: "22rem", width: "100%", display: "flex", flexDirection: "column", gap: "1rem",
+          animation: "fadeInUp 0.5s ease forwards",
         }}>
-          {/* Ali Rahman */}
+          {/* Ali Rahman - Bank Syariah Indonesia */}
           <div style={{
             background: "rgba(125, 110, 99, 0.04)", border: "1px solid rgba(125, 110, 99, 0.12)",
             borderRadius: "16px", padding: "1.25rem",
@@ -126,7 +139,7 @@ export function AmplopDigitalSection() {
             </div>
           </div>
 
-          {/* Lyla Azzahra */}
+          {/* Lyla Azzahra - Bank Muamalat Indonesia */}
           <div style={{
             background: "rgba(125, 110, 99, 0.04)", border: "1px solid rgba(125, 110, 99, 0.12)",
             borderRadius: "16px", padding: "1.25rem",
@@ -173,6 +186,14 @@ export function AmplopDigitalSection() {
               Kebon Jahe Kober 1<br />Jakarta Pusat
             </p>
           </div>
+
+          {/* Inline animation keyframes */}
+          <style>{`
+            @keyframes fadeInUp {
+              from { opacity: 0; transform: translateY(12px); }
+              to { opacity: 1; transform: translateY(0); }
+            }
+          `}</style>
         </div>
       )}
     </section>

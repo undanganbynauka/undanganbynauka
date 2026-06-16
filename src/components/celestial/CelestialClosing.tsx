@@ -232,11 +232,12 @@ export function CelestialClosing() {
           textAlign: "center",
           maxWidth: "22rem",
           padding: "5rem 1.5rem 2rem",
-          minHeight: "100vh",
+          minHeight: showRekening ? "auto" : "100vh",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center",
+          justifyContent: showRekening ? "flex-start" : "center",
+          paddingBottom: showRekening ? "14rem" : "2rem",
         }}
       >
         {/* ── Crescent Moon — slower, more sacred ── */}

@@ -42,14 +42,19 @@ export function SoundToggle() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const audio = new Audio();
+    // Reuse existing audio instance from SacredHero (shared via window)
+    const existing = (window as any).__sacredAudio as HTMLAudioElement | undefined;
+    const audio = existing || new Audio();
     audio.loop = true;
-    audio.volume = 0;
     audio.preload = "metadata";
     audioRef.current = audio;
+    (window as any).__sacredAudio = audio;
+    // Check if already playing from Hero
+    if (!audio.paused && audio.volume > 0) {
+      setIsPlaying(true);
+    }
     return () => {
-      audio.pause();
-      audio.src = "";
+      // Don't destroy audio — it's shared
     };
   }, []);
 
@@ -85,8 +90,8 @@ export function SoundToggle() {
       onClick={toggle}
       style={{
         position: "fixed",
-        bottom: "3.5rem",
-        right: "1rem",
+        bottom: "1rem",
+        left: "1rem",
         width: "40px",
         height: "40px",
         borderRadius: "50%",
@@ -135,10 +140,10 @@ export function SoundToggle() {
             </>
           ) : (
             <>
-              <path d="M9 18V5l12-2v13" />
-              <circle cx="6" cy="18" r="3" />
-              <circle cx="18" cy="16" r="3" />
-              <line x1="2" y1="2" x2="22" y2="22" strokeWidth="2" />
+              <path d="M9 18V5l12-2v13" opacity="0.4" />
+              <circle cx="6" cy="18" r="3" opacity="0.4" />
+              <circle cx="18" cy="16" r="3" opacity="0.4" />
+              <line x1="2" y1="2" x2="22" y2="22" strokeWidth="1.5" opacity="0.5" />
             </>
           )}
         </svg>

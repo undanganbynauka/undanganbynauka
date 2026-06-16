@@ -104,7 +104,7 @@ export function CelestialClosing() {
         padding: 0,
         minHeight: "100vh",
         justifyContent: "center",
-        overflow: "hidden",
+        overflowX: "hidden",
       }}
     >
       {/* ── Background image — slower, more intimate reveal ── */}

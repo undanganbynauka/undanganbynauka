@@ -29,13 +29,14 @@ const allTemplates: Template[] = [
     preview: "/etalase/celestial-preview.png",
     video: "/etalase/celestial-preview.mp4",
   },
-  {
-    id: "heritage",
-    name: "Heritage",
-    collection: "Universal",
-    href: "/detail/heritage",
-    preview: "/etalase/heritage-preview.png",
-  },
+  // Heritage disimpan dulu, belum di-rebuild — akan digunakan untuk template ke-3
+  // {
+  //   id: "heritage",
+  //   name: "Heritage",
+  //   collection: "Universal",
+  //   href: "/detail/heritage",
+  //   preview: "/etalase/heritage-preview.png",
+  // },
 ];
 
 function EtalaseCard({ tpl, delay }: { tpl: Template; delay: number }) {

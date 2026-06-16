@@ -15,14 +15,11 @@ export default function NaukaLanding() {
       {/* 2. MOCKUP — Trust Builder (phone frame glimpse) */}
       <NaukaMockup />
 
-      {/* 3. ETALASE — Visual Proof (first batch) */}
-      <NaukaEtalase start={0} end={2} />
+      {/* 3. ETALASE — Visual Proof */}
+      <NaukaEtalase />
 
       {/* 4. PRICING — Clarity */}
       <NaukaHarga />
-
-      {/* 5. ETALASE CONTINUATION — Exploration */}
-      <NaukaEtalase start={2} end={3} />
 
       {/* 6. FOOTER — Closing Moment (reflection & calmness) */}
       <NaukaFooter />

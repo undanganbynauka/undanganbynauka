@@ -54,23 +54,24 @@ const templates: Record<string, TemplateDetail> = {
     ],
     emotionalNote: "Momen Anda layak diungkapkan dengan keindahan.",
   },
-  heritage: {
-    id: "heritage",
-    name: "Heritage",
-    collection: "Universal",
-    collectionLabel: "Universal Collection",
-    demoHref: "/template",
-    preview: "/etalase/heritage-preview.png",
-    description:
-      "Heritage menggabungkan sentuhan tradisional dengan desain digital modern. Ornamen klasik dipadukan dengan tata letak yang bersih, menciptakan undangan yang terasa hangat namun tetap sophisticated.",
-    highlights: [
-      "Ornamen tradisional yang dikurasi dengan rapi",
-      "Paduan klasik dan modern yang harmonis",
-      "Desain bersih yang tetap kaya karakter",
-      "Pilihan audio yang melengkapi suasana",
-    ],
-    emotionalNote: "Warisan budaya dalam sentuhan digital.",
-  },
+  // Heritage disimpan dulu — akan digunakan untuk template ke-3
+  // heritage: {
+  //   id: "heritage",
+  //   name: "Heritage",
+  //   collection: "Universal",
+  //   collectionLabel: "Universal Collection",
+  //   demoHref: "/template",
+  //   preview: "/etalase/heritage-preview.png",
+  //   description:
+  //     "Heritage menggabungkan sentuhan tradisional dengan desain digital modern. Ornamen klasik dipadukan dengan tata letak yang bersih, menciptakan undangan yang terasa hangat namun tetap sophisticated.",
+  //   highlights: [
+  //     "Ornamen tradisional yang dikurasi dengan rapi",
+  //     "Paduan klasik dan modern yang harmonis",
+  //     "Desain bersih yang tetap kaya karakter",
+  //     "Pilihan audio yang melengkapi suasana",
+  //   ],
+  //   emotionalNote: "Warisan budaya dalam sentuhan digital.",
+  // },
 };
 
 export default function DetailTemplatePage() {
@@ -125,7 +126,7 @@ export default function DetailTemplatePage() {
           className="pointer-events-none absolute inset-0"
           style={{
             background: loaded
-              ? `radial-gradient(ellipse at 50% 10%, ${tpl.accent} 0%, transparent 50%)`
+              ? "radial-gradient(ellipse at 50% 10%, rgba(201,169,110,0.03) 0%, transparent 50%)"
               : "none",
             transition: "background 1.8s ease",
           }}

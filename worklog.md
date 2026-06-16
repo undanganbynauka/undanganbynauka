@@ -182,3 +182,27 @@ Stage Summary:
 - WA only used for: payment confirmation notification + consultation (footer)
 - Google Form is the primary post-checkout action
 - GOOGLE_FORM_URL still placeholder — user needs to provide actual URL
+
+---
+Task ID: 9
+Agent: main
+Task: Add digital nota (receipt) for user after payment confirmation
+
+Work Log:
+- Added generateOrderId() function: creates unique ID like "NAU-SAC-K1J2XZ-AB3C"
+- Added formatDateTime() function: Indonesian locale date/time
+- After "Konfirmasi Pembayaran" clicked, digital nota card appears on screen with:
+  - Header: "Nota Pesanan" + status badge "Menunggu Verifikasi"
+  - Order ID + Date/Time
+  - Template, Package, Payment method
+  - Total price
+  - Micro footer: "Simpan nota ini sebagai bukti pemesanan"
+- Below nota: Google Form CTA "Isi Detail Undangan →"
+- Below that: subtle WA fallback "Kirim ulang notifikasi via WhatsApp"
+- Build successful
+
+Stage Summary:
+- User gets visual nota/receipt on screen after confirming payment
+- Nota can be screenshotted as proof of order
+- Flow: Confirm → WA notif to owner + Nota appears + Google Form CTA
+- GOOGLE_FORM_URL still placeholder — waiting for actual URL

@@ -11,10 +11,30 @@ interface CheckoutProps {
   premiumPrice: number;
 }
 
+function generateOrderId(templateId: string): string {
+  const ts = Date.now().toString(36).toUpperCase();
+  const rand = Math.random().toString(36).substring(2, 6).toUpperCase();
+  return `NAU-${templateId.substring(0, 3).toUpperCase()}-${ts}-${rand}`;
+}
+
+function formatDateTime(): string {
+  const now = new Date();
+  const opts: Intl.DateTimeFormatOptions = {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  };
+  return now.toLocaleDateString("id-ID", opts);
+}
+
 export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPrice }: CheckoutProps) {
   const [selected, setSelected] = useState<"basic" | "premium">("premium");
   const [confirmed, setConfirmed] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [orderId, setOrderId] = useState("");
+  const [orderDate, setOrderDate] = useState("");
   const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -33,6 +53,8 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
   const waNotifLink = getWAOrderNotifLink(templateName, packageName, price);
 
   const handleConfirm = () => {
+    setOrderId(generateOrderId(templateId));
+    setOrderDate(formatDateTime());
     setConfirmed(true);
     // Auto-open WA notif ke owner (background tab)
     window.open(waNotifLink, "_blank");
@@ -445,18 +467,101 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
             </button>
           ) : (
             <div style={{ textAlign: "center" }}>
-              {/* Thank you message */}
-              <p
+
+              {/* ─── NOTA DIGITAL ─── */}
+              <div
                 style={{
-                  fontFamily: "var(--font-inter)",
-                  fontSize: "13px",
-                  color: "rgba(255,255,255,0.55)",
-                  marginBottom: "8px",
-                  lineHeight: 1.6,
+                  padding: "28px 24px",
+                  borderRadius: "14px",
+                  border: "1px solid rgba(201,169,110,0.12)",
+                  background: "rgba(255,255,255,0.02)",
+                  textAlign: "left",
+                  marginBottom: "28px",
                 }}
               >
-                Terima kasih telah mengonfirmasi pembayaran.
-              </p>
+                {/* Header nota */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                  <span
+                    style={{
+                      fontFamily: "var(--font-bodoni)",
+                      fontSize: "16px",
+                      fontWeight: 400,
+                      letterSpacing: "0.04em",
+                      color: "rgba(255,255,255,0.75)",
+                    }}
+                  >
+                    Nota Pesanan
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: "var(--font-inter)",
+                      fontSize: "9px",
+                      letterSpacing: "0.15em",
+                      textTransform: "uppercase",
+                      padding: "4px 10px",
+                      borderRadius: "100px",
+                      border: "1px solid rgba(201,169,110,0.18)",
+                      color: "rgba(201,169,110,0.55)",
+                    }}
+                  >
+                    Menunggu Verifikasi
+                  </span>
+                </div>
+
+                {/* Order ID + Date */}
+                <div style={{ marginBottom: "18px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
+                    <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.30)", letterSpacing: "0.06em" }}>No. Pesanan</span>
+                    <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.55)", letterSpacing: "0.04em" }}>{orderId}</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.30)", letterSpacing: "0.06em" }}>Tanggal</span>
+                    <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.55)" }}>{orderDate}</span>
+                  </div>
+                </div>
+
+                {/* Divider */}
+                <div style={{ height: "1px", background: "rgba(255,255,255,0.06)", margin: "0 0 18px" }} />
+
+                {/* Order details */}
+                <div style={{ marginBottom: "6px", display: "flex", justifyContent: "space-between" }}>
+                  <span style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(255,255,255,0.45)" }}>Template</span>
+                  <span style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(255,255,255,0.72)" }}>{templateName}</span>
+                </div>
+                <div style={{ marginBottom: "6px", display: "flex", justifyContent: "space-between" }}>
+                  <span style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(255,255,255,0.45)" }}>Paket</span>
+                  <span style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: selected === "premium" ? "rgba(201,169,110,0.7)" : "rgba(255,255,255,0.72)" }}>{packageName}</span>
+                </div>
+                <div style={{ marginBottom: "6px", display: "flex", justifyContent: "space-between" }}>
+                  <span style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(255,255,255,0.45)" }}>Pembayaran</span>
+                  <span style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(255,255,255,0.55)" }}>QRIS</span>
+                </div>
+
+                {/* Total divider */}
+                <div style={{ height: "1px", background: "rgba(255,255,255,0.08)", margin: "16px 0" }} />
+
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                  <span style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(255,255,255,0.45)" }}>Total</span>
+                  <span style={{ fontFamily: "var(--font-bodoni)", fontSize: "20px", fontWeight: 400, color: "rgba(255,255,255,0.85)" }}>
+                    Rp{price.toLocaleString("id-ID")}
+                  </span>
+                </div>
+
+                {/* Micro footer */}
+                <p
+                  style={{
+                    fontFamily: "var(--font-inter)",
+                    fontSize: "10px",
+                    color: "rgba(255,255,255,0.20)",
+                    marginTop: "18px",
+                    lineHeight: 1.5,
+                  }}
+                >
+                  Simpan nota ini sebagai bukti pemesanan. Tim Nauka akan memverifikasi pembayaran Anda.
+                </p>
+              </div>
+
+              {/* Notif info */}
               <p
                 style={{
                   fontFamily: "var(--font-inter)",
@@ -466,7 +571,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                   lineHeight: 1.5,
                 }}
               >
-                Notifikasi telah dikirim ke Nauka via WhatsApp.
+                Notifikasi konfirmasi telah dikirim ke Nauka.
               </p>
 
               {/* PRIMARY: Google Form */}

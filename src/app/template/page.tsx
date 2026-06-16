@@ -13,22 +13,31 @@ import { AmplopDigitalSection } from "@/components/template/AmplopDigitalSection
 import { ClosingSection } from "@/components/template/ClosingSection";
 import { FloatingNav } from "@/components/template/FloatingNav";
 
-type Phase = "gate" | "opening" | "inside";
+type Phase = "checking" | "gate" | "opening" | "inside";
+
+const STORAGE_KEY = "nauka-heritage-opened";
 
 export default function TemplatePage() {
-  const [phase, setPhase] = useState<Phase>("gate");
+  const [phase, setPhase] = useState<Phase>("checking");
 
   useEffect(() => {
-    if (localStorage.getItem("nauka-heritage-opened") === "true") {
+    if (localStorage.getItem(STORAGE_KEY) === "true") {
       setPhase("inside");
+    } else {
+      setPhase("gate");
     }
   }, []);
 
   const handleOpen = useCallback(() => {
-    localStorage.setItem("nauka-heritage-opened", "true");
+    localStorage.setItem(STORAGE_KEY, "true");
     setPhase("opening");
     setTimeout(() => setPhase("inside"), 1400);
   }, []);
+
+  // Don't render gate or content until we know localStorage state
+  if (phase === "checking") {
+    return <main />;
+  }
 
   const isGateVisible = phase === "gate" || phase === "opening";
 
@@ -52,7 +61,7 @@ export default function TemplatePage() {
         <div id="doa"><ClosingSection /></div>
       </div>
 
-      {/* HERO GATE — smooth fade out */}
+      {/* HERO GATE — only rendered when visible */}
       {isGateVisible && (
         <div
           style={{

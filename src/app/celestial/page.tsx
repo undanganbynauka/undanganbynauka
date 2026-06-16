@@ -16,41 +16,52 @@ import { CelestialNav } from "@/components/celestial/CelestialNav";
 import { CelestialMusic } from "@/components/celestial/CelestialMusic";
 import { CelestialSectionReveal } from "@/components/celestial/CelestialSectionReveal";
 
-type Phase = "gate" | "opening" | "inside";
+type Phase = "checking" | "gate" | "opening" | "inside";
+
+const STORAGE_KEY = "nauka-celestial-opened";
 
 export default function CelestialPage() {
-  const [phase, setPhase] = useState<Phase>("gate");
+  const [phase, setPhase] = useState<Phase>("checking");
 
   useEffect(() => {
-    if (localStorage.getItem("nauka-celestial-opened") === "true") {
+    if (localStorage.getItem(STORAGE_KEY) === "true") {
       setPhase("inside");
+    } else {
+      setPhase("gate");
     }
   }, []);
 
   const handleOpen = useCallback(() => {
-    localStorage.setItem("nauka-celestial-opened", "true");
+    localStorage.setItem(STORAGE_KEY, "true");
     setPhase("opening");
     setTimeout(() => setPhase("inside"), 2200);
   }, []);
+
+  // Don't render anything until we know localStorage state
+  if (phase === "checking") {
+    return <main className="celestial-page"><StarField /><ShootingStar /></main>;
+  }
 
   return (
     <main className="celestial-page">
       <StarField />
       <ShootingStar />
 
-      {/* HERO GATE */}
-      <div
-        style={{
-          position: "fixed",
-          inset: 0,
-          zIndex: 50,
-          pointerEvents: phase === "gate" ? "auto" : "none",
-          opacity: phase === "gate" ? 1 : phase === "opening" ? 0 : 0,
-          transition: "opacity 2s cubic-bezier(0.4, 0, 0.2, 1)",
-        }}
-      >
-        <CelestialHero onOpen={phase === "gate" ? handleOpen : undefined} />
-      </div>
+      {/* HERO GATE — only rendered when phase is gate or opening */}
+      {(phase === "gate" || phase === "opening") && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 50,
+            pointerEvents: phase === "gate" ? "auto" : "none",
+            opacity: phase === "gate" ? 1 : 0,
+            transition: "opacity 2s cubic-bezier(0.4, 0, 0.2, 1)",
+          }}
+        >
+          <CelestialHero onOpen={phase === "gate" ? handleOpen : undefined} />
+        </div>
+      )}
 
       {/* INSIDE CONTENT */}
       {phase !== "gate" && (
@@ -72,7 +83,7 @@ export default function CelestialPage() {
         </div>
       )}
 
-      {/* MUSIC — always visible */}
+      {/* MUSIC — always visible when not checking */}
       <CelestialMusic />
     </main>
   );

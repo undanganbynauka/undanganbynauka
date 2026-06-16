@@ -16,38 +16,49 @@ import { FloatingNav } from "@/components/template/FloatingNav";
 import { SaveTheDateCard } from "@/components/template/SaveTheDateCard";
 import { IntroSection } from "@/components/template/IntroSection";
 
-type Phase = "gate" | "opening" | "inside";
+type Phase = "checking" | "gate" | "opening" | "inside";
+
+const STORAGE_KEY = "nauka-sacred-opened";
 
 export default function SacredPage() {
-  const [phase, setPhase] = useState<Phase>("gate");
+  const [phase, setPhase] = useState<Phase>("checking");
 
   useEffect(() => {
-    if (localStorage.getItem("nauka-sacred-opened") === "true") {
+    if (localStorage.getItem(STORAGE_KEY) === "true") {
       setPhase("inside");
+    } else {
+      setPhase("gate");
     }
   }, []);
 
   const handleOpen = useCallback(() => {
-    localStorage.setItem("nauka-sacred-opened", "true");
+    localStorage.setItem(STORAGE_KEY, "true");
     setPhase("opening");
     setTimeout(() => setPhase("inside"), 2200);
   }, []);
 
+  // Don't render gate or content until we know localStorage state
+  if (phase === "checking") {
+    return <main className="sacred-page" />;
+  }
+
   return (
     <main className="sacred-page">
-      {/* HERO GATE — always rendered for smooth cross-fade */}
-      <div
-        style={{
-          position: "fixed",
-          inset: 0,
-          zIndex: 50,
-          pointerEvents: phase === "gate" ? "auto" : "none",
-          opacity: phase === "gate" ? 1 : phase === "opening" ? 0 : 0,
-          transition: "opacity 2s cubic-bezier(0.4, 0, 0.2, 1)",
-        }}
-      >
-        <SacredHero onOpen={phase === "gate" ? handleOpen : undefined} />
-      </div>
+      {/* HERO GATE — only rendered when phase is gate or opening */}
+      {(phase === "gate" || phase === "opening") && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 50,
+            pointerEvents: phase === "gate" ? "auto" : "none",
+            opacity: phase === "gate" ? 1 : 0,
+            transition: "opacity 2s cubic-bezier(0.4, 0, 0.2, 1)",
+          }}
+        >
+          <SacredHero onOpen={phase === "gate" ? handleOpen : undefined} />
+        </div>
+      )}
 
       {/* INSIDE CONTENT — fades in while cover fades out */}
       {phase !== "gate" && (

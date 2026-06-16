@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { SoundToggle } from "@/components/mood/SoundToggle";
 import { SacredHero } from "@/components/sacred/SacredHero";
 import { CountdownSection } from "@/components/template/CountdownSection";
@@ -21,7 +21,14 @@ type Phase = "gate" | "opening" | "inside";
 export default function SacredPage() {
   const [phase, setPhase] = useState<Phase>("gate");
 
+  useEffect(() => {
+    if (localStorage.getItem("nauka-sacred-opened") === "true") {
+      setPhase("inside");
+    }
+  }, []);
+
   const handleOpen = useCallback(() => {
+    localStorage.setItem("nauka-sacred-opened", "true");
     setPhase("opening");
     setTimeout(() => setPhase("inside"), 2200);
   }, []);

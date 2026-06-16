@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import "@/app/celestial.css";
 import { StarField, ShootingStar } from "@/components/celestial/StarField";
 import { CelestialHero } from "@/components/celestial/CelestialHero";
@@ -21,7 +21,14 @@ type Phase = "gate" | "opening" | "inside";
 export default function CelestialPage() {
   const [phase, setPhase] = useState<Phase>("gate");
 
+  useEffect(() => {
+    if (localStorage.getItem("nauka-celestial-opened") === "true") {
+      setPhase("inside");
+    }
+  }, []);
+
   const handleOpen = useCallback(() => {
+    localStorage.setItem("nauka-celestial-opened", "true");
     setPhase("opening");
     setTimeout(() => setPhase("inside"), 2200);
   }, []);

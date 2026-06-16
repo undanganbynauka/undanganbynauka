@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { HeroSection } from "@/components/template/HeroSection";
 import { CountdownSection } from "@/components/template/CountdownSection";
 import { BismillahSection } from "@/components/template/BismillahSection";
@@ -18,7 +18,14 @@ type Phase = "gate" | "opening" | "inside";
 export default function TemplatePage() {
   const [phase, setPhase] = useState<Phase>("gate");
 
+  useEffect(() => {
+    if (localStorage.getItem("nauka-heritage-opened") === "true") {
+      setPhase("inside");
+    }
+  }, []);
+
   const handleOpen = useCallback(() => {
+    localStorage.setItem("nauka-heritage-opened", "true");
     setPhase("opening");
     setTimeout(() => setPhase("inside"), 1400);
   }, []);

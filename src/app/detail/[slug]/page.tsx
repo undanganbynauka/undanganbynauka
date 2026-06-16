@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useParams } from "next/navigation";
 import { NaukaCheckout } from "@/components/nauka/NaukaCheckout";
 import { NaukaFooter } from "@/components/nauka/NaukaFooter";
@@ -12,9 +13,7 @@ interface TemplateDetail {
   collection: string;
   collectionLabel: string;
   demoHref: string;
-  gradient: string;
-  accent: string;
-  ornament: "arch" | "diamond" | "line";
+  preview: string;
   description: string;
   highlights: string[];
   emotionalNote: string;
@@ -27,9 +26,7 @@ const templates: Record<string, TemplateDetail> = {
     collection: "Syar'i",
     collectionLabel: "Syar'i Collection",
     demoHref: "/sacred",
-    gradient: "linear-gradient(160deg, #0B1120 0%, #16213e 55%, #1a1a2e 100%)",
-    accent: "rgba(201,169,110,0.12)",
-    ornament: "arch",
+    preview: "/etalase/sacred-preview.png",
     description:
       "Sacred dirancang untuk pasangan yang mengutamakan kesederhanaan syar'i dalam setiap detail undangannya. Tanpa foto, tanpa musik instrumental — hanya keindahan yang terjaga dan kata-kata yang bermakna.",
     highlights: [
@@ -46,9 +43,7 @@ const templates: Record<string, TemplateDetail> = {
     collection: "Universal",
     collectionLabel: "Universal Collection",
     demoHref: "/celestial",
-    gradient: "linear-gradient(160deg, #111827 0%, #1e1b3a 55%, #0f172a 100%)",
-    accent: "rgba(147,130,200,0.10)",
-    ornament: "diamond",
+    preview: "/etalase/celestial-preview.png",
     description:
       "Celestial menghadirkan keanggunan universal dalam desain undangan digital. Dengan animasi sinematik dan tipografi yang halus, setiap detail dirancang untuk memberikan kesan mendalam bagi tamu Anda.",
     highlights: [
@@ -65,9 +60,7 @@ const templates: Record<string, TemplateDetail> = {
     collection: "Universal",
     collectionLabel: "Universal Collection",
     demoHref: "/template",
-    gradient: "linear-gradient(160deg, #0f172a 0%, #1e293b 55%, #0B1120 100%)",
-    accent: "rgba(148,163,184,0.08)",
-    ornament: "line",
+    preview: "/etalase/heritage-preview.png",
     description:
       "Heritage menggabungkan sentuhan tradisional dengan desain digital modern. Ornamen klasik dipadukan dengan tata letak yang bersih, menciptakan undangan yang terasa hangat namun tetap sophisticated.",
     highlights: [
@@ -191,7 +184,7 @@ export default function DetailTemplatePage() {
             {tpl.name}
           </h1>
 
-          {/* Preview mockup */}
+          {/* Preview — real screenshot */}
           <div
             style={{
               marginTop: "36px",
@@ -203,89 +196,23 @@ export default function DetailTemplatePage() {
             <div
               style={{
                 width: "100%",
-                paddingTop: "140%",
+                aspectRatio: "9 / 16",
                 borderRadius: "16px",
                 border: "1px solid rgba(255,255,255,0.07)",
-                background: tpl.gradient,
                 overflow: "hidden",
                 position: "relative",
+                background: "#0B1120",
               }}
             >
-              {/* Accent */}
-              <div
-                className="pointer-events-none absolute inset-0"
-                style={{
-                  background: `radial-gradient(ellipse at 50% 20%, ${tpl.accent} 0%, transparent 60%)`,
-                }}
+              <Image
+                src={tpl.preview}
+                alt={`${tpl.name} preview`}
+                fill
+                sizes="(max-width: 580px) 100vw, 580px"
+                className="object-cover"
+                style={{ opacity: 0.9 }}
+                priority
               />
-
-              {/* Ornament */}
-              <div
-                className="absolute inset-0 flex items-center justify-center"
-                style={{ padding: "48px" }}
-              >
-                {tpl.ornament === "arch" && (
-                  <div
-                    style={{
-                      width: "80px",
-                      height: "120px",
-                      borderRadius: "50% 50% 0 0",
-                      border: "1px solid rgba(201,169,110,0.20)",
-                      borderBottom: "none",
-                    }}
-                  />
-                )}
-                {tpl.ornament === "diamond" && (
-                  <div
-                    style={{
-                      width: "48px",
-                      height: "48px",
-                      border: "1px solid rgba(147,130,200,0.20)",
-                      transform: "rotate(45deg)",
-                    }}
-                  />
-                )}
-                {tpl.ornament === "line" && (
-                  <div
-                    style={{
-                      width: "64px",
-                      height: "1px",
-                      background: "rgba(148,163,184,0.20)",
-                    }}
-                  />
-                )}
-              </div>
-
-              {/* Template name centered */}
-              <div
-                className="absolute inset-0 flex flex-col items-center justify-center"
-                style={{ gap: "10px" }}
-              >
-                <span
-                  style={{
-                    fontFamily: "var(--font-bodoni)",
-                    fontSize: "32px",
-                    fontWeight: 400,
-                    letterSpacing: "0.06em",
-                    color: "rgba(255,255,255,0.65)",
-                    textTransform: "uppercase",
-                  }}
-                >
-                  {tpl.name}
-                </span>
-                <span
-                  style={{
-                    fontFamily: "var(--font-inter)",
-                    fontSize: "11px",
-                    fontWeight: 400,
-                    letterSpacing: "0.2em",
-                    textTransform: "uppercase",
-                    color: "rgba(255,255,255,0.25)",
-                  }}
-                >
-                  Preview
-                </span>
-              </div>
             </div>
           </div>
 

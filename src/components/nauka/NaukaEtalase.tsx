@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 
 interface Template {
@@ -8,9 +9,7 @@ interface Template {
   name: string;
   collection: string;
   href: string;
-  gradient: string;
-  accent: string;
-  ornament: "arch" | "diamond" | "line";
+  preview: string;
 }
 
 const allTemplates: Template[] = [
@@ -19,27 +18,21 @@ const allTemplates: Template[] = [
     name: "Sacred",
     collection: "Syar'i",
     href: "/detail/sacred",
-    gradient: "linear-gradient(160deg, #0B1120 0%, #16213e 55%, #1a1a2e 100%)",
-    accent: "rgba(201,169,110,0.12)",
-    ornament: "arch",
+    preview: "/etalase/sacred-preview.png",
   },
   {
     id: "celestial",
     name: "Celestial",
     collection: "Universal",
     href: "/detail/celestial",
-    gradient: "linear-gradient(160deg, #111827 0%, #1e1b3a 55%, #0f172a 100%)",
-    accent: "rgba(147,130,200,0.10)",
-    ornament: "diamond",
+    preview: "/etalase/celestial-preview.png",
   },
   {
     id: "heritage",
     name: "Heritage",
     collection: "Universal",
     href: "/detail/heritage",
-    gradient: "linear-gradient(160deg, #0f172a 0%, #1e293b 55%, #0B1120 100%)",
-    accent: "rgba(148,163,184,0.08)",
-    ornament: "line",
+    preview: "/etalase/heritage-preview.png",
   },
 ];
 
@@ -120,91 +113,33 @@ export function NaukaEtalase({ start = 0, end }: { start?: number; end?: number 
                     e.currentTarget.style.transform = "translateY(0)";
                   }}
                 >
-                  {/* Mockup cover */}
+                  {/* Real screenshot preview */}
                   <div
                     style={{
                       position: "relative",
                       width: "100%",
-                      paddingTop: "130%",
-                      background: tpl.gradient,
+                      aspectRatio: "9 / 16",
                       overflow: "hidden",
+                      background: "#0B1120",
                     }}
                   >
-                    {/* Accent overlay */}
-                    <div
-                      className="pointer-events-none absolute inset-0"
-                      style={{
-                        background: `radial-gradient(ellipse at 50% 20%, ${tpl.accent} 0%, transparent 60%)`,
-                      }}
+                    <Image
+                      src={tpl.preview}
+                      alt={`${tpl.name} preview`}
+                      fill
+                      sizes="(max-width: 768px) 48vw, 30vw"
+                      className="object-cover"
+                      style={{ opacity: 0.85 }}
                     />
 
-                    {/* Ornament */}
+                    {/* Subtle gradient overlay at bottom for readability */}
                     <div
-                      className="absolute inset-0 flex items-center justify-center"
-                      style={{ padding: "24px" }}
-                    >
-                      {tpl.ornament === "arch" && (
-                        <div
-                          style={{
-                            width: "44px",
-                            height: "66px",
-                            borderRadius: "50% 50% 0 0",
-                            border: "1px solid rgba(201,169,110,0.16)",
-                            borderBottom: "none",
-                          }}
-                        />
-                      )}
-                      {tpl.ornament === "diamond" && (
-                        <div
-                          style={{
-                            width: "28px",
-                            height: "28px",
-                            border: "1px solid rgba(147,130,200,0.16)",
-                            transform: "rotate(45deg)",
-                          }}
-                        />
-                      )}
-                      {tpl.ornament === "line" && (
-                        <div
-                          style={{
-                            width: "36px",
-                            height: "1px",
-                            background: "rgba(148,163,184,0.16)",
-                          }}
-                        />
-                      )}
-                    </div>
-
-                    {/* Template name */}
-                    <div
-                      className="absolute inset-0 flex flex-col items-center justify-center"
-                      style={{ gap: "6px" }}
-                    >
-                      <span
-                        style={{
-                          fontFamily: "var(--font-bodoni)",
-                          fontSize: "18px",
-                          fontWeight: 400,
-                          letterSpacing: "0.06em",
-                          color: "rgba(255,255,255,0.65)",
-                          textTransform: "uppercase",
-                        }}
-                      >
-                        {tpl.name}
-                      </span>
-                      <span
-                        style={{
-                          fontFamily: "var(--font-inter)",
-                          fontSize: "8px",
-                          fontWeight: 400,
-                          letterSpacing: "0.2em",
-                          textTransform: "uppercase",
-                          color: "rgba(255,255,255,0.25)",
-                        }}
-                      >
-                        {tpl.collection}
-                      </span>
-                    </div>
+                      className="pointer-events-none absolute inset-x-0 bottom-0"
+                      style={{
+                        height: "40%",
+                        background: "linear-gradient(to top, rgba(11,17,32,0.7) 0%, transparent 100%)",
+                      }}
+                    />
                   </div>
 
                   {/* Info bar */}
@@ -216,16 +151,34 @@ export function NaukaEtalase({ start = 0, end }: { start?: number; end?: number 
                       justifyContent: "space-between",
                     }}
                   >
-                    <span
-                      style={{
-                        fontFamily: "var(--font-inter)",
-                        fontSize: "10px",
-                        color: "rgba(255,255,255,0.30)",
-                        letterSpacing: "0.04em",
-                      }}
-                    >
-                      75rb – 99rb
-                    </span>
+                    <div>
+                      <span
+                        style={{
+                          fontFamily: "var(--font-bodoni)",
+                          fontSize: "14px",
+                          fontWeight: 400,
+                          letterSpacing: "0.04em",
+                          color: "rgba(255,255,255,0.70)",
+                          display: "block",
+                        }}
+                      >
+                        {tpl.name}
+                      </span>
+                      <span
+                        style={{
+                          fontFamily: "var(--font-inter)",
+                          fontSize: "9px",
+                          fontWeight: 400,
+                          letterSpacing: "0.14em",
+                          textTransform: "uppercase",
+                          color: "rgba(255,255,255,0.28)",
+                          display: "block",
+                          marginTop: "2px",
+                        }}
+                      >
+                        {tpl.collection} · 75rb – 99rb
+                      </span>
+                    </div>
                     <span
                       style={{
                         fontFamily: "var(--font-inter)",
@@ -235,7 +188,7 @@ export function NaukaEtalase({ start = 0, end }: { start?: number; end?: number 
                         color: "rgba(255,255,255,0.45)",
                       }}
                     >
-                      Lihat Demo →
+                      Demo →
                     </span>
                   </div>
                 </div>

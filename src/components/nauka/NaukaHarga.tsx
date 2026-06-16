@@ -3,17 +3,20 @@
 import React, { useEffect, useRef, useState } from "react";
 
 const features = [
-  { name: "Doa & Ucapan", basic: "Maks. 20 orang", premium: "Tanpa batas", highlight: true },
-  { name: "Masa Aktif", basic: "H+30", premium: "H+90" },
-  { name: "Input Tamu", basic: "Isi sendiri", premium: "Isi sendiri / Terima jadi" },
-  { name: "BGM", basic: "Default", premium: "Library pilihan" },
-  { name: "Custom URL", basic: "nauka.id/inv/abc123", premium: "nauka.id/nama-pasangan" },
+  { name: "Doa & Ucapan", basic: "Hingga 20 tamu", premium: "Tanpa batas interaksi tamu", highlight: true },
+  { name: "Masa Aktif", basic: "30 hari aktif", premium: "90 hari aktif" },
+  { name: "Input Tamu", basic: "Mandiri", premium: "Mandiri / dibantu pengisian" },
+  { name: "BGM", basic: "Default audio", premium: "Kurasi dari library Nauka" },
+  { name: "Custom URL", basic: "Standar", premium: "Personal nama pasangan" },
   { name: "RSVP", basic: "✓", premium: "✓" },
   { name: "Amplop Digital", basic: "✓", premium: "✓" },
-  { name: "Jumlah Tamu", basic: "Tanpa batas", premium: "Tanpa batas" },
-  { name: "Support", basic: "WhatsApp", premium: "Prioritas + revisi minor" },
-  { name: "Analitik", basic: "—", premium: "✓", highlight: true },
+  { name: "Jumlah Tamu", basic: "Tidak dibatasi", premium: "Tidak dibatasi" },
+  { name: "Support", basic: "WhatsApp standar", premium: "Prioritas + bantuan revisi minor" },
+  { name: "Analitik", basic: "—", premium: "Tersedia laporan interaksi", highlight: true },
 ];
+
+const WA_BASIC = "https://wa.me/6289655592925?text=Halo%20Nauka%2C%20saya%20tertarik%20dengan%20paket%20Basic";
+const WA_PREMIUM = "https://wa.me/6289655592925?text=Halo%20Nauka%2C%20saya%20tertarik%20dengan%20paket%20Premium";
 
 export function NaukaHarga() {
   const [visible, setVisible] = useState(false);
@@ -24,7 +27,7 @@ export function NaukaHarga() {
       ([entry]) => {
         if (entry.isIntersecting) setVisible(true);
       },
-      { threshold: 0.1 }
+      { threshold: 0.08 }
     );
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
@@ -35,22 +38,22 @@ export function NaukaHarga() {
       ref={ref}
       className="nauka-grain relative"
       style={{
-        background: "#111827",
+        background: "linear-gradient(180deg, #0B1120 0%, #111827 100%)",
         padding: "90px 24px",
       }}
     >
-      {/* Ambient glow — top right */}
+      {/* Ambient glow */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
           background: visible
-            ? "linear-gradient(225deg, rgba(201,169,110,0.02) 0%, transparent 40%)"
+            ? "linear-gradient(135deg, rgba(201,169,110,0.02) 0%, transparent 40%)"
             : "none",
           transition: "background 1.8s ease",
         }}
       />
 
-      <div className="relative z-10 mx-auto max-w-[620px]">
+      <div className="relative z-10 mx-auto max-w-[640px]">
         {/* Section title */}
         <h2
           style={{
@@ -66,8 +69,27 @@ export function NaukaHarga() {
           }}
           className="md:!text-[22px]"
         >
-          Paket & Harga
+          Pilihan Paket
         </h2>
+
+        {/* Subtext */}
+        <p
+          style={{
+            fontFamily: "var(--font-inter)",
+            fontSize: "13px",
+            fontWeight: 400,
+            lineHeight: 1.7,
+            color: "rgba(255,255,255,0.45)",
+            textAlign: "center",
+            maxWidth: "420px",
+            margin: "18px auto 0",
+            opacity: visible ? 1 : 0,
+            transform: visible ? "translateY(0)" : "translateY(16px)",
+            transition: "opacity 1.3s ease-out 0.15s, transform 1.3s ease-out 0.15s",
+          }}
+        >
+          Kedua paket dirancang dengan kualitas yang sama, dengan tingkat keluasan pengalaman yang berbeda.
+        </p>
 
         {/* Divider */}
         <div
@@ -82,11 +104,13 @@ export function NaukaHarga() {
 
         {/* Price cards */}
         <div
-          className="grid gap-6 md:grid-cols-2"
           style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "16px",
             opacity: visible ? 1 : 0,
             transform: visible ? "translateY(0)" : "translateY(20px)",
-            transition: "opacity 1.4s ease-out 0.3s, transform 1.4s ease-out 0.3s",
+            transition: "opacity 1.4s ease-out 0.25s, transform 1.4s ease-out 0.25s",
           }}
         >
           {/* Basic */}
@@ -95,7 +119,7 @@ export function NaukaHarga() {
               borderRadius: "14px",
               border: "1px solid rgba(255,255,255,0.06)",
               background: "rgba(255,255,255,0.02)",
-              padding: "28px",
+              padding: "28px 20px",
               textAlign: "center",
             }}
           >
@@ -132,7 +156,7 @@ export function NaukaHarga() {
               borderRadius: "14px",
               border: "1px solid rgba(201,169,110,0.12)",
               background: "rgba(201,169,110,0.02)",
-              padding: "28px",
+              padding: "28px 20px",
               textAlign: "center",
               position: "relative",
             }}
@@ -195,7 +219,7 @@ export function NaukaHarga() {
             marginTop: "42px",
             opacity: visible ? 1 : 0,
             transform: visible ? "translateY(0)" : "translateY(20px)",
-            transition: "opacity 1.4s ease-out 0.5s, transform 1.4s ease-out 0.5s",
+            transition: "opacity 1.4s ease-out 0.4s, transform 1.4s ease-out 0.4s",
           }}
         >
           {/* Table header */}
@@ -226,10 +250,122 @@ export function NaukaHarga() {
             >
               <span style={{ fontFamily: "var(--font-inter)", fontSize: "13px", color: "rgba(255,255,255,0.72)" }}>{feat.name}</span>
               <span style={{ fontFamily: "var(--font-inter)", fontSize: "13px", color: "rgba(255,255,255,0.45)", textAlign: "center" }}>{feat.basic}</span>
-              <span style={{ fontFamily: "var(--font-inter)", fontSize: "13px", color: "rgba(201,169,110,0.6)", textAlign: "center" }}>{feat.premium}</span>
+              <span style={{ fontFamily: "var(--font-inter)", fontSize: "13px", color: feat.highlight ? "rgba(201,169,110,0.7)" : "rgba(201,169,110,0.6)", textAlign: "center" }}>{feat.premium}</span>
             </div>
           ))}
         </div>
+
+        {/* CTA buttons */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "16px",
+            marginTop: "42px",
+            opacity: visible ? 1 : 0,
+            transform: visible ? "translateY(0)" : "translateY(20px)",
+            transition: "opacity 1.4s ease-out 0.55s, transform 1.4s ease-out 0.55s",
+          }}
+        >
+          {/* Basic — outline, low emphasis */}
+          <a
+            href={WA_BASIC}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "16px 20px",
+              borderRadius: "12px",
+              border: "1px solid rgba(255,255,255,0.10)",
+              background: "transparent",
+              fontFamily: "var(--font-inter)",
+              fontSize: "13px",
+              fontWeight: 400,
+              letterSpacing: "0.08em",
+              color: "rgba(255,255,255,0.6)",
+              textDecoration: "none",
+              transition: "border-color 0.3s ease, color 0.3s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = "rgba(255,255,255,0.20)";
+              e.currentTarget.style.color = "rgba(255,255,255,0.8)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = "rgba(255,255,255,0.10)";
+              e.currentTarget.style.color = "rgba(255,255,255,0.6)";
+            }}
+          >
+            Gunakan Basic
+          </a>
+
+          {/* Premium — filled subtle */}
+          <a
+            href={WA_PREMIUM}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "16px 20px",
+              borderRadius: "12px",
+              border: "1px solid rgba(201,169,110,0.18)",
+              background: "rgba(201,169,110,0.06)",
+              fontFamily: "var(--font-inter)",
+              fontSize: "13px",
+              fontWeight: 400,
+              letterSpacing: "0.08em",
+              color: "rgba(201,169,110,0.75)",
+              textDecoration: "none",
+              transition: "border-color 0.3s ease, background 0.3s ease, color 0.3s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = "rgba(201,169,110,0.30)";
+              e.currentTarget.style.background = "rgba(201,169,110,0.10)";
+              e.currentTarget.style.color = "rgba(201,169,110,0.9)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = "rgba(201,169,110,0.18)";
+              e.currentTarget.style.background = "rgba(201,169,110,0.06)";
+              e.currentTarget.style.color = "rgba(201,169,110,0.75)";
+            }}
+          >
+            Gunakan Premium
+            <span
+              style={{
+                fontFamily: "var(--font-inter)",
+                fontSize: "10px",
+                fontWeight: 400,
+                letterSpacing: "0.04em",
+                color: "rgba(201,169,110,0.40)",
+                marginTop: "6px",
+              }}
+            >
+              Pilihan yang lebih sering digunakan
+            </span>
+          </a>
+        </div>
+
+        {/* Footer note */}
+        <p
+          style={{
+            fontFamily: "var(--font-inter)",
+            fontSize: "12px",
+            fontWeight: 400,
+            lineHeight: 1.6,
+            color: "rgba(255,255,255,0.30)",
+            textAlign: "center",
+            marginTop: "32px",
+            opacity: visible ? 1 : 0,
+            transition: "opacity 1.3s ease-out 0.7s",
+          }}
+        >
+          Pilih paket sesuai kebutuhan. Keduanya dibuat dengan standar kualitas yang sama.
+        </p>
       </div>
     </section>
   );

@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useCallback, useEffect } from "react";
+import React, { Suspense, useState, useCallback, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import "@/app/celestial.css";
 import { StarField, ShootingStar } from "@/components/celestial/StarField";
 import { CelestialHero } from "@/components/celestial/CelestialHero";
@@ -20,22 +21,29 @@ type Phase = "checking" | "gate" | "opening" | "inside";
 
 const STORAGE_KEY = "nauka-celestial-opened";
 
-export default function CelestialPage() {
+function CelestialContent() {
   const [phase, setPhase] = useState<Phase>("checking");
+  const searchParams = useSearchParams();
+  const isPreview = searchParams.get("preview") === "true";
 
   useEffect(() => {
-    if (localStorage.getItem(STORAGE_KEY) === "true") {
+    if (isPreview) {
+      // Preview mode: selalu mulai dari gate, abaikan localStorage
+      setPhase("gate");
+    } else if (localStorage.getItem(STORAGE_KEY) === "true") {
       setPhase("inside");
     } else {
       setPhase("gate");
     }
-  }, []);
+  }, [isPreview]);
 
   const handleOpen = useCallback(() => {
-    localStorage.setItem(STORAGE_KEY, "true");
+    if (!isPreview) {
+      localStorage.setItem(STORAGE_KEY, "true");
+    }
     setPhase("opening");
     setTimeout(() => setPhase("inside"), 2200);
-  }, []);
+  }, [isPreview]);
 
   // Don't render anything until we know localStorage state
   if (phase === "checking") {
@@ -86,5 +94,13 @@ export default function CelestialPage() {
       {/* MUSIC — always visible when not checking */}
       <CelestialMusic />
     </main>
+  );
+}
+
+export default function CelestialPage() {
+  return (
+    <Suspense fallback={<main className="celestial-page"><StarField /><ShootingStar /></main>}>
+      <CelestialContent />
+    </Suspense>
   );
 }

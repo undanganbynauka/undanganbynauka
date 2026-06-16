@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useCallback, useEffect } from "react";
+import React, { Suspense, useState, useCallback, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { SoundToggle } from "@/components/mood/SoundToggle";
 import { SacredHero } from "@/components/sacred/SacredHero";
 import { CountdownSection } from "@/components/template/CountdownSection";
@@ -20,22 +21,29 @@ type Phase = "checking" | "gate" | "opening" | "inside";
 
 const STORAGE_KEY = "nauka-sacred-opened";
 
-export default function SacredPage() {
+function SacredContent() {
   const [phase, setPhase] = useState<Phase>("checking");
+  const searchParams = useSearchParams();
+  const isPreview = searchParams.get("preview") === "true";
 
   useEffect(() => {
-    if (localStorage.getItem(STORAGE_KEY) === "true") {
+    if (isPreview) {
+      // Preview mode: selalu mulai dari gate, abaikan localStorage
+      setPhase("gate");
+    } else if (localStorage.getItem(STORAGE_KEY) === "true") {
       setPhase("inside");
     } else {
       setPhase("gate");
     }
-  }, []);
+  }, [isPreview]);
 
   const handleOpen = useCallback(() => {
-    localStorage.setItem(STORAGE_KEY, "true");
+    if (!isPreview) {
+      localStorage.setItem(STORAGE_KEY, "true");
+    }
     setPhase("opening");
     setTimeout(() => setPhase("inside"), 2200);
-  }, []);
+  }, [isPreview]);
 
   // Don't render gate or content until we know localStorage state
   if (phase === "checking") {
@@ -84,5 +92,13 @@ export default function SacredPage() {
         </div>
       )}
     </main>
+  );
+}
+
+export default function SacredPage() {
+  return (
+    <Suspense fallback={<main className="sacred-page" />}>
+      <SacredContent />
+    </Suspense>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useCallback, useEffect } from "react";
+import React, { Suspense, useState, useCallback, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { HeroSection } from "@/components/template/HeroSection";
 import { CountdownSection } from "@/components/template/CountdownSection";
 import { BismillahSection } from "@/components/template/BismillahSection";
@@ -17,22 +18,28 @@ type Phase = "checking" | "gate" | "opening" | "inside";
 
 const STORAGE_KEY = "nauka-heritage-opened";
 
-export default function TemplatePage() {
+function TemplateContent() {
   const [phase, setPhase] = useState<Phase>("checking");
+  const searchParams = useSearchParams();
+  const isPreview = searchParams.get("preview") === "true";
 
   useEffect(() => {
-    if (localStorage.getItem(STORAGE_KEY) === "true") {
+    if (isPreview) {
+      setPhase("gate");
+    } else if (localStorage.getItem(STORAGE_KEY) === "true") {
       setPhase("inside");
     } else {
       setPhase("gate");
     }
-  }, []);
+  }, [isPreview]);
 
   const handleOpen = useCallback(() => {
-    localStorage.setItem(STORAGE_KEY, "true");
+    if (!isPreview) {
+      localStorage.setItem(STORAGE_KEY, "true");
+    }
     setPhase("opening");
     setTimeout(() => setPhase("inside"), 1400);
-  }, []);
+  }, [isPreview]);
 
   // Don't render gate or content until we know localStorage state
   if (phase === "checking") {
@@ -79,5 +86,13 @@ export default function TemplatePage() {
       {/* Floating Navigation — only when inside */}
       {phase === "inside" && <FloatingNav />}
     </main>
+  );
+}
+
+export default function TemplatePage() {
+  return (
+    <Suspense fallback={<main />}>
+      <TemplateContent />
+    </Suspense>
   );
 }

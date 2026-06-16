@@ -10,6 +10,7 @@ interface Template {
   collection: string;
   href: string;
   preview: string;
+  liveHref?: string;
   video?: string;
 }
 
@@ -20,6 +21,7 @@ const syariTemplates: Template[] = [
     collection: "Syar'i",
     href: "/detail/sacred",
     preview: "/etalase/sacred-preview.png",
+    liveHref: "/sacred?preview=true",
   },
 ];
 
@@ -30,6 +32,7 @@ const universalTemplates: Template[] = [
     collection: "Universal",
     href: "/detail/celestial",
     preview: "/etalase/celestial-preview.png",
+    liveHref: "/celestial?preview=true",
     video: "/etalase/celestial-preview.mp4",
   },
   // Heritage disimpan dulu — akan digunakan untuk template ke-3
@@ -198,7 +201,7 @@ function EtalaseCard({ tpl, delay }: { tpl: Template; delay: number }) {
               color: "rgba(255,255,255,0.45)",
             }}
           >
-            Demo →
+            Preview →
           </span>
         </div>
       </div>

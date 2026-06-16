@@ -12,7 +12,7 @@ interface TemplateDetail {
   name: string;
   collection: string;
   collectionLabel: string;
-  demoHref: string;
+  previewHref: string;
   preview: string;
   description: string;
   highlights: string[];
@@ -25,7 +25,7 @@ const templates: Record<string, TemplateDetail> = {
     name: "Sacred",
     collection: "Syar'i",
     collectionLabel: "Syar'i Collection",
-    demoHref: "/sacred",
+    previewHref: "/sacred?preview=true",
     preview: "/etalase/sacred-preview.png",
     description:
       "Sacred dirancang untuk pasangan yang mengutamakan kesederhanaan syar'i dalam setiap detail undangannya. Tanpa foto, tanpa musik instrumental — hanya keindahan yang terjaga dan kata-kata yang bermakna.",
@@ -42,7 +42,7 @@ const templates: Record<string, TemplateDetail> = {
     name: "Celestial",
     collection: "Universal",
     collectionLabel: "Universal Collection",
-    demoHref: "/celestial",
+    previewHref: "/celestial?preview=true",
     preview: "/etalase/celestial-preview.png",
     description:
       "Celestial menghadirkan keanggunan universal dalam desain undangan digital. Dengan animasi sinematik dan tipografi yang halus, setiap detail dirancang untuk memberikan kesan mendalam bagi tamu Anda.",
@@ -60,7 +60,7 @@ const templates: Record<string, TemplateDetail> = {
   //   name: "Heritage",
   //   collection: "Universal",
   //   collectionLabel: "Universal Collection",
-  //   demoHref: "/template",
+  //   previewHref: "/template?preview=true",
   //   preview: "/etalase/heritage-preview.png",
   //   description:
   //     "Heritage menggabungkan sentuhan tradisional dengan desain digital modern. Ornamen klasik dipadukan dengan tata letak yang bersih, menciptakan undangan yang terasa hangat namun tetap sophisticated.",
@@ -217,10 +217,10 @@ export default function DetailTemplatePage() {
             </div>
           </div>
 
-          {/* Lihat Demo link */}
+          {/* Lihat Preview link */}
           <div style={{ textAlign: "center", marginTop: "24px" }}>
             <Link
-              href={tpl.demoHref}
+              href={tpl.previewHref}
               style={{
                 fontFamily: "var(--font-inter)",
                 fontSize: "12px",
@@ -239,7 +239,7 @@ export default function DetailTemplatePage() {
                 e.currentTarget.style.borderBottomColor = "rgba(255,255,255,0.12)";
               }}
             >
-              Buka demo penuh →
+              Buka preview →
             </Link>
           </div>
 

@@ -63,6 +63,7 @@ export function NaukaEtalase({ start = 0, end }: { start?: number; end?: number 
   return (
     <section
       ref={ref}
+      id="nauka-etalase"
       className="nauka-grain relative"
       style={{
         background: "linear-gradient(180deg, #111827 0%, #0B1120 100%)",

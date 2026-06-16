@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 
 export function NaukaGerbang() {
   const [loaded, setLoaded] = useState(false);
@@ -11,6 +10,13 @@ export function NaukaGerbang() {
     const t = setTimeout(() => setLoaded(true), 80);
     return () => clearTimeout(t);
   }, []);
+
+  const scrollToEtalase = () => {
+    const el = document.getElementById("nauka-etalase");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   return (
     <section
@@ -105,19 +111,23 @@ export function NaukaGerbang() {
           Pilih Jalur Anda
         </p>
 
-        {/* CARDS */}
+        {/* CARDS — scroll to etalase, not navigate */}
         <div
           className="mt-6 flex w-full flex-col gap-3 md:mt-[24px] md:flex-row md:gap-4"
           style={{ maxWidth: "420px" }}
         >
           {/* Syar'i Collection */}
-          <Link
-            href="/sacred"
+          <button
+            onClick={scrollToEtalase}
             className="block w-full"
             style={{
               opacity: loaded ? 1 : 0,
               transform: loaded ? "translateY(0)" : "translateY(12px)",
               transition: "opacity 1.3s ease-out 0.8s, transform 1.3s ease-out 0.8s",
+              background: "none",
+              border: "none",
+              padding: 0,
+              cursor: "pointer",
             }}
           >
             <div
@@ -153,16 +163,20 @@ export function NaukaGerbang() {
                 Syar&apos;i Collection
               </span>
             </div>
-          </Link>
+          </button>
 
           {/* Universal Collection */}
-          <Link
-            href="/celestial"
+          <button
+            onClick={scrollToEtalase}
             className="block w-full"
             style={{
               opacity: loaded ? 1 : 0,
               transform: loaded ? "translateY(0)" : "translateY(12px)",
               transition: "opacity 1.3s ease-out 0.95s, transform 1.3s ease-out 0.95s",
+              background: "none",
+              border: "none",
+              padding: 0,
+              cursor: "pointer",
             }}
           >
             <div
@@ -198,7 +212,7 @@ export function NaukaGerbang() {
                 Universal Collection
               </span>
             </div>
-          </Link>
+          </button>
         </div>
       </div>
     </section>

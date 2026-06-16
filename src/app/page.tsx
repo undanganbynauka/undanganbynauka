@@ -6,6 +6,7 @@ import { NaukaEtalaseSyari, NaukaEtalaseUniversal } from "@/components/nauka/Nau
 import { NaukaHarga } from "@/components/nauka/NaukaHarga";
 import { NaukaBayanganMomen } from "@/components/nauka/NaukaBayanganMomen";
 import { NaukaFooter } from "@/components/nauka/NaukaFooter";
+import { NaukaWhatsAppFloat } from "@/components/nauka/NaukaWhatsAppFloat";
 
 export default function NaukaLanding() {
   return (
@@ -30,6 +31,9 @@ export default function NaukaLanding() {
 
       {/* 7. FOOTER — Closing Moment */}
       <NaukaFooter />
+
+      {/* FLOATING WA — Disabled by default, activate in component */}
+      <NaukaWhatsAppFloat />
     </main>
   );
 }

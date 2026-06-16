@@ -6,6 +6,8 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import { NaukaCheckout } from "@/components/nauka/NaukaCheckout";
 import { NaukaFooter } from "@/components/nauka/NaukaFooter";
+import { NaukaWhatsAppFloat } from "@/components/nauka/NaukaWhatsAppFloat";
+import { WA_INQUIRY_LINK } from "@/lib/whatsapp";
 
 interface TemplateDetail {
   id: string;
@@ -339,8 +341,56 @@ export default function DetailTemplatePage() {
         premiumPrice={99}
       />
 
+      {/* CONTEXTUAL WA SUPPORT — small secondary fallback */}
+      <div style={{ textAlign: "center", padding: "0 24px 48px" }}>
+        <p
+          style={{
+            fontFamily: "var(--font-inter)",
+            fontSize: "12px",
+            fontWeight: 400,
+            lineHeight: 1.6,
+            color: "rgba(255,255,255,0.30)",
+            marginBottom: "12px",
+          }}
+        >
+          Belum siap checkout? Tanyakan langsung via WhatsApp.
+        </p>
+        <a
+          href={WA_INQUIRY_LINK}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: "inline-block",
+            padding: "10px 24px",
+            borderRadius: "8px",
+            border: "1px solid rgba(255,255,255,0.08)",
+            background: "transparent",
+            fontFamily: "var(--font-inter)",
+            fontSize: "12px",
+            fontWeight: 400,
+            letterSpacing: "0.06em",
+            color: "rgba(255,255,255,0.35)",
+            textDecoration: "none",
+            transition: "border-color 0.3s ease, color 0.3s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = "rgba(255,255,255,0.18)";
+            e.currentTarget.style.color = "rgba(255,255,255,0.55)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
+            e.currentTarget.style.color = "rgba(255,255,255,0.35)";
+          }}
+        >
+          Tanya via WhatsApp
+        </a>
+      </div>
+
       {/* FOOTER — Closing Moment */}
       <NaukaFooter />
+
+      {/* FLOATING WA — Disabled by default, activate in component */}
+      <NaukaWhatsAppFloat />
     </main>
   );
 }

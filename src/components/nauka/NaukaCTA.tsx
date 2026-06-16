@@ -2,10 +2,11 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { WA_INQUIRY_LINK } from "@/lib/whatsapp";
 
-const WA_NUMBER = "6289655592925";
-const WA_TEXT = encodeURIComponent("Halo Nauka, saya tertarik dengan undangan digital 🤍");
-const WA_LINK = `https://wa.me/${WA_NUMBER}?text=${WA_TEXT}`;
+// WA config centralized in @/lib/whatsapp
+// This component is NOT currently used on the landing page.
+// WhatsApp should remain a secondary support layer, not primary CTA.
 
 export function NaukaCTA() {
   const [visible, setVisible] = useState(false);
@@ -78,7 +79,7 @@ export function NaukaCTA() {
 
         {/* WhatsApp CTA */}
         <a
-          href={WA_LINK}
+          href={WA_INQUIRY_LINK}
           target="_blank"
           rel="noopener noreferrer"
           style={{

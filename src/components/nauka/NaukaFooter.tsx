@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { WA_INQUIRY_LINK } from "@/lib/whatsapp";
 
 export function NaukaFooter() {
   const [visible, setVisible] = useState(false);
@@ -108,9 +109,9 @@ export function NaukaFooter() {
           </span>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            {/* WhatsApp */}
+            {/* WhatsApp — subtle support contact */}
             <a
-              href="https://wa.me/6289655592925"
+              href={WA_INQUIRY_LINK}
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -124,8 +125,7 @@ export function NaukaFooter() {
               onMouseEnter={(e) => { e.currentTarget.style.color = "rgba(255,255,255,0.65)"; }}
               onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(255,255,255,0.45)"; }}
             >
-              0896-555-9292-5
-              <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.20)", marginLeft: "8px", letterSpacing: "0.08em" }}>WhatsApp</span>
+              Hubungi via WhatsApp
             </a>
 
             {/* Instagram */}

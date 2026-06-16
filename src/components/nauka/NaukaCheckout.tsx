@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { getWAOrderLink } from "@/lib/whatsapp";
 
 interface CheckoutProps {
   templateName: string;
@@ -10,7 +11,7 @@ interface CheckoutProps {
   premiumPrice: number;
 }
 
-const WA_BASE = "6289655592925";
+// WA config centralized in @/lib/whatsapp
 
 export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPrice }: CheckoutProps) {
   const [selected, setSelected] = useState<"basic" | "premium">("premium");
@@ -32,8 +33,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
   const price = selected === "basic" ? basicPrice : premiumPrice;
   const packageName = selected === "basic" ? "Basic" : "Premium";
 
-  const waMessage = `Halo Nauka, saya ingin order undangan.%0A%0ATemplate: ${templateName}%0APaket: ${packageName}%0AHarga: Rp${price.toLocaleString("id-ID")}%0AMetode: QRIS`;
-  const waLink = `https://wa.me/${WA_BASE}?text=${waMessage}`;
+  const waLink = getWAOrderLink(templateName, packageName, price);
 
   return (
     <section

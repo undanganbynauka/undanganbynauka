@@ -15,8 +15,8 @@ const features = [
   { name: "Analitik", basic: "—", premium: "Tersedia laporan interaksi", highlight: true },
 ];
 
-const WA_BASIC = "https://wa.me/6289655592925?text=Halo%20Nauka%2C%20saya%20tertarik%20dengan%20paket%20Basic";
-const WA_PREMIUM = "https://wa.me/6289655592925?text=Halo%20Nauka%2C%20saya%20tertarik%20dengan%20paket%20Premium";
+// WhatsApp removed from pricing CTA — WA is support layer, not primary sales channel
+// CTA hierarchy: Hero → Etalase → Pricing → Checkout → Footer WA
 
 export function NaukaHarga() {
   const [visible, setVisible] = useState(false);
@@ -255,7 +255,7 @@ export function NaukaHarga() {
           ))}
         </div>
 
-        {/* CTA buttons */}
+        {/* CTA buttons — scroll to explore templates */}
         <div
           style={{
             display: "grid",
@@ -268,10 +268,11 @@ export function NaukaHarga() {
           }}
         >
           {/* Basic — outline, low emphasis */}
-          <a
-            href={WA_BASIC}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            onClick={() => {
+              const el = document.getElementById("etalase-syari");
+              if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
             style={{
               display: "flex",
               flexDirection: "column",
@@ -286,7 +287,7 @@ export function NaukaHarga() {
               fontWeight: 400,
               letterSpacing: "0.08em",
               color: "rgba(255,255,255,0.6)",
-              textDecoration: "none",
+              cursor: "pointer",
               transition: "border-color 0.3s ease, color 0.3s ease",
             }}
             onMouseEnter={(e) => {
@@ -298,14 +299,12 @@ export function NaukaHarga() {
               e.currentTarget.style.color = "rgba(255,255,255,0.6)";
             }}
           >
-            Gunakan Basic
-          </a>
+            Lihat Template
+          </button>
 
           {/* Premium — filled subtle */}
           <a
-            href={WA_PREMIUM}
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/detail/celestial"
             style={{
               display: "flex",
               flexDirection: "column",
@@ -334,7 +333,7 @@ export function NaukaHarga() {
               e.currentTarget.style.color = "rgba(201,169,110,0.75)";
             }}
           >
-            Gunakan Premium
+            Pesan Sekarang
             <span
               style={{
                 fontFamily: "var(--font-inter)",
@@ -345,7 +344,7 @@ export function NaukaHarga() {
                 marginTop: "6px",
               }}
             >
-              Pilihan yang lebih sering digunakan
+              Mulai dari 75rb
             </span>
           </a>
         </div>

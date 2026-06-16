@@ -135,3 +135,28 @@ Stage Summary:
 - Clouds now straddle the border line (di antara border), asymmetric positions
 - Text uses @keyframes animation with 35px translateY for much more visible rolling effect
 - Border and clouds have no animation — only text rolls in per line
+
+---
+Task ID: 7
+Agent: main
+Task: Implement WhatsApp as secondary communication layer on Nauka website + remove visible phone number
+
+Work Log:
+- Created centralized WhatsApp config at src/lib/whatsapp.ts with WA_INQUIRY_LINK, getWAOrderLink(), getWAInquiryLink()
+- Updated NaukaFooter: removed visible phone number (0896-555-9292-5), replaced with subtle "Hubungi via WhatsApp" text link using new prefilled message
+- Updated NaukaHarga: removed WA_BASIC and WA_PREMIUM links from CTA buttons, replaced "Gunakan Basic" with "Lihat Template" (scrolls to etalase) and "Gunakan Premium" with "Pesan Sekarang" (links to /detail/celestial)
+- Updated NaukaCheckout: replaced hardcoded WA_BASE with centralized getWAOrderLink() — this is appropriate as post-payment confirmation step
+- Updated detail/[slug]/page.tsx: added small "Tanya via WhatsApp" secondary button after checkout as contextual support fallback
+- Created NaukaWhatsAppFloat component: disabled by default (ENABLED=false), monochrome chat icon (not WA green), low opacity (0.4), no animation, bottom-right position
+- Added NaukaWhatsAppFloat to both landing page and detail page
+- Updated NaukaCTA: replaced hardcoded WA constants with centralized config (component not used on landing page)
+- Verified Syar'i & Universal categorization: Sacred → Syar'i (correct), Celestial → Universal (correct)
+- Build successful with no errors
+
+Stage Summary:
+- Phone number removed from website, replaced with subtle "Hubungi via WhatsApp" in footer
+- All WA links centralized in lib/whatsapp.ts with prefilled message: "Halo Nauka, saya ingin menanyakan tentang undangan digital."
+- Pricing CTA no longer links to WhatsApp — now leads to template exploration/checkout
+- WA present in 3 strategic locations: Footer (main), Detail page after checkout (contextual fallback), Floating button (disabled by default)
+- Visual rules applied: no WA green, no big icons, no aggressive animations, quiet support feel
+- CTA hierarchy maintained: Hero → Etalase → Pricing → Checkout → Google Form → Footer WA

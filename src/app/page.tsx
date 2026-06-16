@@ -4,6 +4,7 @@ import { NaukaGerbang } from "@/components/nauka/NaukaGerbang";
 import { NaukaMockup } from "@/components/nauka/NaukaMockup";
 import { NaukaEtalaseSyari, NaukaEtalaseUniversal } from "@/components/nauka/NaukaEtalase";
 import { NaukaHarga } from "@/components/nauka/NaukaHarga";
+import { NaukaBayanganMomen } from "@/components/nauka/NaukaBayanganMomen";
 import { NaukaFooter } from "@/components/nauka/NaukaFooter";
 
 export default function NaukaLanding() {
@@ -21,10 +22,13 @@ export default function NaukaLanding() {
       {/* 4. PRICING — Clarity */}
       <NaukaHarga />
 
-      {/* 5. ETALASE UNIVERSAL — Celestial */}
+      {/* 5. BAYANGAN MOMEN — Emotional Anchor */}
+      <NaukaBayanganMomen />
+
+      {/* 6. ETALASE UNIVERSAL — Celestial */}
       <NaukaEtalaseUniversal />
 
-      {/* 6. FOOTER — Closing Moment */}
+      {/* 7. FOOTER — Closing Moment */}
       <NaukaFooter />
     </main>
   );

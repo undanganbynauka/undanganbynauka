@@ -2,12 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 export function NaukaGerbang() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    const t = setTimeout(() => setLoaded(true), 100);
+    const t = setTimeout(() => setLoaded(true), 80);
     return () => clearTimeout(t);
   }, []);
 
@@ -21,81 +22,183 @@ export function NaukaGerbang() {
         className="pointer-events-none absolute inset-0"
         style={{
           background: loaded
-            ? "linear-gradient(180deg, rgba(201,169,110,0.035) 0%, transparent 40%)"
+            ? "linear-gradient(180deg, rgba(201,169,110,0.03) 0%, transparent 35%)"
             : "none",
           transition: "background 1.8s ease",
         }}
       />
 
-      {/* Main content */}
-      <div className="relative z-10 flex flex-col items-center text-center px-6">
-        {/* Logo */}
+      {/* Main content — vertical center */}
+      <div className="relative z-10 flex flex-col items-center text-center px-6 w-full max-w-[520px]">
+
+        {/* LOGO */}
         <div
           style={{
-            opacity: loaded ? 1 : 0,
-            transform: loaded ? "translateY(0)" : "translateY(20px)",
+            width: "84px",
+            opacity: loaded ? 0.9 : 0,
+            transform: loaded ? "translateY(0)" : "translateY(18px)",
             transition: "opacity 1.2s ease-out, transform 1.2s ease-out",
           }}
         >
-          <div className="relative h-14 w-[176px] md:h-[72px] md:w-[240px]">
-            <Image
-              src="/nauka-logo-new.png"
-              alt="Nauka"
-              fill
-              sizes="(max-width: 768px) 176px, 240px"
-              priority
-              className="object-contain"
-              style={{ filter: "brightness(0) invert(1)" }}
-            />
+          <div className="relative md:!w-[104px]" style={{ width: "84px" }}>
+            <div className="relative" style={{ width: "84px", height: "28px" }}>
+              <Image
+                src="/nauka-logo-new.png"
+                alt="Nauka"
+                fill
+                sizes="84px"
+                priority
+                className="object-contain"
+                style={{ filter: "brightness(0) invert(1)", opacity: 0.9 }}
+              />
+            </div>
+            <div className="relative hidden md:block" style={{ width: "104px", height: "34px" }}>
+              <Image
+                src="/nauka-logo-new.png"
+                alt="Nauka"
+                fill
+                sizes="104px"
+                priority
+                className="object-contain"
+                style={{ filter: "brightness(0) invert(1)", opacity: 0.9 }}
+              />
+            </div>
           </div>
         </div>
 
-        {/* Tagline */}
+        {/* TAGLINE */}
         <p
-          className="mt-6 md:mt-8"
           style={{
-            fontFamily: "var(--font-cormorant)",
+            fontFamily: "var(--font-bodoni)",
             fontSize: "26px",
             fontWeight: 400,
-            lineHeight: 1.5,
-            color: "rgba(255,255,255,0.72)",
+            lineHeight: 1.45,
+            letterSpacing: "0.02em",
+            color: "rgba(255,255,255,0.92)",
+            maxWidth: "460px",
+            marginTop: "30px",
             opacity: loaded ? 1 : 0,
-            transform: loaded ? "translateY(0)" : "translateY(28px)",
-            transition: "opacity 1.4s ease-out 0.35s, transform 1.4s ease-out 0.35s",
+            transform: loaded ? "translateY(0)" : "translateY(24px)",
+            transition: "opacity 1.4s ease-out 0.3s, transform 1.4s ease-out 0.3s",
           }}
+          className="md:!text-[32px]"
         >
           Langkah awal menuju momen bahagia
         </p>
 
-        {/* Negative space */}
-        <div style={{ height: "120px" }} />
+        {/* EMPTY SPACE — dominant breathing room */}
+        <div style={{ height: "160px" }} className="md:!h-[180px]" />
 
-        {/* Scroll indicator */}
-        <div
-          className="flex flex-col items-center gap-3"
+        {/* GATE TITLE */}
+        <p
           style={{
+            fontFamily: "var(--font-bodoni)",
+            fontSize: "18px",
+            fontWeight: 400,
+            letterSpacing: "0.06em",
+            color: "rgba(255,255,255,0.72)",
             opacity: loaded ? 1 : 0,
-            transition: "opacity 1.2s ease-out 0.8s",
+            transition: "opacity 1.3s ease-out 0.6s",
           }}
+          className="md:!text-[22px]"
         >
-          <span
+          Pilih Jalur Anda
+        </p>
+
+        {/* CARDS */}
+        <div
+          className="mt-6 flex w-full flex-col gap-3 md:mt-[24px] md:flex-row md:gap-4"
+          style={{ maxWidth: "420px" }}
+        >
+          {/* Syar'i Collection */}
+          <Link
+            href="/sacred"
+            className="block w-full"
             style={{
-              fontFamily: "var(--font-inter)",
-              fontSize: "11px",
-              letterSpacing: "0.28em",
-              color: "rgba(255,255,255,0.45)",
+              opacity: loaded ? 1 : 0,
+              transform: loaded ? "translateY(0)" : "translateY(12px)",
+              transition: "opacity 1.3s ease-out 0.8s, transform 1.3s ease-out 0.8s",
             }}
           >
-            SCROLL
-          </span>
-          <div
+            <div
+              style={{
+                padding: "18px 24px",
+                borderRadius: "14px",
+                border: "1px solid rgba(255,255,255,0.10)",
+                background: "rgba(255,255,255,0.03)",
+                backdropFilter: "blur(10px)",
+                WebkitBackdropFilter: "blur(10px)",
+                textAlign: "center",
+                cursor: "pointer",
+                transition: "border-color 0.3s ease-out, transform 0.3s ease-out",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = "rgba(255,255,255,0.25)";
+                e.currentTarget.style.transform = "translateY(-3px)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = "rgba(255,255,255,0.10)";
+                e.currentTarget.style.transform = "translateY(0)";
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: "var(--font-inter)",
+                  fontSize: "14px",
+                  fontWeight: 400,
+                  letterSpacing: "0.04em",
+                  color: "rgba(255,255,255,0.85)",
+                }}
+              >
+                Syar&apos;i Collection
+              </span>
+            </div>
+          </Link>
+
+          {/* Universal Collection */}
+          <Link
+            href="/celestial"
+            className="block w-full"
             style={{
-              width: "1px",
-              height: "48px",
-              background: "linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%)",
-              animation: "nauka-scroll-float 2.2s ease-in-out infinite",
+              opacity: loaded ? 1 : 0,
+              transform: loaded ? "translateY(0)" : "translateY(12px)",
+              transition: "opacity 1.3s ease-out 0.95s, transform 1.3s ease-out 0.95s",
             }}
-          />
+          >
+            <div
+              style={{
+                padding: "18px 24px",
+                borderRadius: "14px",
+                border: "1px solid rgba(255,255,255,0.10)",
+                background: "rgba(255,255,255,0.03)",
+                backdropFilter: "blur(10px)",
+                WebkitBackdropFilter: "blur(10px)",
+                textAlign: "center",
+                cursor: "pointer",
+                transition: "border-color 0.3s ease-out, transform 0.3s ease-out",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = "rgba(255,255,255,0.25)";
+                e.currentTarget.style.transform = "translateY(-3px)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = "rgba(255,255,255,0.10)";
+                e.currentTarget.style.transform = "translateY(0)";
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: "var(--font-inter)",
+                  fontSize: "14px",
+                  fontWeight: 400,
+                  letterSpacing: "0.04em",
+                  color: "rgba(255,255,255,0.85)",
+                }}
+              >
+                Universal Collection
+              </span>
+            </div>
+          </Link>
         </div>
       </div>
     </section>

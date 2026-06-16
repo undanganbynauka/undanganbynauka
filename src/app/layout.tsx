@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Cormorant_Garamond, Playfair_Display, Lora, Amiri, Plus_Jakarta_Sans } from "next/font/google";
+import { Inter, Cormorant_Garamond, Playfair_Display, Lora, Amiri, Plus_Jakarta_Sans, Bodoni_Moda } from "next/font/google";
 import "./globals.css";
 import "./sacred.css";
 import "./nauka.css";
@@ -45,6 +45,13 @@ const amiri = Amiri({
   display: "swap",
 });
 
+const bodoni = Bodoni_Moda({
+  variable: "--font-bodoni",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Nauka — Undangan Digital yang Elegan",
   description:
@@ -75,7 +82,7 @@ export default function RootLayout({
   return (
     <html lang="id" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${jakarta.variable} ${cormorant.variable} ${playfair.variable} ${lora.variable} ${amiri.variable} antialiased`}
+        className={`${inter.variable} ${jakarta.variable} ${cormorant.variable} ${playfair.variable} ${lora.variable} ${amiri.variable} ${bodoni.variable} antialiased`}
       >
         {children}
       </body>

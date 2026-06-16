@@ -179,7 +179,7 @@ export function NaukaFooter() {
           }}
         />
 
-        {/* ─── 3. PAYMENT — QRIS ONLY ─── */}
+        {/* ─── 3. PAYMENT — QRIS ─── */}
         <div
           style={{
             opacity: visible ? 1 : 0,
@@ -200,15 +200,28 @@ export function NaukaFooter() {
             Pembayaran
           </span>
 
-          <span
-            style={{
-              fontFamily: "var(--font-inter)",
-              fontSize: "12px",
-              color: "rgba(255,255,255,0.38)",
-            }}
-          >
-            QRIS — via semua aplikasi pembayaran &amp; mobile banking
-          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <span
+              style={{
+                fontFamily: "var(--font-inter)",
+                fontSize: "11px",
+                fontWeight: 500,
+                letterSpacing: "0.08em",
+                color: "rgba(201,169,110,0.55)",
+              }}
+            >
+              QRIS
+            </span>
+            <span
+              style={{
+                fontFamily: "var(--font-inter)",
+                fontSize: "12px",
+                color: "rgba(255,255,255,0.30)",
+              }}
+            >
+              via semua aplikasi pembayaran &amp; mobile banking
+            </span>
+          </div>
         </div>
 
         {/* Divider */}

@@ -2,12 +2,14 @@
 
 import { NaukaGerbang } from "@/components/nauka/NaukaGerbang";
 import { NaukaPrinsip } from "@/components/nauka/NaukaPrinsip";
+import { NaukaHarga } from "@/components/nauka/NaukaHarga";
 
 export default function NaukaLanding() {
   return (
     <main className="min-h-screen" style={{ background: "#0B1120" }}>
       <NaukaGerbang />
       <NaukaPrinsip />
+      <NaukaHarga />
     </main>
   );
 }

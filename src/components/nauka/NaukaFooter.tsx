@@ -1,11 +1,10 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
 
 export function NaukaFooter() {
   const [visible, setVisible] = useState(false);
+  const [paymentOpen, setPaymentOpen] = useState(false);
   const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -25,7 +24,7 @@ export function NaukaFooter() {
       className="nauka-grain relative"
       style={{
         background: "linear-gradient(180deg, #0B1120 0%, #080d1a 100%)",
-        padding: "80px 24px 48px",
+        padding: "80px 24px 40px",
       }}
     >
       {/* Ambient glow — very subtle bottom warmth */}
@@ -39,89 +38,290 @@ export function NaukaFooter() {
         }}
       />
 
-      <div className="relative z-10 mx-auto max-w-[520px] text-center">
-        {/* Closing tagline */}
-        <p
+      <div className="relative z-10 mx-auto max-w-[520px]">
+
+        {/* ─── 1. BRAND LINE ─── */}
+        <div
           style={{
-            fontFamily: "var(--font-bodoni)",
-            fontSize: "20px",
-            fontWeight: 400,
-            lineHeight: 1.5,
-            letterSpacing: "0.02em",
-            color: "rgba(255,255,255,0.55)",
-            fontStyle: "italic",
+            textAlign: "center",
             opacity: visible ? 1 : 0,
             transform: visible ? "translateY(0)" : "translateY(16px)",
             transition: "opacity 1.6s ease-out, transform 1.6s ease-out",
           }}
-          className="md:!text-[24px]"
         >
-          Dirancang dengan tenang, untuk dikenang.
-        </p>
+          <span
+            style={{
+              fontFamily: "var(--font-bodoni)",
+              fontSize: "24px",
+              fontWeight: 400,
+              letterSpacing: "0.04em",
+              color: "rgba(255,255,255,0.75)",
+            }}
+          >
+            Nauka
+          </span>
+          <p
+            style={{
+              fontFamily: "var(--font-inter)",
+              fontSize: "12px",
+              fontWeight: 400,
+              letterSpacing: "0.04em",
+              color: "rgba(255,255,255,0.35)",
+              marginTop: "8px",
+              lineHeight: 1.6,
+            }}
+          >
+            Menghadirkan keindahan dalam kesederhanaan
+          </p>
+        </div>
 
         {/* Divider */}
         <div
           style={{
             height: "1px",
-            background: "rgba(255,255,255,0.06)",
-            margin: "48px auto",
-            maxWidth: "60px",
+            background: "rgba(255,255,255,0.08)",
+            margin: "40px 0",
             opacity: visible ? 1 : 0,
-            transition: "opacity 1.4s ease-out 0.3s",
+            transition: "opacity 1.4s ease-out 0.2s",
           }}
         />
 
-        {/* Logo — small, quiet */}
+        {/* ─── 2. CONTACT SECTION ─── */}
         <div
           style={{
-            width: "56px",
-            height: "19px",
-            margin: "0 auto",
-            opacity: visible ? 0.5 : 0,
-            transition: "opacity 1.6s ease-out 0.4s",
+            opacity: visible ? 1 : 0,
+            transform: visible ? "translateY(0)" : "translateY(12px)",
+            transition: "opacity 1.3s ease-out 0.25s, transform 1.3s ease-out 0.25s",
           }}
         >
-          <div className="relative" style={{ width: "56px", height: "19px" }}>
-            <Image
-              src="/nauka-logo-new.png"
-              alt="Nauka"
-              fill
-              sizes="56px"
-              className="object-contain"
-              style={{ filter: "brightness(0) invert(1)", opacity: 0.5 }}
-            />
+          <span
+            style={{
+              fontFamily: "var(--font-inter)",
+              fontSize: "10px",
+              letterSpacing: "0.2em",
+              textTransform: "uppercase",
+              color: "rgba(255,255,255,0.25)",
+              display: "block",
+              marginBottom: "20px",
+            }}
+          >
+            Hubungi Kami
+          </span>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            {/* WhatsApp */}
+            <a
+              href="https://wa.me/6289655592925"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                fontFamily: "var(--font-inter)",
+                fontSize: "13px",
+                fontWeight: 400,
+                color: "rgba(255,255,255,0.45)",
+                textDecoration: "none",
+                transition: "color 0.3s ease",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = "rgba(255,255,255,0.65)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(255,255,255,0.45)"; }}
+            >
+              0896-555-9292-5
+              <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.20)", marginLeft: "8px", letterSpacing: "0.08em" }}>WhatsApp</span>
+            </a>
+
+            {/* Instagram */}
+            <a
+              href="https://instagram.com/undanganbynauka"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                fontFamily: "var(--font-inter)",
+                fontSize: "13px",
+                fontWeight: 400,
+                color: "rgba(255,255,255,0.45)",
+                textDecoration: "none",
+                transition: "color 0.3s ease",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = "rgba(255,255,255,0.65)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(255,255,255,0.45)"; }}
+            >
+              @undanganbynauka
+              <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.20)", marginLeft: "8px", letterSpacing: "0.08em" }}>Instagram</span>
+            </a>
+
+            {/* Email */}
+            <a
+              href="mailto:undanganbynauka@gmail.com"
+              style={{
+                fontFamily: "var(--font-inter)",
+                fontSize: "13px",
+                fontWeight: 400,
+                color: "rgba(255,255,255,0.45)",
+                textDecoration: "none",
+                transition: "color 0.3s ease",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = "rgba(255,255,255,0.65)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(255,255,255,0.45)"; }}
+            >
+              undanganbynauka@gmail.com
+              <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.20)", marginLeft: "8px", letterSpacing: "0.08em" }}>Email</span>
+            </a>
           </div>
         </div>
 
-        {/* Contact — minimal */}
+        {/* Divider */}
         <div
           style={{
-            marginTop: "24px",
+            height: "1px",
+            background: "rgba(255,255,255,0.08)",
+            margin: "36px 0",
             opacity: visible ? 1 : 0,
-            transition: "opacity 1.3s ease-out 0.55s",
+            transition: "opacity 1.3s ease-out 0.35s",
+          }}
+        />
+
+        {/* ─── 3. PAYMENT SECTION (COLLAPSIBLE) ─── */}
+        <div
+          style={{
+            opacity: visible ? 1 : 0,
+            transition: "opacity 1.3s ease-out 0.4s",
           }}
         >
-          <a
-            href="https://wa.me/6289655592925"
-            target="_blank"
-            rel="noopener noreferrer"
+          {/* Toggle header */}
+          <button
+            onClick={() => setPaymentOpen(!paymentOpen)}
             style={{
-              fontFamily: "var(--font-inter)",
-              fontSize: "11px",
-              fontWeight: 400,
-              letterSpacing: "0.08em",
-              color: "rgba(255,255,255,0.25)",
-              textDecoration: "none",
-              transition: "color 0.3s ease",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: "100%",
+              background: "none",
+              border: "none",
+              padding: 0,
+              cursor: "pointer",
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = "rgba(255,255,255,0.45)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(255,255,255,0.25)"; }}
           >
-            wa.me/6289655592925
-          </a>
+            <span
+              style={{
+                fontFamily: "var(--font-inter)",
+                fontSize: "10px",
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                color: "rgba(255,255,255,0.25)",
+              }}
+            >
+              Pembayaran
+            </span>
+            <span
+              style={{
+                fontFamily: "var(--font-inter)",
+                fontSize: "10px",
+                letterSpacing: "0.1em",
+                color: "rgba(255,255,255,0.18)",
+                transition: "transform 0.3s ease, color 0.3s ease",
+                transform: paymentOpen ? "rotate(180deg)" : "rotate(0deg)",
+              }}
+            >
+              ▾
+            </span>
+          </button>
+
+          {/* Summary — always visible */}
+          <div style={{ marginTop: "14px", display: "flex", gap: "16px", flexWrap: "wrap" }}>
+            <span
+              style={{
+                fontFamily: "var(--font-inter)",
+                fontSize: "12px",
+                color: "rgba(255,255,255,0.30)",
+              }}
+            >
+              QRIS tersedia
+            </span>
+            <span
+              style={{
+                fontFamily: "var(--font-inter)",
+                fontSize: "12px",
+                color: "rgba(255,255,255,0.20)",
+              }}
+            >
+              ·
+            </span>
+            <span
+              style={{
+                fontFamily: "var(--font-inter)",
+                fontSize: "12px",
+                color: "rgba(255,255,255,0.30)",
+              }}
+            >
+              Transfer bank / e-wallet
+            </span>
+          </div>
+
+          {/* Expandable detail */}
+          <div
+            style={{
+              maxHeight: paymentOpen ? "200px" : "0",
+              overflow: "hidden",
+              transition: "max-height 0.5s ease-out, opacity 0.4s ease-out",
+              opacity: paymentOpen ? 1 : 0,
+            }}
+          >
+            <div
+              style={{
+                marginTop: "18px",
+                paddingTop: "18px",
+                borderTop: "1px solid rgba(255,255,255,0.05)",
+                display: "flex",
+                flexDirection: "column",
+                gap: "10px",
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(255,255,255,0.28)" }}>Bank Jago Syariah</span>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(255,255,255,0.40)", letterSpacing: "0.04em" }}>503564771009</span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(255,255,255,0.28)" }}>SeaBank</span>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(255,255,255,0.40)", letterSpacing: "0.04em" }}>901344361441</span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(255,255,255,0.28)" }}>GoPay / OVO / DANA</span>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(255,255,255,0.40)", letterSpacing: "0.04em" }}>0896-555-9292-5</span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Copyright — very muted */}
+        {/* Divider */}
+        <div
+          style={{
+            height: "1px",
+            background: "rgba(255,255,255,0.08)",
+            margin: "36px 0",
+            opacity: visible ? 1 : 0,
+            transition: "opacity 1.3s ease-out 0.5s",
+          }}
+        />
+
+        {/* ─── CLOSING TAGLINE (from emotional hierarchy) ─── */}
+        <p
+          style={{
+            fontFamily: "var(--font-bodoni)",
+            fontSize: "16px",
+            fontWeight: 400,
+            lineHeight: 1.5,
+            letterSpacing: "0.02em",
+            color: "rgba(255,255,255,0.40)",
+            fontStyle: "italic",
+            textAlign: "center",
+            opacity: visible ? 1 : 0,
+            transition: "opacity 1.4s ease-out 0.55s",
+          }}
+        >
+          Dirancang dengan tenang, untuk dikenang.
+        </p>
+
+        {/* ─── 4. COPYRIGHT ─── */}
         <p
           style={{
             fontFamily: "var(--font-inter)",
@@ -129,12 +329,13 @@ export function NaukaFooter() {
             fontWeight: 400,
             letterSpacing: "0.06em",
             color: "rgba(255,255,255,0.15)",
-            marginTop: "20px",
+            textAlign: "center",
+            marginTop: "32px",
             opacity: visible ? 1 : 0,
             transition: "opacity 1.3s ease-out 0.65s",
           }}
         >
-          Nauka &copy; 2026
+          &copy; Nauka — All rights reserved.
         </p>
       </div>
     </footer>

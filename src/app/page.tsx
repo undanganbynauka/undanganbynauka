@@ -1,7 +1,7 @@
 "use client";
 
 import { NaukaGerbang } from "@/components/nauka/NaukaGerbang";
-import { NaukaPrinsip } from "@/components/nauka/NaukaPrinsip";
+import { NaukaMockup } from "@/components/nauka/NaukaMockup";
 import { NaukaEtalase } from "@/components/nauka/NaukaEtalase";
 import { NaukaHarga } from "@/components/nauka/NaukaHarga";
 
@@ -11,16 +11,16 @@ export default function NaukaLanding() {
       {/* 1. HERO — Emotional Entry Gate */}
       <NaukaGerbang />
 
-      {/* 2. PRINSIP — Understanding & Trust */}
-      <NaukaPrinsip />
+      {/* 2. MOCKUP — Trust Builder (phone frame glimpse) */}
+      <NaukaMockup />
 
-      {/* 3. ETALASE — Visual Proof (first batch: Sacred + Celestial) */}
+      {/* 3. ETALASE — Visual Proof (first batch) */}
       <NaukaEtalase start={0} end={2} />
 
       {/* 4. PRICING — Clarity */}
       <NaukaHarga />
 
-      {/* 5. ETALASE CONTINUATION — Exploration (Heritage) */}
+      {/* 5. ETALASE CONTINUATION — Exploration */}
       <NaukaEtalase start={2} end={3} />
     </main>
   );

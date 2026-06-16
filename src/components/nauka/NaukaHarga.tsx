@@ -6,12 +6,11 @@ const features = [
   { name: "Doa & Ucapan", basic: "Hingga 20 tamu", premium: "Tanpa batas interaksi tamu", highlight: true },
   { name: "Masa Aktif", basic: "30 hari aktif", premium: "90 hari aktif" },
   { name: "Input Tamu", basic: "Mandiri", premium: "Mandiri / dibantu pengisian" },
-  { name: "BGM", basic: "Default audio", premium: "Kurasi dari library Nauka" },
   { name: "Custom URL", basic: "Standar", premium: "Personal nama pasangan" },
   { name: "RSVP", basic: "✓", premium: "✓" },
   { name: "Amplop Digital", basic: "✓", premium: "✓" },
   { name: "Jumlah Tamu", basic: "Tidak dibatasi", premium: "Tidak dibatasi" },
-  { name: "Support", basic: "WhatsApp standar", premium: "Prioritas + bantuan revisi minor" },
+  { name: "Bagikan Undangan", basic: "WhatsApp", premium: "WhatsApp + Media Sosial", highlight: true },
   { name: "Analitik", basic: "—", premium: "Tersedia laporan interaksi", highlight: true },
 ];
 

@@ -441,6 +441,7 @@ export function CelestialClosing() {
             style={{
               maxWidth: "20rem",
               width: "100%",
+              margin: "0 auto",
               opacity: 1,
               animation: "celClosingReveal 1s cubic-bezier(0.42, 0, 0.58, 1) forwards",
             }}
@@ -466,7 +467,9 @@ export function CelestialClosing() {
                   animation: "celGiftPulse 3s ease-in-out infinite",
                   display: "flex",
                   alignItems: "center",
+                  justifyContent: "center",
                   gap: "0.5rem",
+                  margin: "0 auto",
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.opacity = "1";

@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-
-const QRIS_CODE = "00020101021126610014COM.GO-JEK.WWW01189360091435569828750210G5569828750303UMI51440014ID.CO.QRIS.WWW0215ID10265338820920303UMI5204899953033605802ID5925Undangan By Nauka, Digita6005BOGOR61051691362070703A016304EA85";
+import Image from "next/image";
 
 interface CheckoutProps {
   templateName: string;
@@ -273,7 +272,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
           }}
         />
 
-        {/* ─── 4. PEMBAYARAN — QRIS CODE ─── */}
+        {/* ─── 4. PEMBAYARAN — QRIS ─── */}
         <div
           style={{
             opacity: visible ? 1 : 0,
@@ -307,14 +306,14 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               marginTop: "8px",
             }}
           >
-            Salin kode QRIS untuk menyelesaikan pembayaran
+            Scan QR untuk menyelesaikan pembayaran
           </p>
 
-          {/* QRIS Code — premium glass card */}
+          {/* QR Code — premium glass card */}
           <div
             style={{
               marginTop: "28px",
-              padding: "24px 20px",
+              padding: "28px 24px",
               borderRadius: "16px",
               border: "1px solid rgba(255,255,255,0.07)",
               background: "rgba(255,255,255,0.025)",
@@ -322,85 +321,44 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               textAlign: "center",
             }}
           >
-            {/* QRIS badge */}
+            {/* QR Image */}
+            <div
+              style={{
+                width: "200px",
+                height: "200px",
+                margin: "0 auto",
+                borderRadius: "12px",
+                overflow: "hidden",
+                position: "relative",
+                background: "#ffffff",
+                padding: "12px",
+              }}
+            >
+              <Image
+                src="/qris.png"
+                alt="QRIS Payment"
+                fill
+                sizes="200px"
+                className="object-contain"
+                style={{ borderRadius: "8px" }}
+                priority
+              />
+            </div>
+
+            {/* QRIS label */}
             <span
               style={{
                 fontFamily: "var(--font-inter)",
-                fontSize: "11px",
+                fontSize: "13px",
                 fontWeight: 500,
-                letterSpacing: "0.15em",
-                textTransform: "uppercase",
-                color: "rgba(201,169,110,0.65)",
+                letterSpacing: "0.06em",
+                color: "rgba(255,255,255,0.60)",
                 display: "block",
-                marginBottom: "16px",
+                marginTop: "18px",
               }}
             >
               QRIS
             </span>
-
-            {/* Code display */}
-            <div
-              style={{
-                padding: "16px",
-                borderRadius: "10px",
-                border: "1px solid rgba(255,255,255,0.06)",
-                background: "rgba(0,0,0,0.25)",
-                wordBreak: "break-all",
-                fontFamily: "monospace",
-                fontSize: "11px",
-                lineHeight: 1.7,
-                color: "rgba(255,255,255,0.50)",
-                letterSpacing: "0.02em",
-                userSelect: "all",
-              }}
-            >
-              {QRIS_CODE}
-            </div>
-
-            {/* Copy button */}
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText(QRIS_CODE).then(() => {
-                  const btn = document.activeElement as HTMLButtonElement;
-                  const orig = btn.textContent;
-                  btn.textContent = "Tersalin ✓";
-                  btn.style.borderColor = "rgba(201,169,110,0.30)";
-                  btn.style.color = "rgba(201,169,110,0.8)";
-                  setTimeout(() => {
-                    btn.textContent = orig;
-                    btn.style.borderColor = "rgba(255,255,255,0.10)";
-                    btn.style.color = "rgba(255,255,255,0.45)";
-                  }, 1800);
-                });
-              }}
-              style={{
-                marginTop: "16px",
-                padding: "10px 24px",
-                borderRadius: "8px",
-                border: "1px solid rgba(255,255,255,0.10)",
-                background: "rgba(255,255,255,0.03)",
-                fontFamily: "var(--font-inter)",
-                fontSize: "11px",
-                fontWeight: 400,
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-                color: "rgba(255,255,255,0.45)",
-                cursor: "pointer",
-                transition: "border-color 0.3s ease, color 0.3s ease, background 0.3s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "rgba(255,255,255,0.18)";
-                e.currentTarget.style.color = "rgba(255,255,255,0.60)";
-                e.currentTarget.style.background = "rgba(255,255,255,0.05)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "rgba(255,255,255,0.10)";
-                e.currentTarget.style.color = "rgba(255,255,255,0.45)";
-                e.currentTarget.style.background = "rgba(255,255,255,0.03)";
-              }}
-            >
-              Salin Kode
-            </button>
 
             {/* Micro info */}
             <p
@@ -409,11 +367,11 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                 fontSize: "11px",
                 fontWeight: 400,
                 lineHeight: 1.5,
-                color: "rgba(255,255,255,0.25)",
-                marginTop: "16px",
+                color: "rgba(255,255,255,0.28)",
+                marginTop: "8px",
               }}
             >
-              Buka aplikasi pembayaran atau mobile banking, lalu tempel kode QRIS
+              Dapat dibayar melalui semua aplikasi pembayaran &amp; mobile banking
             </p>
           </div>
         </div>

@@ -1,0 +1,1051 @@
+     1→"use client";
+     2→
+     3→import React, { useState } from "react";
+     4→
+     5→// ════════════════════════════════════════════════════════════════
+     6→// OUR JOURNEY — DEFAULT TEXT FROM NAUKA TEMPLATES
+     7→// (Celestial/Universal & Sacred/Syar'i)
+     8→// ════════════════════════════════════════════════════════════════
+     9→
+    10→const JOURNEY_UNIVERSAL = [
+    11→  {
+    12→    stage: "Pertemuan",
+    13→    desc: "Sebuah awal sederhana yang perlahan menjadi bagian penting dari cerita kami.",
+    14→  },
+    15→  {
+    16→    stage: "Mengenal",
+    17→    desc: "Waktu membawa kami untuk saling memahami dan menemukan kenyamanan satu sama lain.",
+    18→  },
+    19→  {
+    20→    stage: "Komitmen",
+    21→    desc: "Tumbuh dari keyakinan yang sama untuk melangkah ke arah yang lebih serius.",
+    22→  },
+    23→  {
+    24→    stage: "Hari Bahagia",
+    25→    desc: "Hari ketika kami memulai perjalanan baru sebagai satu keluarga, dengan harapan yang sama untuk masa depan.",
+    26→  },
+    27→];
+    28→
+    29→const JOURNEY_SYARI = [
+    30→  {
+    31→    stage: "Ta'aruf",
+    32→    desc: "Pertemuan pertama yang terasa seperti kenangan lama. Dua jiwa yang tak saling kenal, namun dunia seolah sudah mengatur jalan mereka untuk berpapasan.",
+    33→  },
+    34→  {
+    35→    stage: "Nadzor",
+    36→    desc: "Langkah kedua yang penuh kehati-hatian dan keindahan. Masing-masing melihat dengan mata hati, memastikan bahwa perasaan ini bukan sekadar ilusi.",
+    37→  },
+    38→  {
+    39→    stage: "Khitbah",
+    40→    desc: "Sebuah janji yang diucapkan dengan penuh keyakinan. Di hadapan keluarga, dua nama resmi disatukan dalam satu ikatan yang suci.",
+    41→  },
+    42→  {
+    43→    stage: "Menikah",
+    44→    desc: "Puncak dari segala doa dan harapan. Hari di mana dua jiwa akhirnya menjadi satu, di bawah rahmat dan berkat-Nya.",
+    45→  },
+    46→];
+    47→
+    48→// ════════════════════════════════════════════════════════════════
+    49→// SHARED STYLE TOKENS — match existing Nauka dark cinematic theme
+    50→// ════════════════════════════════════════════════════════════════
+    51→
+    52→const sectionLabel = {
+    53→  fontFamily: "var(--font-inter)",
+    54→  fontSize: "10px",
+    55→  letterSpacing: "0.2em",
+    56→  textTransform: "uppercase" as const,
+    57→  color: "rgba(255,255,255,0.25)",
+    58→  display: "block",
+    59→  marginBottom: "20px",
+    60→};
+    61→
+    62→const fieldLabel = {
+    63→  fontFamily: "var(--font-inter)",
+    64→  fontSize: "12px",
+    65→  fontWeight: 400,
+    66→  letterSpacing: "0.04em",
+    67→  color: "rgba(255,255,255,0.45)",
+    68→  display: "block",
+    69→  marginBottom: "6px",
+    70→};
+    71→
+    72→const inputStyle = {
+    73→  width: "100%",
+    74→  padding: "12px 14px",
+    75→  borderRadius: "10px",
+    76→  border: "1px solid rgba(255,255,255,0.08)",
+    77→  background: "rgba(255,255,255,0.03)",
+    78→  fontFamily: "var(--font-inter)",
+    79→  fontSize: "13px",
+    80→  color: "rgba(255,255,255,0.85)",
+    81→  outline: "none",
+    82→  transition: "border-color 0.3s ease",
+    83→};
+    84→
+    85→const textareaStyle = {
+    86→  ...inputStyle,
+    87→  resize: "vertical" as const,
+    88→  lineHeight: 1.6,
+    89→};
+    90→
+    91→const dividerStyle = {
+    92→  height: "1px",
+    93→  background: "rgba(255,255,255,0.08)",
+    94→  margin: "32px 0",
+    95→};
+    96→
+    97→// ════════════════════════════════════════════════════════════════
+    98→// MAIN COMPONENT
+    99→// ════════════════════════════════════════════════════════════════
+   100→
+   101→export default function CheckoutFormPage() {
+   102→  // Template category (default Universal — user bisa pilih)
+   103→  const [templateCategory, setTemplateCategory] = useState<"universal" | "syari">("universal");
+   104→
+   105→  // Determine journey stages based on category
+   106→  const journeyStages = templateCategory === "syari" ? JOURNEY_SYARI : JOURNEY_UNIVERSAL;
+   107→
+   108→  // ── A. Data Pemesan ──
+   109→  const [pemesanNama, setPemesanNama] = useState("");
+   110→  const [pemesanWa, setPemesanWa] = useState("");
+   111→  const [pemesanEmail, setPemesanEmail] = useState("");
+   112→
+   113→  // ── B. Data Mempelai ──
+   114→  const [mempelaiPria, setMempelaiPria] = useState("");
+   115→  const [mempelaiWanita, setMempelaiWanita] = useState("");
+   116→  const [ayahPria, setAyahPria] = useState("");
+   117→  const [ibuPria, setIbuPria] = useState("");
+   118→  const [ayahWanita, setAyahWanita] = useState("");
+   119→  const [ibuWanita, setIbuWanita] = useState("");
+   120→  const [anakKePria, setAnakKePria] = useState("");
+   121→  const [anakKeWanita, setAnakKeWanita] = useState("");
+   122→
+   123→  // ── C. Data Acara ──
+   124→  const [tanggalAkad, setTanggalAkad] = useState("");
+   125→  const [waktuAkad, setWaktuAkad] = useState("");
+   126→  const [tempatAkad, setTempatAkad] = useState("");
+   127→  const [alamatAkad, setAlamatAkad] = useState("");
+   128→  const [tanggalResepsi, setTanggalResepsi] = useState("");
+   129→  const [waktuResepsi, setWaktuResepsi] = useState("");
+   130→  const [tempatResepsi, setTempatResepsi] = useState("");
+   131→  const [alamatResepsi, setAlamatResepsi] = useState("");
+   132→  const [linkMaps, setLinkMaps] = useState("");
+   133→
+   134→  // ── D. Our Journey (3-4 stages, pre-filled) ──
+   135→  const [journeyData, setJourneyData] = useState(
+   136→    JOURNEY_UNIVERSAL.map((j) => ({ stage: j.stage, desc: j.desc, date: "" }))
+   137→  );
+   138→  const [useFourthStage, setUseFourthStage] = useState(true);
+   139→
+   140→  // ── E. Detail Undangan ──
+   141→  const [kalimatPembuka, setKalimatPembuka] = useState("");
+   142→  const [quotes, setQuotes] = useState("");
+   143→
+   144→  // ── F. Musik Latar (BGM) ──
+   145→  const [bgmChoice, setBgmChoice] = useState("acapella");
+   146→  const [bgmReferensi, setBgmReferensi] = useState("");
+   147→
+   148→  // ── G. Custom URL (Premium only) ──
+   149→  const [customUrl, setCustomUrl] = useState("");
+   150→
+   151→  // ── H. Rekening + Kado Fisik ──
+   152→  const [hadiahMode, setHadiahMode] = useState<"rekening" | "kado" | "both">("rekening");
+   153→  const [rekeningNomor, setRekeningNomor] = useState("");
+   154→  const [rekeningBank, setRekeningBank] = useState("");
+   155→  const [rekeningPemilik, setRekeningPemilik] = useState("");
+   156→  const [kadoAlamat, setKadoAlamat] = useState("");
+   157→  const [kadoPenerima, setKadoPenerima] = useState("");
+   158→
+   159→  // ── I. Daftar Nama Tamu ──
+   160→  const [daftarTamu, setDaftarTamu] = useState("");
+   161→
+   162→  // ── J. Catatan & Pertanyaan ──
+   163→  const [catatan, setCatatan] = useState("");
+   164→
+   165→  // ── Submit handler (UI only — no backend) ──
+   166→  const handleSubmit = (e: React.FormEvent) => {
+   167→    e.preventDefault();
+   168→    alert("Form pemesanan berhasil diisi. (Demo — backend belum diimplementasikan)");
+   169→  };
+   170→
+   171→  // Update journey data when category changes
+   172→  const handleCategoryChange = (cat: "universal" | "syari") => {
+   173→    setTemplateCategory(cat);
+   174→    const newStages = cat === "syari" ? JOURNEY_SYARI : JOURNEY_UNIVERSAL;
+   175→    setJourneyData(newStages.map((j) => ({ stage: j.stage, desc: j.desc, date: "" })));
+   176→  };
+   177→
+   178→  const updateJourneyField = (idx: number, field: "desc" | "date", value: string) => {
+   179→    setJourneyData((prev) => prev.map((j, i) => (i === idx ? { ...j, [field]: value } : j)));
+   180→  };
+   181→
+   182→  return (
+   183→    <main
+   184→      className="nauka-grain relative"
+   185→      style={{
+   186→        background: "linear-gradient(180deg, #0B1120 0%, #080d1a 100%)",
+   187→        minHeight: "100vh",
+   188→        padding: "80px 24px",
+   189→      }}
+   190→    >
+   191→      <div className="relative z-10 mx-auto max-w-[640px]">
+   192→        {/* ─── HEADER ─── */}
+   193→        <div style={{ textAlign: "center", marginBottom: "60px" }}>
+   194→          <span
+   195→            style={{
+   196→              fontFamily: "var(--font-inter)",
+   197→              fontSize: "10px",
+   198→              letterSpacing: "0.2em",
+   199→              textTransform: "uppercase",
+   200→              color: "rgba(201,169,110,0.55)",
+   201→            }}
+   202→          >
+   203→            Form Pemesanan
+   204→          </span>
+   205→          <h1
+   206→            style={{
+   207→              fontFamily: "var(--font-bodoni)",
+   208→              fontSize: "28px",
+   209→              fontWeight: 400,
+   210→              letterSpacing: "0.04em",
+   211→              color: "rgba(255,255,255,0.85)",
+   212→              marginTop: "12px",
+   213→            }}
+   214→          >
+   215→            Silakan Lengkapi Data
+   216→          </h1>
+   217→          <p
+   218→            style={{
+   219→              fontFamily: "var(--font-inter)",
+   220→              fontSize: "12px",
+   221→              fontWeight: 400,
+   222→              lineHeight: 1.6,
+   223→              color: "rgba(255,255,255,0.35)",
+   224→              marginTop: "12px",
+   225→            }}
+   226→          >
+   227→            Isi data berikut dengan benar. Data ini akan digunakan untuk membuat undangan digital Anda.
+   228→          </p>
+   229→        </div>
+   230→
+   231→        <form onSubmit={handleSubmit}>
+   232→          {/* ════════════════════════════════════════════════ */}
+   233→          {/* A. DATA PEMESAN */}
+   234→          {/* ════════════════════════════════════════════════ */}
+   235→          <section>
+   236→            <span style={sectionLabel}>A. Data Pemesan</span>
+   237→
+   238→            <div style={{ marginBottom: "16px" }}>
+   239→              <label style={fieldLabel}>Nama Lengkap Pemesan *</label>
+   240→              <input
+   241→                type="text"
+   242→                required
+   243→                value={pemesanNama}
+   244→                onChange={(e) => setPemesanNama(e.target.value)}
+   245→                placeholder="Masukkan nama lengkap"
+   246→                style={inputStyle}
+   247→              />
+   248→            </div>
+   249→
+   250→            <div style={{ marginBottom: "16px" }}>
+   251→              <label style={fieldLabel}>Nomor WhatsApp Aktif *</label>
+   252→              <input
+   253→                type="tel"
+   254→                required
+   255→                value={pemesanWa}
+   256→                onChange={(e) => setPemesanWa(e.target.value)}
+   257→                placeholder="08xxxxxxxxxx"
+   258→                style={inputStyle}
+   259→              />
+   260→            </div>
+   261→
+   262→            <div style={{ marginBottom: "16px" }}>
+   263→              <label style={fieldLabel}>Email (Opsional)</label>
+   264→              <input
+   265→                type="email"
+   266→                value={pemesanEmail}
+   267→                onChange={(e) => setPemesanEmail(e.target.value)}
+   268→                placeholder="email@contoh.com"
+   269→                style={inputStyle}
+   270→              />
+   271→            </div>
+   272→          </section>
+   273→
+   274→          <div style={dividerStyle} />
+   275→
+   276→          {/* ════════════════════════════════════════════════ */}
+   277→          {/* B. DATA MEMPELAI */}
+   278→          {/* ════════════════════════════════════════════════ */}
+   279→          <section>
+   280→            <span style={sectionLabel}>B. Data Mempelai</span>
+   281→
+   282→            <div style={{ marginBottom: "16px" }}>
+   283→              <label style={fieldLabel}>Nama Mempelai Pria *</label>
+   284→              <input
+   285→                type="text"
+   286→                required
+   287→                value={mempelaiPria}
+   288→                onChange={(e) => setMempelaiPria(e.target.value)}
+   289→                placeholder="Nama lengkap mempelai pria"
+   290→                style={inputStyle}
+   291→              />
+   292→            </div>
+   293→
+   294→            <div style={{ marginBottom: "16px" }}>
+   295→              <label style={fieldLabel}>Nama Mempelai Wanita *</label>
+   296→              <input
+   297→                type="text"
+   298→                required
+   299→                value={mempelaiWanita}
+   300→                onChange={(e) => setMempelaiWanita(e.target.value)}
+   301→                placeholder="Nama lengkap mempelai wanita"
+   302→                style={inputStyle}
+   303→              />
+   304→            </div>
+   305→
+   306→            <div style={{ marginBottom: "16px" }}>
+   307→              <label style={fieldLabel}>Nama Ayah Mempelai Pria *</label>
+   308→              <input
+   309→                type="text"
+   310→                required
+   311→                value={ayahPria}
+   312→                onChange={(e) => setAyahPria(e.target.value)}
+   313→                placeholder="Bpk. ..."
+   314→                style={inputStyle}
+   315→              />
+   316→            </div>
+   317→
+   318→            <div style={{ marginBottom: "16px" }}>
+   319→              <label style={fieldLabel}>Nama Ibu Mempelai Pria *</label>
+   320→              <input
+   321→                type="text"
+   322→                required
+   323→                value={ibuPria}
+   324→                onChange={(e) => setIbuPria(e.target.value)}
+   325→                placeholder="Ibu. ..."
+   326→                style={inputStyle}
+   327→              />
+   328→            </div>
+   329→
+   330→            <div style={{ marginBottom: "16px" }}>
+   331→              <label style={fieldLabel}>Nama Ayah Mempelai Wanita *</label>
+   332→              <input
+   333→                type="text"
+   334→                required
+   335→                value={ayahWanita}
+   336→                onChange={(e) => setAyahWanita(e.target.value)}
+   337→                placeholder="Bpk. ..."
+   338→                style={inputStyle}
+   339→              />
+   340→            </div>
+   341→
+   342→            <div style={{ marginBottom: "16px" }}>
+   343→              <label style={fieldLabel}>Nama Ibu Mempelai Wanita *</label>
+   344→              <input
+   345→                type="text"
+   346→                required
+   347→                value={ibuWanita}
+   348→                onChange={(e) => setIbuWanita(e.target.value)}
+   349→                placeholder="Ibu. ..."
+   350→                style={inputStyle}
+   351→              />
+   352→            </div>
+   353→
+   354→            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+   355→              <div>
+   356→                <label style={fieldLabel}>Anak ke-berapa Pria (Opsional)</label>
+   357→                <input
+   358→                  type="text"
+   359→                  value={anakKePria}
+   360→                  onChange={(e) => setAnakKePria(e.target.value)}
+   361→                  placeholder="Pertama / Kedua / ..."
+   362→                  style={inputStyle}
+   363→                />
+   364→              </div>
+   365→              <div>
+   366→                <label style={fieldLabel}>Anak ke-berapa Wanita (Opsional)</label>
+   367→                <input
+   368→                  type="text"
+   369→                  value={anakKeWanita}
+   370→                  onChange={(e) => setAnakKeWanita(e.target.value)}
+   371→                  placeholder="Pertama / Kedua / ..."
+   372→                  style={inputStyle}
+   373→                />
+   374→              </div>
+   375→            </div>
+   376→          </section>
+   377→
+   378→          <div style={dividerStyle} />
+   379→
+   380→          {/* ════════════════════════════════════════════════ */}
+   381→          {/* C. DATA ACARA */}
+   382→          {/* ════════════════════════════════════════════════ */}
+   383→          <section>
+   384→            <span style={sectionLabel}>C. Data Acara — Akad</span>
+   385→
+   386→            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "16px" }}>
+   387→              <div>
+   388→                <label style={fieldLabel}>Tanggal Akad *</label>
+   389→                <input
+   390→                  type="date"
+   391→                  required
+   392→                  value={tanggalAkad}
+   393→                  onChange={(e) => setTanggalAkad(e.target.value)}
+   394→                  style={inputStyle}
+   395→                />
+   396→              </div>
+   397→              <div>
+   398→                <label style={fieldLabel}>Waktu Akad *</label>
+   399→                <input
+   400→                  type="text"
+   401→                  required
+   402→                  value={waktuAkad}
+   403→                  onChange={(e) => setWaktuAkad(e.target.value)}
+   404→                  placeholder="08:00 - 10:00"
+   405→                  style={inputStyle}
+   406→                />
+   407→              </div>
+   408→            </div>
+   409→
+   410→            <div style={{ marginBottom: "16px" }}>
+   411→              <label style={fieldLabel}>Tempat Akad *</label>
+   412→              <input
+   413→                type="text"
+   414→                required
+   415→                value={tempatAkad}
+   416→                onChange={(e) => setTempatAkad(e.target.value)}
+   417→                placeholder="Nama gedung / rumah"
+   418→                style={inputStyle}
+   419→              />
+   420→            </div>
+   421→
+   422→            <div style={{ marginBottom: "32px" }}>
+   423→              <label style={fieldLabel}>Alamat Lengkap Akad *</label>
+   424→              <textarea
+   425→                required
+   426→                value={alamatAkad}
+   427→                onChange={(e) => setAlamatAkad(e.target.value)}
+   428→                placeholder="Alamat lengkap tempat akad"
+   429→                rows={2}
+   430→                style={textareaStyle}
+   431→              />
+   432→            </div>
+   433→
+   434→            <span style={sectionLabel}>C. Data Acara — Resepsi</span>
+   435→
+   436→            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "16px" }}>
+   437→              <div>
+   438→                <label style={fieldLabel}>Tanggal Resepsi *</label>
+   439→                <input
+   440→                  type="date"
+   441→                  required
+   442→                  value={tanggalResepsi}
+   443→                  onChange={(e) => setTanggalResepsi(e.target.value)}
+   444→                  style={inputStyle}
+   445→                />
+   446→              </div>
+   447→              <div>
+   448→                <label style={fieldLabel}>Waktu Resepsi *</label>
+   449→                <input
+   450→                  type="text"
+   451→                  required
+   452→                  value={waktuResepsi}
+   453→                  onChange={(e) => setWaktuResepsi(e.target.value)}
+   454→                  placeholder="11:00 - 14:00"
+   455→                  style={inputStyle}
+   456→                />
+   457→              </div>
+   458→            </div>
+   459→
+   460→            <div style={{ marginBottom: "16px" }}>
+   461→              <label style={fieldLabel}>Tempat Resepsi *</label>
+   462→              <input
+   463→                type="text"
+   464→                required
+   465→                value={tempatResepsi}
+   466→                onChange={(e) => setTempatResepsi(e.target.value)}
+   467→                placeholder="Nama gedung / rumah"
+   468→                style={inputStyle}
+   469→              />
+   470→            </div>
+   471→
+   472→            <div style={{ marginBottom: "16px" }}>
+   473→              <label style={fieldLabel}>Alamat Lengkap Resepsi *</label>
+   474→              <textarea
+   475→                required
+   476→                value={alamatResepsi}
+   477→                onChange={(e) => setAlamatResepsi(e.target.value)}
+   478→                placeholder="Alamat lengkap tempat resepsi"
+   479→                rows={2}
+   480→                style={textareaStyle}
+   481→              />
+   482→            </div>
+   483→
+   484→            <div>
+   485→              <label style={fieldLabel}>Link Google Maps (Opsional)</label>
+   486→              <input
+   487→                type="url"
+   488→                value={linkMaps}
+   489→                onChange={(e) => setLinkMaps(e.target.value)}
+   490→                placeholder="https://maps.google.com/..."
+   491→                style={inputStyle}
+   492→              />
+   493→            </div>
+   494→          </section>
+   495→
+   496→          <div style={dividerStyle} />
+   497→
+   498→          {/* ════════════════════════════════════════════════ */}
+   499→          {/* D. OUR JOURNEY */}
+   500→          {/* ════════════════════════════════════════════════ */}
+   501→          <section>
+   502→            <span style={sectionLabel}>D. Our Journey</span>
+   503→
+   504→            <p
+   505→              style={{
+   506→                fontFamily: "var(--font-inter)",
+   507→                fontSize: "12px",
+   508→                lineHeight: 1.6,
+   509→                color: "rgba(255,255,255,0.30)",
+   510→                marginBottom: "20px",
+   511→              }}
+   512→            >
+   513→              Pilih kategori template untuk menentukan tahapan perjalanan. Deskripsi sudah diisi
+   514→              otomatis dengan teks default Nauka — Anda bisa edit atau biarkan default.
+   515→            </p>
+   516→
+   517→            {/* Category selector */}
+   518→            <div style={{ display: "flex", gap: "12px", marginBottom: "24px" }}>
+   519→              {(["universal", "syari"] as const).map((cat) => (
+   520→                <button
+   521→                  key={cat}
+   522→                  type="button"
+   523→                  onClick={() => handleCategoryChange(cat)}
+   524→                  style={{
+   525→                    flex: 1,
+   526→                    padding: "12px",
+   527→                    borderRadius: "10px",
+   528→                    border:
+   529→                      templateCategory === cat
+   530→                        ? "1px solid rgba(201,169,110,0.4)"
+   531→                        : "1px solid rgba(255,255,255,0.08)",
+   532→                    background:
+   533→                      templateCategory === cat ? "rgba(201,169,110,0.05)" : "rgba(255,255,255,0.02)",
+   534→                    fontFamily: "var(--font-inter)",
+   535→                    fontSize: "12px",
+   536→                    letterSpacing: "0.08em",
+   537→                    color:
+   538→                      templateCategory === cat
+   539→                        ? "rgba(201,169,110,0.85)"
+   540→                        : "rgba(255,255,255,0.45)",
+   541→                    cursor: "pointer",
+   542→                    transition: "all 0.3s ease",
+   543→                  }}
+   544→                >
+   545→                  {cat === "universal" ? "Universal (Celestial)" : "Syar'i (Sacred)"}
+   546→                </button>
+   547→              ))}
+   548→            </div>
+   549→
+   550→            {/* 4th stage toggle */}
+   551→            <div style={{ marginBottom: "24px" }}>
+   552→              <label
+   553→                style={{
+   554→                  display: "flex",
+   555→                  alignItems: "center",
+   556→                  gap: "10px",
+   557→                  cursor: "pointer",
+   558→                  fontFamily: "var(--font-inter)",
+   559→                  fontSize: "12px",
+   560→                  color: "rgba(255,255,255,0.45)",
+   561→                }}
+   562→              >
+   563→                <input
+   564→                  type="checkbox"
+   565→                  checked={useFourthStage}
+   566→                  onChange={(e) => setUseFourthStage(e.target.checked)}
+   567→                  style={{ accentColor: "rgba(201,169,110,0.6)" }}
+   568→                />
+   569→                Tampilkan stage ke-4 ({journeyStages[3].stage})
+   570→              </label>
+   571→              <p
+   572→                style={{
+   573→                  fontFamily: "var(--font-inter)",
+   574→                  fontSize: "11px",
+   575→                  color: "rgba(255,255,255,0.20)",
+   576→                  marginTop: "6px",
+   577→                  marginLeft: "24px",
+   578→                }}
+   579→              >
+   580→                Hilangkan centang jika hanya ingin 3 stage
+   581→              </p>
+   582→            </div>
+   583→
+   584→            {/* Journey stages */}
+   585→            {(useFourthStage ? journeyData : journeyData.slice(0, 3)).map((stage, idx) => (
+   586→              <div
+   587→                key={idx}
+   588→                style={{
+   589→                  padding: "20px",
+   590→                  borderRadius: "12px",
+   591→                  border: "1px solid rgba(255,255,255,0.06)",
+   592→                  background: "rgba(255,255,255,0.015)",
+   593→                  marginBottom: "16px",
+   594→                }}
+   595→              >
+   596→                <div
+   597→                  style={{
+   598→                    fontFamily: "var(--font-bodoni)",
+   599→                    fontSize: "16px",
+   600→                    color: "rgba(201,169,110,0.85)",
+   601→                    marginBottom: "14px",
+   602→                  }}
+   603→                >
+   604→                  Stage {idx + 1}: {stage.stage}
+   605→                </div>
+   606→
+   607→                <div style={{ marginBottom: "12px" }}>
+   608→                  <label style={fieldLabel}>Tanggal (Opsional)</label>
+   609→                  <input
+   610→                    type="text"
+   611→                    value={stage.date}
+   612→                    onChange={(e) => updateJourneyField(idx, "date", e.target.value)}
+   613→                    placeholder="Maret 2026 / 12 Maret 2026"
+   614→                    style={inputStyle}
+   615→                  />
+   616→                </div>
+   617→
+   618→                <div>
+   619→                  <label style={fieldLabel}>Deskripsi</label>
+   620→                  <textarea
+   621→                    value={stage.desc}
+   622→                    onChange={(e) => updateJourneyField(idx, "desc", e.target.value)}
+   623→                    rows={3}
+   624→                    style={textareaStyle}
+   625→                  />
+   626→                </div>
+   627→              </div>
+   628→            ))}
+   629→          </section>
+   630→
+   631→          <div style={dividerStyle} />
+   632→
+   633→          {/* ════════════════════════════════════════════════ */}
+   634→          {/* E. DETAIL UNDANGAN */}
+   635→          {/* ════════════════════════════════════════════════ */}
+   636→          <section>
+   637→            <span style={sectionLabel}>E. Detail Undangan</span>
+   638→
+   639→            <p
+   640→              style={{
+   641→                fontFamily: "var(--font-inter)",
+   642→                fontSize: "11px",
+   643→                lineHeight: 1.6,
+   644→                color: "rgba(255,255,255,0.20)",
+   645→                marginBottom: "16px",
+   646→              }}
+   647→            >
+   648→              Catatan: Kalimat pembuka hanya untuk template Universal. Sacred & Celestial memakai
+   649→              default dari template.
+   650→            </p>
+   651→
+   652→            <div style={{ marginBottom: "16px" }}>
+   653→              <label style={fieldLabel}>Kalimat Pembuka (Opsional — Universal only)</label>
+   654→              <textarea
+   655→                value={kalimatPembuka}
+   656→                onChange={(e) => setKalimatPembuka(e.target.value)}
+   657→                placeholder="Dengan memohon rahmat dan ridha Allah..."
+   658→                rows={3}
+   659→                style={textareaStyle}
+   660→              />
+   661→            </div>
+   662→
+   663→            <div>
+   664→              <label style={fieldLabel}>Quotes / Ayat Favorit (Opsional)</label>
+   665→              <textarea
+   666→                value={quotes}
+   667→                onChange={(e) => setQuotes(e.target.value)}
+   668→                placeholder="Dan di antara tanda-tanda kekuasaan-Nya..."
+   669→                rows={3}
+   670→                style={textareaStyle}
+   671→              />
+   672→            </div>
+   673→          </section>
+   674→
+   675→          <div style={dividerStyle} />
+   676→
+   677→          {/* ════════════════════════════════════════════════ */}
+   678→          {/* F. MUSIK LATAR (BGM) */}
+   679→          {/* ════════════════════════════════════════════════ */}
+   680→          <section>
+   681→            <span style={sectionLabel}>F. Musik Latar (BGM)</span>
+   682→
+   683→            <p
+   684→              style={{
+   685→                fontFamily: "var(--font-inter)",
+   686→                fontSize: "11px",
+   687→                lineHeight: 1.6,
+   688→                color: "rgba(255,255,255,0.20)",
+   689→                marginBottom: "16px",
+   690→              }}
+   691→            >
+   692→              Catatan: Nauka hanya menggunakan VOCAL ONLY (acapella, nasyid) atau suara alam.
+   693→              Tidak ada musik instrumental.
+   694→            </p>
+   695→
+   696→            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginBottom: "16px" }}>
+   697→              {[
+   698→                { value: "acapella", label: "Acapella" },
+   699→                { value: "nasyid", label: "Nasyid (vocal only)" },
+   700→                { value: "suara-alam", label: "Suara Alam" },
+   701→                { value: "tanpa-musik", label: "Tidak pakai musik" },
+   702→              ].map((opt) => (
+   703→                <button
+   704→                  key={opt.value}
+   705→                  type="button"
+   706→                  onClick={() => setBgmChoice(opt.value)}
+   707→                  style={{
+   708→                    padding: "10px 12px",
+   709→                    borderRadius: "8px",
+   710→                    border:
+   711→                      bgmChoice === opt.value
+   712→                        ? "1px solid rgba(201,169,110,0.4)"
+   713→                        : "1px solid rgba(255,255,255,0.08)",
+   714→                    background:
+   715→                      bgmChoice === opt.value ? "rgba(201,169,110,0.05)" : "rgba(255,255,255,0.02)",
+   716→                    fontFamily: "var(--font-inter)",
+   717→                    fontSize: "12px",
+   718→                    color: bgmChoice === opt.value ? "rgba(201,169,110,0.85)" : "rgba(255,255,255,0.45)",
+   719→                    cursor: "pointer",
+   720→                    transition: "all 0.3s ease",
+   721→                    textAlign: "left" as const,
+   722→                  }}
+   723→                >
+   724→                  {opt.label}
+   725→                </button>
+   726→              ))}
+   727→            </div>
+   728→
+   729→            <div>
+   730→              <label style={fieldLabel}>Referensi Musik Sendiri (Opsional)</label>
+   731→              <input
+   732→                type="text"
+   733→                value={bgmReferensi}
+   734→                onChange={(e) => setBgmReferensi(e.target.value)}
+   735→                placeholder="Judul lagu / referensi sendiri"
+   736→                style={inputStyle}
+   737→              />
+   738→            </div>
+   739→          </section>
+   740→
+   741→          <div style={dividerStyle} />
+   742→
+   743→          {/* ════════════════════════════════════════════════ */}
+   744→          {/* G. CUSTOM URL (Premium only) */}
+   745→          {/* ════════════════════════════════════════════════ */}
+   746→          <section>
+   747→            <span style={sectionLabel}>G. Custom URL (Premium only)</span>
+   748→
+   749→            <p
+   750→              style={{
+   751→                fontFamily: "var(--font-inter)",
+   752→                fontSize: "11px",
+   753→                lineHeight: 1.6,
+   754→                color: "rgba(255,255,255,0.20)",
+   755→                marginBottom: "16px",
+   756→              }}
+   757→            >
+   758→              Khusus paket Premium. Basic menggunakan URL standar.
+   759→            </p>
+   760→
+   761→            <label style={fieldLabel}>Request Nama URL Personal</label>
+   762→            <div
+   763→              style={{
+   764→                display: "flex",
+   765→                alignItems: "center",
+   766→                borderRadius: "10px",
+   767→                border: "1px solid rgba(255,255,255,0.08)",
+   768→                background: "rgba(255,255,255,0.03)",
+   769→                overflow: "hidden",
+   770→              }}
+   771→            >
+   772→              <span
+   773→                style={{
+   774→                  padding: "0 12px",
+   775→                  fontFamily: "var(--font-inter)",
+   776→                  fontSize: "13px",
+   777→                  color: "rgba(255,255,255,0.35)",
+   778→                  whiteSpace: "nowrap",
+   779→                }}
+   780→              >
+   781→                nauka.id/
+   782→              </span>
+   783→              <input
+   784→                type="text"
+   785→                value={customUrl}
+   786→                onChange={(e) => setCustomUrl(e.target.value)}
+   787→                placeholder="aisyah-fauzan"
+   788→                style={{
+   789→                  ...inputStyle,
+   790→                  border: "none",
+   791→                  borderRadius: 0,
+   792→                  flex: 1,
+   793→                }}
+   794→              />
+   795→            </div>
+   796→          </section>
+   797→
+   798→          <div style={dividerStyle} />
+   799→
+   800→          {/* ════════════════════════════════════════════════ */}
+   801→          {/* H. REKENING + KADO FISIK */}
+   802→          {/* ════════════════════════════════════════════════ */}
+   803→          <section>
+   804→            <span style={sectionLabel}>H. Data Rekening + Kado Fisik</span>
+   805→
+   806→            <p
+   807→              style={{
+   808→                fontFamily: "var(--font-inter)",
+   809→                fontSize: "11px",
+   810→                lineHeight: 1.6,
+   811→                color: "rgba(255,255,255,0.20)",
+   812→                marginBottom: "16px",
+   813→              }}
+   814→            >
+   815→              Pilih metode hadiah untuk tamu. Bisa rekening, alamat kado, atau dua-duanya.
+   816→            </p>
+   817→
+   818→            {/* Mode selector */}
+   819→            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px", marginBottom: "20px" }}>
+   820→              {([
+   821→                { value: "rekening", label: "Rekening" },
+   822→                { value: "kado", label: "Kado Fisik" },
+   823→                { value: "both", label: "Dua-duanya" },
+   824→              ] as const).map((opt) => (
+   825→                <button
+   826→                  key={opt.value}
+   827→                  type="button"
+   828→                  onClick={() => setHadiahMode(opt.value)}
+   829→                  style={{
+   830→                    padding: "10px 8px",
+   831→                    borderRadius: "8px",
+   832→                    border:
+   833→                      hadiahMode === opt.value
+   834→                        ? "1px solid rgba(201,169,110,0.4)"
+   835→                        : "1px solid rgba(255,255,255,0.08)",
+   836→                    background:
+   837→                      hadiahMode === opt.value ? "rgba(201,169,110,0.05)" : "rgba(255,255,255,0.02)",
+   838→                    fontFamily: "var(--font-inter)",
+   839→                    fontSize: "11px",
+   840→                    color: hadiahMode === opt.value ? "rgba(201,169,110,0.85)" : "rgba(255,255,255,0.45)",
+   841→                    cursor: "pointer",
+   842→                    transition: "all 0.3s ease",
+   843→                  }}
+   844→                >
+   845→                  {opt.label}
+   846→                </button>
+   847→              ))}
+   848→            </div>
+   849→
+   850→            {/* Rekening fields */}
+   851→            {(hadiahMode === "rekening" || hadiahMode === "both") && (
+   852→              <div
+   853→                style={{
+   854→                  padding: "16px",
+   855→                  borderRadius: "10px",
+   856→                  border: "1px solid rgba(255,255,255,0.06)",
+   857→                  background: "rgba(255,255,255,0.015)",
+   858→                  marginBottom: "16px",
+   859→                }}
+   860→              >
+   861→                <div
+   862→                  style={{
+   863→                    fontFamily: "var(--font-inter)",
+   864→                    fontSize: "11px",
+   865→                    letterSpacing: "0.1em",
+   866→                    color: "rgba(201,169,110,0.55)",
+   867→                    marginBottom: "12px",
+   868→                  }}
+   869→                >
+   870→                  REKENING BANK
+   871→                </div>
+   872→
+   873→                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "12px" }}>
+   874→                  <div>
+   875→                    <label style={fieldLabel}>Nomor Rekening</label>
+   876→                    <input
+   877→                      type="text"
+   878→                      value={rekeningNomor}
+   879→                      onChange={(e) => setRekeningNomor(e.target.value)}
+   880→                      placeholder="1234567890"
+   881→                      style={inputStyle}
+   882→                    />
+   883→                  </div>
+   884→                  <div>
+   885→                    <label style={fieldLabel}>Nama Bank</label>
+   886→                    <input
+   887→                      type="text"
+   888→                      value={rekeningBank}
+   889→                      onChange={(e) => setRekeningBank(e.target.value)}
+   890→                      placeholder="BCA / Mandiri / BNI"
+   891→                      style={inputStyle}
+   892→                    />
+   893→                  </div>
+   894→                </div>
+   895→
+   896→                <div>
+   897→                  <label style={fieldLabel}>Nama Pemilik Rekening</label>
+   898→                  <input
+   899→                    type="text"
+   900→                    value={rekeningPemilik}
+   901→                    onChange={(e) => setRekeningPemilik(e.target.value)}
+   902→                    placeholder="A.n. Nama Lengkap"
+   903→                    style={inputStyle}
+   904→                  />
+   905→                </div>
+   906→              </div>
+   907→            )}
+   908→
+   909→            {/* Kado fields */}
+   910→            {(hadiahMode === "kado" || hadiahMode === "both") && (
+   911→              <div
+   912→                style={{
+   913→                  padding: "16px",
+   914→                  borderRadius: "10px",
+   915→                  border: "1px solid rgba(255,255,255,0.06)",
+   916→                  background: "rgba(255,255,255,0.015)",
+   917→                }}
+   918→              >
+   919→                <div
+   920→                  style={{
+   921→                    fontFamily: "var(--font-inter)",
+   922→                    fontSize: "11px",
+   923→                    letterSpacing: "0.1em",
+   924→                    color: "rgba(201,169,110,0.55)",
+   925→                    marginBottom: "12px",
+   926→                  }}
+   927→                >
+   928→                  ALAMAT KADO FISIK
+   929→                </div>
+   930→
+   931→                <div style={{ marginBottom: "12px" }}>
+   932→                  <label style={fieldLabel}>Nama Penerima</label>
+   933→                  <input
+   934→                    type="text"
+   935→                    value={kadoPenerima}
+   936→                    onChange={(e) => setKadoPenerima(e.target.value)}
+   937→                    placeholder="Nama penerima kado"
+   938→                    style={inputStyle}
+   939→                  />
+   940→                </div>
+   941→
+   942→                <div>
+   943→                  <label style={fieldLabel}>Alamat Lengkap Pengiriman</label>
+   944→                  <textarea
+   945→                    value={kadoAlamat}
+   946→                    onChange={(e) => setKadoAlamat(e.target.value)}
+   947→                    placeholder="Jl. ... No. ... RT/RW ... Kelurahan ... Kecamatan ... Kota ... Kode Pos"
+   948→                    rows={3}
+   949→                    style={textareaStyle}
+   950→                  />
+   951→                </div>
+   952→              </div>
+   953→            )}
+   954→          </section>
+   955→
+   956→          <div style={dividerStyle} />
+   957→
+   958→          {/* ════════════════════════════════════════════════ */}
+   959→          {/* I. DAFTAR NAMA TAMU */}
+   960→          {/* ════════════════════════════════════════════════ */}
+   961→          <section>
+   962→            <span style={sectionLabel}>I. Daftar Nama Tamu</span>
+   963→
+   964→            <p
+   965→              style={{
+   966→                fontFamily: "var(--font-inter)",
+   967→                fontSize: "11px",
+   968→                lineHeight: 1.6,
+   969→                color: "rgba(255,255,255,0.20)",
+   970→                marginBottom: "16px",
+   971→              }}
+   972→            >
+   973→              Masukkan nama tamu, satu nama per baris. Tidak dibatasi jumlahnya.
+   974→              <br />
+   975→              Format: Bapak Nama / Bang Nama / Saudara Nama / Ibu Nama / Kak Nama
+   976→            </p>
+   977→
+   978→            <textarea
+   979→              value={daftarTamu}
+   980→              onChange={(e) => setDaftarTamu(e.target.value)}
+   981→              placeholder={"Bapak Andi\nBang Hendra\nSaudara Fauzan\nIbu Siti\nKak Sarah"}
+   982→              rows={6}
+   983→              style={textareaStyle}
+   984→            />
+   985→          </section>
+   986→
+   987→          <div style={dividerStyle} />
+   988→
+   989→          {/* ════════════════════════════════════════════════ */}
+   990→          {/* J. CATATAN & PERTANYAAN */}
+   991→          {/* ════════════════════════════════════════════════ */}
+   992→          <section>
+   993→            <span style={sectionLabel}>J. Catatan & Pertanyaan</span>
+   994→
+   995→            <label style={fieldLabel}>Catatan Khusus / Pertanyaan (Opsional)</label>
+   996→            <textarea
+   997→              value={catatan}
+   998→              onChange={(e) => setCatatan(e.target.value)}
+   999→              placeholder="Tulis request khusus atau pertanyaan untuk Nauka..."
+  1000→              rows={4}
+  1001→              style={textareaStyle}
+  1002→            />
+  1003→          </section>
+  1004→
+  1005→          {/* ─── SUBMIT BUTTON ─── */}
+  1006→          <div style={{ marginTop: "48px", textAlign: "center" }}>
+  1007→            <button
+  1008→              type="submit"
+  1009→              style={{
+  1010→                padding: "14px 40px",
+  1011→                borderRadius: "999px",
+  1012→                border: "1px solid rgba(201,169,110,0.4)",
+  1013→                background: "rgba(201,169,110,0.08)",
+  1014→                fontFamily: "var(--font-inter)",
+  1015→                fontSize: "13px",
+  1016→                fontWeight: 500,
+  1017→                letterSpacing: "0.1em",
+  1018→                color: "rgba(201,169,110,0.95)",
+  1019→                cursor: "pointer",
+  1020→                transition: "all 0.3s ease",
+  1021→              }}
+  1022→              onMouseEnter={(e) => {
+  1023→                e.currentTarget.style.background = "rgba(201,169,110,0.15)";
+  1024→                e.currentTarget.style.borderColor = "rgba(201,169,110,0.6)";
+  1025→              }}
+  1026→              onMouseLeave={(e) => {
+  1027→                e.currentTarget.style.background = "rgba(201,169,110,0.08)";
+  1028→                e.currentTarget.style.borderColor = "rgba(201,169,110,0.4)";
+  1029→              }}
+  1030→            >
+  1031→              Kirim Pemesanan
+  1032→            </button>
+  1033→
+  1034→            <p
+  1035→              style={{
+  1036→                fontFamily: "var(--font-inter)",
+  1037→                fontSize: "10px",
+  1038→                color: "rgba(255,255,255,0.15)",
+  1039→                marginTop: "20px",
+  1040→                letterSpacing: "0.06em",
+  1041→              }}
+  1042→            >
+  1043→              Nauka — Form Pemesanan
+  1044→            </p>
+  1045→          </div>
+  1046→        </form>
+  1047→      </div>
+  1048→    </main>
+  1049→  );
+  1050→}
+  1051→

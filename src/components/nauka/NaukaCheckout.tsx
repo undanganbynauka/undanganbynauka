@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { getWAOrderLink } from "@/lib/whatsapp";
+import { getWAOrderNotifLink, GOOGLE_FORM_URL } from "@/lib/whatsapp";
 
 interface CheckoutProps {
   templateName: string;
@@ -10,8 +10,6 @@ interface CheckoutProps {
   basicPrice: number;
   premiumPrice: number;
 }
-
-// WA config centralized in @/lib/whatsapp
 
 export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPrice }: CheckoutProps) {
   const [selected, setSelected] = useState<"basic" | "premium">("premium");
@@ -32,8 +30,13 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
 
   const price = selected === "basic" ? basicPrice : premiumPrice;
   const packageName = selected === "basic" ? "Basic" : "Premium";
+  const waNotifLink = getWAOrderNotifLink(templateName, packageName, price);
 
-  const waLink = getWAOrderLink(templateName, packageName, price);
+  const handleConfirm = () => {
+    setConfirmed(true);
+    // Auto-open WA notif ke owner (background tab)
+    window.open(waNotifLink, "_blank");
+  };
 
   return (
     <section
@@ -397,7 +400,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               color: "rgba(255,255,255,0.38)",
             }}
           >
-            Setelah pembayaran berhasil, konfirmasi melalui WhatsApp. Anda akan diarahkan ke Google Form untuk pengisian detail undangan.
+            Setelah pembayaran berhasil, klik konfirmasi. Notifikasi akan otomatis dikirim ke Nauka, lalu Anda akan diarahkan ke form pengisian detail undangan.
           </p>
         </div>
 
@@ -412,7 +415,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
         >
           {!confirmed ? (
             <button
-              onClick={() => setConfirmed(true)}
+              onClick={handleConfirm}
               style={{
                 width: "100%",
                 padding: "16px 24px",
@@ -442,23 +445,38 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
             </button>
           ) : (
             <div style={{ textAlign: "center" }}>
+              {/* Thank you message */}
               <p
                 style={{
                   fontFamily: "var(--font-inter)",
                   fontSize: "13px",
                   color: "rgba(255,255,255,0.55)",
-                  marginBottom: "20px",
+                  marginBottom: "8px",
                   lineHeight: 1.6,
                 }}
               >
-                Terima kasih. Silakan konfirmasi pembayaran Anda melalui WhatsApp untuk memproses pesanan.
+                Terima kasih telah mengonfirmasi pembayaran.
               </p>
+              <p
+                style={{
+                  fontFamily: "var(--font-inter)",
+                  fontSize: "11px",
+                  color: "rgba(255,255,255,0.30)",
+                  marginBottom: "24px",
+                  lineHeight: 1.5,
+                }}
+              >
+                Notifikasi telah dikirim ke Nauka via WhatsApp.
+              </p>
+
+              {/* PRIMARY: Google Form */}
               <a
-                href={waLink}
+                href={GOOGLE_FORM_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
                   display: "inline-block",
+                  width: "100%",
                   padding: "16px 32px",
                   borderRadius: "12px",
                   border: "1px solid rgba(201,169,110,0.25)",
@@ -469,6 +487,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                   letterSpacing: "0.1em",
                   color: "rgba(201,169,110,0.8)",
                   textDecoration: "none",
+                  textAlign: "center",
                   transition: "border-color 0.3s ease, background 0.3s ease, color 0.3s ease",
                 }}
                 onMouseEnter={(e) => {
@@ -482,44 +501,39 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                   e.currentTarget.style.color = "rgba(201,169,110,0.8)";
                 }}
               >
-                Konfirmasi via WhatsApp
+                Isi Detail Undangan →
               </a>
+
+              {/* SECONDARY: WA fallback — small, subtle */}
+              <div style={{ marginTop: "20px" }}>
+                <a
+                  href={waNotifLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    fontFamily: "var(--font-inter)",
+                    fontSize: "11px",
+                    fontWeight: 400,
+                    letterSpacing: "0.04em",
+                    color: "rgba(255,255,255,0.25)",
+                    textDecoration: "none",
+                    borderBottom: "1px solid rgba(255,255,255,0.08)",
+                    transition: "color 0.3s ease, border-color 0.3s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = "rgba(255,255,255,0.40)";
+                    e.currentTarget.style.borderBottomColor = "rgba(255,255,255,0.15)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = "rgba(255,255,255,0.25)";
+                    e.currentTarget.style.borderBottomColor = "rgba(255,255,255,0.08)";
+                  }}
+                >
+                  Kirim ulang notifikasi via WhatsApp
+                </a>
+              </div>
             </div>
           )}
-        </div>
-
-        {/* Secondary link — Google Form */}
-        <div
-          style={{
-            marginTop: "24px",
-            textAlign: "center",
-            opacity: visible ? 1 : 0,
-            transition: "opacity 1.3s ease-out 0.65s",
-          }}
-        >
-          <a
-            href="#"
-            style={{
-              fontFamily: "var(--font-inter)",
-              fontSize: "11px",
-              fontWeight: 400,
-              letterSpacing: "0.06em",
-              color: "rgba(255,255,255,0.25)",
-              textDecoration: "none",
-              borderBottom: "1px solid rgba(255,255,255,0.10)",
-              transition: "color 0.3s ease, border-color 0.3s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = "rgba(255,255,255,0.45)";
-              e.currentTarget.style.borderBottomColor = "rgba(255,255,255,0.20)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = "rgba(255,255,255,0.25)";
-              e.currentTarget.style.borderBottomColor = "rgba(255,255,255,0.10)";
-            }}
-          >
-            Isi detail undangan
-          </a>
         </div>
       </div>
     </section>

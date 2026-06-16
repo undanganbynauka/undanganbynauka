@@ -160,3 +160,25 @@ Stage Summary:
 - WA present in 3 strategic locations: Footer (main), Detail page after checkout (contextual fallback), Floating button (disabled by default)
 - Visual rules applied: no WA green, no big icons, no aggressive animations, quiet support feel
 - CTA hierarchy maintained: Hero → Etalase → Pricing → Checkout → Google Form → Footer WA
+
+---
+Task ID: 8
+Agent: main
+Task: Make footer WA clickable-looking + rework checkout: confirm → auto WA notif + Google Form
+
+Work Log:
+- Footer: Added "→" arrow after "Hubungi via WhatsApp" text to indicate it's clickable
+- lib/whatsapp.ts: Added GOOGLE_FORM_URL constant, renamed getWAOrderLink → getWAOrderNotifLink with updated message "konfirmasi pembayaran"
+- NaukaCheckout: Complete rework of confirmed state flow:
+  - Click "Konfirmasi Pembayaran" → auto-opens WA with order notification to owner (window.open in new tab)
+  - After confirmed: shows "Isi Detail Undangan →" as PRIMARY CTA linking to Google Form
+  - WA fallback: small subtle "Kirim ulang notifikasi via WhatsApp" link below
+  - Updated info text to explain the new flow
+- Build successful
+
+Stage Summary:
+- Footer WA now has arrow indicator for clickability
+- Checkout flow: Confirm → Auto WA notif to owner + Google Form as primary next step
+- WA only used for: payment confirmation notification + consultation (footer)
+- Google Form is the primary post-checkout action
+- GOOGLE_FORM_URL still placeholder — user needs to provide actual URL

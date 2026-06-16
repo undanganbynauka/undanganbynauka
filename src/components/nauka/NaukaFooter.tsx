@@ -125,7 +125,7 @@ export function NaukaFooter() {
               onMouseEnter={(e) => { e.currentTarget.style.color = "rgba(255,255,255,0.65)"; }}
               onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(255,255,255,0.45)"; }}
             >
-              Hubungi via WhatsApp
+              Hubungi via WhatsApp →
             </a>
 
             {/* Instagram */}

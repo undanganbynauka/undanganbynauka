@@ -75,11 +75,11 @@ export function CelestialWishes() {
     if (!visible) return;
     const timers = [
       setTimeout(() => setStep(0), 100),
-      setTimeout(() => setStep(1), 1600),
-      setTimeout(() => setStep(2), 2400),
-      setTimeout(() => setStep(3), 3000),
-      setTimeout(() => setStep(4), 3800),
-      setTimeout(() => setStep(5), 4600),
+      setTimeout(() => setStep(1), 1100),
+      setTimeout(() => setStep(2), 1700),
+      setTimeout(() => setStep(3), 2100),
+      setTimeout(() => setStep(4), 2700),
+      setTimeout(() => setStep(5), 3300),
     ];
     return () => timers.forEach(clearTimeout);
   }, [visible]);

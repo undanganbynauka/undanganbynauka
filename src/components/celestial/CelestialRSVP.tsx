@@ -26,10 +26,10 @@ export function CelestialRSVP() {
     if (!visible) return;
     const timers = [
       setTimeout(() => setStep(0), 100),   // shooting star
-      setTimeout(() => setStep(1), 1600),  // light spread
-      setTimeout(() => setStep(2), 2400),  // subtitle
-      setTimeout(() => setStep(3), 3000),  // title
-      setTimeout(() => setStep(4), 3800),  // form
+      setTimeout(() => setStep(1), 1100),  // light spread
+      setTimeout(() => setStep(2), 1700),  // subtitle
+      setTimeout(() => setStep(3), 2100),  // title
+      setTimeout(() => setStep(4), 2700),  // form
     ];
     return () => timers.forEach(clearTimeout);
   }, [visible]);

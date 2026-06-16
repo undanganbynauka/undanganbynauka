@@ -144,26 +144,26 @@ export function CelestialHero({ onOpen }: { onOpen?: () => void }) {
     // Step-based animation chain
     const timers: ReturnType<typeof setTimeout>[] = [];
 
-    // step 1: Shooting star phase (CoverShootingStar handles visuals independently)
-    timers.push(setTimeout(() => setStep(1), 400));
+    // step 1: Shooting star phase
+    timers.push(setTimeout(() => setStep(1), 300));
 
-    // step 2: "The Wedding of" fade in — 0.8s after mounted
-    timers.push(setTimeout(() => setStep(2), 800));
+    // step 2: "The Wedding of" fade in
+    timers.push(setTimeout(() => setStep(2), 600));
 
-    // step 3: "Ali" fade in from below — 0.8s after step 2
-    timers.push(setTimeout(() => setStep(3), 1600));
+    // step 3: "Ali" fade in from below
+    timers.push(setTimeout(() => setStep(3), 1200));
 
-    // step 4: "&" with gold glow fade in — 0.6s after step 3
-    timers.push(setTimeout(() => setStep(4), 2200));
+    // step 4: "&" with gold glow fade in
+    timers.push(setTimeout(() => setStep(4), 1650));
 
-    // step 5: "Lyla" fade in from below — 0.6s after step 4
-    timers.push(setTimeout(() => setStep(5), 2800));
+    // step 5: "Lyla" fade in from below
+    timers.push(setTimeout(() => setStep(5), 2100));
 
-    // step 6: Date fade in — 0.6s after step 5
-    timers.push(setTimeout(() => setStep(6), 3400));
+    // step 6: Date fade in
+    timers.push(setTimeout(() => setStep(6), 2550));
 
-    // step 7: "Buka Undangan" button with breathing glow — 0.8s after step 6
-    timers.push(setTimeout(() => setStep(7), 4200));
+    // step 7: "Buka Undangan" button
+    timers.push(setTimeout(() => setStep(7), 3150));
 
     return () => {
       timers.forEach((t) => clearTimeout(t));

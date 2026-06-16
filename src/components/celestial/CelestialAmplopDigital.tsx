@@ -35,11 +35,11 @@ export function CelestialAmplopDigital() {
     if (!visible) return;
     const timers = [
       setTimeout(() => setStep(0), 100),   // shooting star
-      setTimeout(() => setStep(1), 1600),  // light spread
-      setTimeout(() => setStep(2), 2400),  // subtitle
-      setTimeout(() => setStep(3), 3000),  // title
-      setTimeout(() => setStep(4), 3600),  // description
-      setTimeout(() => setStep(5), 4200),  // button
+      setTimeout(() => setStep(1), 1100),  // light spread
+      setTimeout(() => setStep(2), 1700),  // subtitle
+      setTimeout(() => setStep(3), 2100),  // title
+      setTimeout(() => setStep(4), 2500),  // description
+      setTimeout(() => setStep(5), 3000),  // button
     ];
     return () => timers.forEach(clearTimeout);
   }, [visible]);

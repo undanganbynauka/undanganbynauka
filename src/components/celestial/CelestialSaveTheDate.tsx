@@ -23,20 +23,20 @@ export function CelestialSaveTheDate() {
     if (!visible) return;
     const timers: ReturnType<typeof setTimeout>[] = [];
 
-    // Step 2: "The Wedding of" (0.8s)
-    timers.push(setTimeout(() => setStep(2), 800));
+    // Step 2: "The Wedding of"
+    timers.push(setTimeout(() => setStep(2), 600));
 
-    // Step 3: "Ali" appears (1.6s)
-    timers.push(setTimeout(() => setStep(3), 1600));
+    // Step 3: "Ali" appears
+    timers.push(setTimeout(() => setStep(3), 1200));
 
-    // Step 4: "&" gold glow (2.2s)
-    timers.push(setTimeout(() => setStep(4), 2200));
+    // Step 4: "&" gold glow
+    timers.push(setTimeout(() => setStep(4), 1650));
 
-    // Step 5: "Lyla" appears (2.8s)
-    timers.push(setTimeout(() => setStep(5), 2800));
+    // Step 5: "Lyla" appears
+    timers.push(setTimeout(() => setStep(5), 2100));
 
-    // Step 6: Date appears (3.4s)
-    timers.push(setTimeout(() => setStep(6), 3400));
+    // Step 6: Date appears
+    timers.push(setTimeout(() => setStep(6), 2550));
 
     return () => timers.forEach(clearTimeout);
   }, [visible]);

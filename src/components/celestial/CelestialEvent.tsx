@@ -21,12 +21,12 @@ export function CelestialEvent() {
   useEffect(() => {
     if (!visible) return;
     const timers = [
-      setTimeout(() => setStep(1), 1500),   // light spread
-      setTimeout(() => setStep(2), 2200),   // "Waktu & Tempat" subtitle
-      setTimeout(() => setStep(3), 2800),   // "Acara" title
-      setTimeout(() => setStep(4), 3500),   // Akad card
-      setTimeout(() => setStep(5), 4300),   // Resepsi card
-      setTimeout(() => setStep(6), 5000),   // Google Maps button
+      setTimeout(() => setStep(1), 1000),   // light spread
+      setTimeout(() => setStep(2), 1500),   // "Waktu & Tempat" subtitle
+      setTimeout(() => setStep(3), 1900),   // "Acara" title
+      setTimeout(() => setStep(4), 2400),   // Akad card
+      setTimeout(() => setStep(5), 2900),   // Resepsi card
+      setTimeout(() => setStep(6), 3400),   // Google Maps button
     ];
     return () => timers.forEach(clearTimeout);
   }, [visible]);

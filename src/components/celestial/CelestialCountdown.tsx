@@ -50,10 +50,10 @@ export function CelestialCountdown() {
   useEffect(() => {
     if (!visible) return;
     const timers = [
-      setTimeout(() => setStep(1), 1500),   // light spread
-      setTimeout(() => setStep(2), 2500),   // "Our Special Day" heading
-      setTimeout(() => setStep(3), 3500),   // countdown numbers
-      setTimeout(() => setStep(4), 4500),   // divider + quote + button
+      setTimeout(() => setStep(1), 1000),   // light spread
+      setTimeout(() => setStep(2), 1700),   // "Our Special Day" heading
+      setTimeout(() => setStep(3), 2400),   // countdown numbers
+      setTimeout(() => setStep(4), 3100),   // divider + quote + button
     ];
     return () => timers.forEach(clearTimeout);
   }, [visible]);

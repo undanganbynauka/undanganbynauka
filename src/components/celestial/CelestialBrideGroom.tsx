@@ -27,50 +27,50 @@ export function CelestialBrideGroom() {
 
     const timers: ReturnType<typeof setTimeout>[] = [];
 
-    // 1. Shooting star (1.5s)
+    // 1. Shooting star
     timers.push(setTimeout(() => setStep(1), 100));
 
     // 2. Shooting star done, light spreads
-    timers.push(setTimeout(() => setStep(2), 1600));
+    timers.push(setTimeout(() => setStep(2), 1100));
 
     // 3. Invitation text line 1
-    timers.push(setTimeout(() => setStep(3), 2400));
+    timers.push(setTimeout(() => setStep(3), 1600));
 
     // 4. Invitation text line 2
-    timers.push(setTimeout(() => setStep(4), 3200));
+    timers.push(setTimeout(() => setStep(4), 2100));
 
-    // 5. Groom initial circle — scale up + glow (1s)
-    timers.push(setTimeout(() => setStep(5), 4000));
+    // 5. Groom initial circle — scale up + glow
+    timers.push(setTimeout(() => setStep(5), 2600));
 
-    // 6. Groom name — fade in from below (1.2s)
-    timers.push(setTimeout(() => setStep(6), 5100));
+    // 6. Groom name — fade in from below
+    timers.push(setTimeout(() => setStep(6), 3300));
 
     // 7. Groom decorative line
-    timers.push(setTimeout(() => setStep(7), 5900));
+    timers.push(setTimeout(() => setStep(7), 3800));
 
     // 8. "Putra dari" text
-    timers.push(setTimeout(() => setStep(8), 6500));
+    timers.push(setTimeout(() => setStep(8), 4200));
 
     // 9. Parent names
-    timers.push(setTimeout(() => setStep(9), 7100));
+    timers.push(setTimeout(() => setStep(9), 4600));
 
-    // 10. "&" symbol with glow + 1s pause
-    timers.push(setTimeout(() => setStep(10), 7900));
+    // 10. "&" symbol with glow
+    timers.push(setTimeout(() => setStep(10), 5100));
 
-    // 11. Bride initial circle — scale up + glow (1s)
-    timers.push(setTimeout(() => setStep(11), 9200));
+    // 11. Bride initial circle — scale up + glow
+    timers.push(setTimeout(() => setStep(11), 5900));
 
-    // 12. Bride name — fade in from below (1.2s)
-    timers.push(setTimeout(() => setStep(12), 10300));
+    // 12. Bride name — fade in from below
+    timers.push(setTimeout(() => setStep(12), 6600));
 
     // 13. Bride decorative line
-    timers.push(setTimeout(() => setStep(13), 11100));
+    timers.push(setTimeout(() => setStep(13), 7100));
 
     // 14. "Putri dari" text
-    timers.push(setTimeout(() => setStep(14), 11700));
+    timers.push(setTimeout(() => setStep(14), 7500));
 
     // 15. Parent names
-    timers.push(setTimeout(() => setStep(15), 12300));
+    timers.push(setTimeout(() => setStep(15), 7900));
 
     return () => timers.forEach(clearTimeout);
   }, [visible]);

@@ -28,51 +28,50 @@ export function CelestialClosing() {
     return () => observer.disconnect();
   }, [visible]);
 
-  // Master animation sequence — slower, cinematic pacing
-  // Total ~14s — everything breathes slower than previous sections
+  // Master animation sequence — balanced cinematic pacing
+  // Total ~9.5s — elegant but keeps momentum
   useEffect(() => {
     if (!visible) return;
     const timers: ReturnType<typeof setTimeout>[] = [];
 
-    // 1. Slow atmospheric fade (bg + overlay already transitioning via CSS)
-    // 2. Particles appear very softly
-    timers.push(setTimeout(() => setStep(1), 300));
+    // 1. Atmospheric fade
+    timers.push(setTimeout(() => setStep(1), 200));
 
-    // 3. Shooting star — opening gesture
-    timers.push(setTimeout(() => setStep(2), 900));
+    // 2. Shooting star — opening gesture
+    timers.push(setTimeout(() => setStep(2), 600));
 
-    // 4. Shooting star fades, light spreads
-    timers.push(setTimeout(() => setStep(3), 2200));
+    // 3. Shooting star fades, light spreads
+    timers.push(setTimeout(() => setStep(3), 1500));
 
-    // 5. Crescent moon appears (very slow, 1.8s transition)
-    timers.push(setTimeout(() => setStep(4), 3000));
+    // 4. Crescent moon appears
+    timers.push(setTimeout(() => setStep(4), 2000));
 
-    // 6. Doa line 1 — first breath
-    timers.push(setTimeout(() => setStep(5), 4800));
+    // 5. Doa line 1
+    timers.push(setTimeout(() => setStep(5), 3200));
 
-    // 7. Doa line 2
-    timers.push(setTimeout(() => setStep(6), 6400));
+    // 6. Doa line 2
+    timers.push(setTimeout(() => setStep(6), 4300));
 
-    // 8. Doa line 3
-    timers.push(setTimeout(() => setStep(7), 8000));
+    // 7. Doa line 3
+    timers.push(setTimeout(() => setStep(7), 5400));
 
-    // 9. Author attribution
-    timers.push(setTimeout(() => setStep(8), 9200));
+    // 8. Author attribution
+    timers.push(setTimeout(() => setStep(8), 6200));
 
-    // 10. Ornamental divider
-    timers.push(setTimeout(() => setStep(9), 10100));
+    // 9. Ornamental divider
+    timers.push(setTimeout(() => setStep(9), 6800));
 
-    // 11. Couple names — focal point
-    timers.push(setTimeout(() => setStep(10), 11200));
+    // 10. Couple names — focal point
+    timers.push(setTimeout(() => setStep(10), 7500));
 
-    // 12. Date
-    timers.push(setTimeout(() => setStep(11), 12300));
+    // 11. Date
+    timers.push(setTimeout(() => setStep(11), 8200));
 
-    // 13. Rekening / Gift section
-    timers.push(setTimeout(() => setStep(12), 13400));
+    // 12. Rekening / Gift section
+    timers.push(setTimeout(() => setStep(12), 9000));
 
-    // 14. Nauka logo — final element
-    timers.push(setTimeout(() => setStep(13), 14000));
+    // 13. Nauka logo — final element
+    timers.push(setTimeout(() => setStep(13), 9500));
 
     return () => timers.forEach(clearTimeout);
   }, [visible]);
@@ -249,7 +248,7 @@ export function CelestialClosing() {
             margin: "0 auto 3rem",
             opacity: step >= 4 ? 1 : 0,
             transform: step >= 4 ? "scale(1) translateY(0)" : "scale(0.92) translateY(8px)",
-            transition: `opacity 1.8s ${easeCinematic}, transform 1.8s ${easeCinematic}`,
+            transition: `opacity 1.1s ${easeCinematic}, transform 1.1s ${easeCinematic}`,
           }}
         >
           <img
@@ -261,7 +260,7 @@ export function CelestialClosing() {
               objectFit: "contain",
               filter: "brightness(1.05)",
               animation: step >= 4
-                ? "celClosingMoonFloat 10s ease-in-out infinite, celClosingMoonGlow 7s ease-in-out infinite"
+                ? "celClosingMoonFloat 7s ease-in-out infinite, celClosingMoonGlow 5s ease-in-out infinite"
                 : "none",
             }}
           />
@@ -287,7 +286,7 @@ export function CelestialClosing() {
               margin: 0,
               opacity: step >= 5 ? 1 : 0,
               transform: step >= 5 ? "translateY(0)" : "translateY(10px)",
-              transition: `opacity 1.2s ${easeCinematic}, transform 1.2s ${easeCinematic}`,
+              transition: `opacity 0.8s ${easeCinematic}, transform 0.8s ${easeCinematic}`,
             }}
           >
             &ldquo;Cinta bukan tentang saling memandang,
@@ -305,7 +304,7 @@ export function CelestialClosing() {
               margin: 0,
               opacity: step >= 6 ? 1 : 0,
               transform: step >= 6 ? "translateY(0)" : "translateY(10px)",
-              transition: `opacity 1.2s ${easeCinematic}, transform 1.2s ${easeCinematic}`,
+              transition: `opacity 0.8s ${easeCinematic}, transform 0.8s ${easeCinematic}`,
             }}
           >
             tetapi tentang melihat
@@ -323,7 +322,7 @@ export function CelestialClosing() {
               margin: 0,
               opacity: step >= 7 ? 1 : 0,
               transform: step >= 7 ? "translateY(0)" : "translateY(10px)",
-              transition: `opacity 1.2s ${easeCinematic}, transform 1.2s ${easeCinematic}`,
+              transition: `opacity 0.8s ${easeCinematic}, transform 0.8s ${easeCinematic}`,
             }}
           >
             ke arah yang sama.&rdquo;
@@ -343,7 +342,7 @@ export function CelestialClosing() {
             textShadow: "0 1px 12px rgba(0,0,0,0.4)",
             opacity: step >= 8 ? 1 : 0,
             transform: step >= 8 ? "translateX(0)" : "translateX(-12px)",
-            transition: `opacity 1s ${easeCinematic}, transform 1s ${easeCinematic}`,
+            transition: `opacity 0.7s ${easeCinematic}, transform 0.7s ${easeCinematic}`,
           }}
         >
           &mdash; Antoine de Saint-Exup&eacute;ry
@@ -365,7 +364,7 @@ export function CelestialClosing() {
               height: "0.5px",
               background: "linear-gradient(to right, transparent, var(--cel-accent))",
               opacity: step >= 9 ? 0.3 : 0,
-              transition: `width 1.2s ${easeCinematic}, opacity 1.2s ${easeCinematic}`,
+              transition: `width 0.8s ${easeCinematic}, opacity 0.8s ${easeCinematic}`,
               overflow: "hidden",
             }}
           />
@@ -374,7 +373,7 @@ export function CelestialClosing() {
               color: "var(--cel-accent)",
               fontSize: "0.5rem",
               opacity: step >= 9 ? 0.4 : 0,
-              transition: `opacity 0.8s ${easeCinematic} 0.6s`,
+              transition: `opacity 0.6s ${easeCinematic} 0.4s`,
             }}
           >
             ✦
@@ -385,7 +384,7 @@ export function CelestialClosing() {
               height: "0.5px",
               background: "linear-gradient(to left, transparent, var(--cel-accent))",
               opacity: step >= 9 ? 0.3 : 0,
-              transition: `width 1.2s ${easeCinematic}, opacity 1.2s ${easeCinematic}`,
+              transition: `width 0.8s ${easeCinematic}, opacity 0.8s ${easeCinematic}`,
               overflow: "hidden",
             }}
           />
@@ -402,15 +401,15 @@ export function CelestialClosing() {
             marginBottom: "0.625rem",
             opacity: step >= 10 ? 1 : 0,
             transform: step >= 10 ? "translateY(0)" : "translateY(12px)",
-            transition: `opacity 1.4s ${easeCinematic}, transform 1.4s ${easeCinematic}`,
-            ...(step >= 10 ? { animation: "celClosingNameBreath 8s ease-in-out infinite" } : {}),
+            transition: `opacity 0.9s ${easeCinematic}, transform 0.9s ${easeCinematic}`,
+            ...(step >= 10 ? { animation: "celClosingNameBreath 6s ease-in-out infinite" } : {}),
           }}
         >
           Ali{" "}
           <span
             style={{
               color: "var(--cel-accent)",
-              ...(step >= 10 ? { animation: "celClosingAmpGlow 8s ease-in-out infinite" } : {}),
+              ...(step >= 10 ? { animation: "celClosingAmpGlow 6s ease-in-out infinite" } : {}),
             }}
           >
             &amp;
@@ -429,7 +428,7 @@ export function CelestialClosing() {
             textTransform: "uppercase",
             marginBottom: "3rem",
             opacity: step >= 11 ? 0.5 : 0,
-            transition: `opacity 1.2s ${easeCinematic}`,
+            transition: `opacity 0.8s ${easeCinematic}`,
           }}
         >
           5 Desember 2026
@@ -647,7 +646,7 @@ export function CelestialClosing() {
             "linear-gradient(to top, rgba(8,12,32,0.98) 0%, rgba(8,12,32,0.7) 30%, rgba(8,12,32,0.3) 60%, transparent 100%)",
           pointerEvents: "none",
           opacity: visible ? 1 : 0,
-          transition: `opacity 3s ${easeCinematic} 2s, height 0.8s ease`,
+          transition: `opacity 2s ${easeCinematic} 1s, height 0.6s ease`,
         }}
       />
 
@@ -662,7 +661,7 @@ export function CelestialClosing() {
           background: "#080C20",
           pointerEvents: "none",
           opacity: visible ? 1 : 0,
-          transition: `opacity 4s ${easeCinematic} 3s, height 0.8s ease`,
+          transition: `opacity 2.5s ${easeCinematic} 1.5s, height 0.6s ease`,
         }}
       />
 

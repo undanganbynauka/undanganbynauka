@@ -117,37 +117,37 @@ export function CelestialNightSky() {
     return () => observer.disconnect();
   }, [visible]);
 
-  // Step-based animation chain (total ~8s)
+  // Step-based animation chain (total ~5s)
   useEffect(() => {
     if (!visible) return;
     const timers: ReturnType<typeof setTimeout>[] = [];
 
-    // step 1: Stars begin appearing (0s)
+    // step 1: Stars begin appearing
     timers.push(setTimeout(() => setStep(1), 0));
 
-    // step 2: Shooting star (0.5s after visible)
-    timers.push(setTimeout(() => setStep(2), 500));
+    // step 2: Shooting star
+    timers.push(setTimeout(() => setStep(2), 350));
 
-    // step 3: Background fully revealed (1.5s)
-    timers.push(setTimeout(() => setStep(3), 1500));
+    // step 3: Background fully revealed
+    timers.push(setTimeout(() => setStep(3), 1000));
 
-    // step 4: Grass silhouette fades in (2.5s)
-    timers.push(setTimeout(() => setStep(4), 2500));
+    // step 4: Grass silhouette fades in
+    timers.push(setTimeout(() => setStep(4), 1700));
 
-    // step 5: "The Wedding Of" text (3.5s)
-    timers.push(setTimeout(() => setStep(5), 3500));
+    // step 5: "The Wedding Of" text
+    timers.push(setTimeout(() => setStep(5), 2400));
 
-    // step 6: "Ali" appears (4.5s)
-    timers.push(setTimeout(() => setStep(6), 4500));
+    // step 6: "Ali" appears
+    timers.push(setTimeout(() => setStep(6), 3100));
 
-    // step 7: "&" glow (5.2s)
-    timers.push(setTimeout(() => setStep(7), 5200));
+    // step 7: "&" glow
+    timers.push(setTimeout(() => setStep(7), 3600));
 
-    // step 8: "Lyla" appears (5.9s)
-    timers.push(setTimeout(() => setStep(8), 5900));
+    // step 8: "Lyla" appears
+    timers.push(setTimeout(() => setStep(8), 4100));
 
-    // step 9: Date appears (6.8s)
-    timers.push(setTimeout(() => setStep(9), 6800));
+    // step 9: Date appears
+    timers.push(setTimeout(() => setStep(9), 4700));
 
     return () => timers.forEach(clearTimeout);
   }, [visible]);

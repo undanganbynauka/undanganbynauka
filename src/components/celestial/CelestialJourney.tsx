@@ -144,18 +144,18 @@ export function CelestialJourney() {
     const timers: ReturnType<typeof setTimeout>[] = [];
 
     // Step 0: Shooting star starts immediately
-    // Step 1: Subtitle fade in (2.8s — after shooting star traversed)
-    timers.push(setTimeout(() => setStep(1), 2800));
+    // Step 1: Subtitle fade in
+    timers.push(setTimeout(() => setStep(1), 2000));
 
-    // Step 2: Title slide up + fade in (3.5s)
-    timers.push(setTimeout(() => setStep(2), 3500));
+    // Step 2: Title slide up + fade in
+    timers.push(setTimeout(() => setStep(2), 2500));
 
     // Step 3: Timeline line grows
-    timers.push(setTimeout(() => setStep(3), 4600));
+    timers.push(setTimeout(() => setStep(3), 3300));
 
     // Animate timeline line growing
-    const lineStart = 4600;
-    const lineDuration = 2000;
+    const lineStart = 3300;
+    const lineDuration = 1500;
     const lineSteps = 40;
     for (let i = 0; i <= lineSteps; i++) {
       timers.push(
@@ -166,12 +166,12 @@ export function CelestialJourney() {
     }
 
     // Phase reveals
-    const phaseStart = lineStart + lineDuration + 400;
+    const phaseStart = lineStart + lineDuration + 300;
     JOURNEY_PHASES.forEach((_, i) => {
       timers.push(
         setTimeout(() => {
           setActivePhase(i);
-        }, phaseStart + i * 2200)
+        }, phaseStart + i * 1600)
       );
     });
 

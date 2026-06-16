@@ -21,9 +21,9 @@ export function CelestialIntro() {
   useEffect(() => {
     if (!visible) return;
     const timers = [
-      setTimeout(() => setStep(1), 300),
-      setTimeout(() => setStep(2), 800),
-      setTimeout(() => setStep(3), 1400),
+      setTimeout(() => setStep(1), 200),
+      setTimeout(() => setStep(2), 600),
+      setTimeout(() => setStep(3), 1000),
     ];
     return () => timers.forEach(clearTimeout);
   }, [visible]);

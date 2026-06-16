@@ -4,18 +4,35 @@ import React, { useEffect, useRef, useState } from "react";
 
 export function NaukaMockup() {
   const [visible, setVisible] = useState(false);
+  const [inView, setInView] = useState(false);
   const ref = useRef<HTMLElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) setVisible(true);
+        if (entry.isIntersecting) {
+          setVisible(true);
+          setInView(true);
+        } else {
+          setInView(false);
+        }
       },
       { threshold: 0.15 }
     );
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      if (inView) {
+        videoRef.current.play().catch(() => {});
+      } else {
+        videoRef.current.pause();
+      }
+    }
+  }, [inView]);
 
   return (
     <section
@@ -58,7 +75,7 @@ export function NaukaMockup() {
           Sekilas Hasil
         </span>
 
-        {/* Phone frame */}
+        {/* Phone frame with video */}
         <div
           style={{
             marginTop: "28px",
@@ -73,7 +90,7 @@ export function NaukaMockup() {
               height: "400px",
               borderRadius: "28px",
               border: "1px solid rgba(255,255,255,0.08)",
-              background: "linear-gradient(160deg, #111827 0%, #1e1b3a 55%, #0f172a 100%)",
+              background: "#0B1120",
               overflow: "hidden",
               position: "relative",
               boxShadow: "0 24px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.03)",
@@ -89,94 +106,27 @@ export function NaukaMockup() {
                 width: "48px",
                 height: "6px",
                 borderRadius: "100px",
-                background: "rgba(255,255,255,0.06)",
+                background: "rgba(0,0,0,0.4)",
+                zIndex: 2,
               }}
             />
 
-            {/* Screen content — Celestial style */}
-            <div
+            {/* Celestial video */}
+            <video
+              ref={videoRef}
+              src="/etalase/celestial-preview.mp4"
+              muted
+              loop
+              playsInline
+              preload="auto"
               style={{
                 position: "absolute",
-                inset: "0",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                padding: "40px 20px",
-                gap: "12px",
+                inset: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
               }}
-            >
-              {/* Ambient accent */}
-              <div
-                className="pointer-events-none absolute inset-0"
-                style={{
-                  background: "radial-gradient(ellipse at 50% 20%, rgba(147,130,200,0.08) 0%, transparent 60%)",
-                }}
-              />
-
-              {/* Diamond ornament */}
-              <div
-                style={{
-                  width: "24px",
-                  height: "24px",
-                  border: "1px solid rgba(147,130,200,0.18)",
-                  transform: "rotate(45deg)",
-                  opacity: 0.7,
-                }}
-              />
-
-              {/* Template name */}
-              <span
-                style={{
-                  fontFamily: "var(--font-bodoni)",
-                  fontSize: "16px",
-                  fontWeight: 400,
-                  letterSpacing: "0.08em",
-                  color: "rgba(255,255,255,0.65)",
-                  textTransform: "uppercase",
-                }}
-              >
-                Celestial
-              </span>
-
-              {/* Simulated names */}
-              <span
-                style={{
-                  fontFamily: "var(--font-bodoni)",
-                  fontSize: "13px",
-                  fontWeight: 400,
-                  letterSpacing: "0.04em",
-                  color: "rgba(255,255,255,0.40)",
-                  marginTop: "8px",
-                }}
-              >
-                Ahmad & Fatimah
-              </span>
-
-              {/* Simulated divider */}
-              <div
-                style={{
-                  width: "32px",
-                  height: "1px",
-                  background: "rgba(255,255,255,0.12)",
-                  margin: "4px 0",
-                }}
-              />
-
-              {/* Simulated date */}
-              <span
-                style={{
-                  fontFamily: "var(--font-inter)",
-                  fontSize: "8px",
-                  fontWeight: 400,
-                  letterSpacing: "0.18em",
-                  color: "rgba(255,255,255,0.25)",
-                  textTransform: "uppercase",
-                }}
-              >
-                12 . 06 . 2026
-              </span>
-            </div>
+            />
           </div>
         </div>
 

@@ -237,7 +237,7 @@ export function CelestialClosing() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: showRekening ? "flex-start" : "center",
-          paddingBottom: showRekening ? "14rem" : "2rem",
+          paddingBottom: showRekening ? "18rem" : "2rem",
         }}
       >
         {/* ── Crescent Moon — slower, more sacred ── */}
@@ -435,9 +435,10 @@ export function CelestialClosing() {
           5 Desember 2026
         </p>
 
-        {/* ── Rekening / Gift Section — minimal, clean, sacred ── */}
+        {/* ── Rekening / Gift Section — visible, inviting, sacred ── */}
         {step >= 12 && (
           <div
+            id="hadiah"
             style={{
               maxWidth: "20rem",
               width: "100%",
@@ -449,31 +450,39 @@ export function CelestialClosing() {
               <button
                 onClick={() => setShowRekening(true)}
                 style={{
-                  padding: "0.5rem 1.5rem",
-                  border: "1px solid rgba(201,169,110,0.25)",
+                  padding: "0.75rem 2rem",
+                  border: "1px solid rgba(201,169,110,0.4)",
                   borderRadius: "9999px",
-                  background: "rgba(201,169,110,0.04)",
+                  background: "linear-gradient(135deg, rgba(201,169,110,0.12) 0%, rgba(201,169,110,0.06) 100%)",
                   color: "var(--cel-accent)",
                   fontFamily: "var(--font-inter)",
-                  fontSize: "0.5rem",
-                  fontWeight: 400,
-                  letterSpacing: "0.18em",
+                  fontSize: "0.6875rem",
+                  fontWeight: 500,
+                  letterSpacing: "0.14em",
                   textTransform: "uppercase",
                   cursor: "pointer",
                   transition: "all 0.5s ease",
-                  opacity: 0.7,
+                  opacity: 1,
+                  boxShadow: "0 0 24px rgba(201,169,110,0.08), inset 0 0 12px rgba(201,169,110,0.04)",
+                  animation: "celGiftPulse 3s ease-in-out infinite",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.opacity = "1";
-                  e.currentTarget.style.borderColor = "rgba(201,169,110,0.45)";
-                  e.currentTarget.style.boxShadow = "0 0 20px rgba(201,169,110,0.08)";
+                  e.currentTarget.style.borderColor = "rgba(201,169,110,0.6)";
+                  e.currentTarget.style.boxShadow = "0 0 32px rgba(201,169,110,0.18), inset 0 0 16px rgba(201,169,110,0.06)";
+                  e.currentTarget.style.transform = "scale(1.03)";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.opacity = "0.7";
-                  e.currentTarget.style.borderColor = "rgba(201,169,110,0.25)";
-                  e.currentTarget.style.boxShadow = "none";
+                  e.currentTarget.style.opacity = "1";
+                  e.currentTarget.style.borderColor = "rgba(201,169,110,0.4)";
+                  e.currentTarget.style.boxShadow = "0 0 24px rgba(201,169,110,0.08), inset 0 0 12px rgba(201,169,110,0.04)";
+                  e.currentTarget.style.transform = "scale(1)";
                 }}
               >
+                <span style={{ fontSize: "0.875rem" }}>🎁</span>
                 Tanda Kasih
               </button>
             ) : (
@@ -626,19 +635,19 @@ export function CelestialClosing() {
         )}
       </div>
 
-      {/* ── Final Fade-to-Black — like film ending ── */}
+      {/* ── Final Fade-to-Black — shrinks when gift section is open ── */}
       <div
         style={{
           position: "absolute",
           bottom: 0,
           left: 0,
           right: 0,
-          height: "35%",
+          height: showRekening ? "15%" : "35%",
           background:
             "linear-gradient(to top, rgba(8,12,32,0.98) 0%, rgba(8,12,32,0.7) 30%, rgba(8,12,32,0.3) 60%, transparent 100%)",
           pointerEvents: "none",
           opacity: visible ? 1 : 0,
-          transition: `opacity 3s ${easeCinematic} 2s`,
+          transition: `opacity 3s ${easeCinematic} 2s, height 0.8s ease`,
         }}
       />
 
@@ -649,11 +658,11 @@ export function CelestialClosing() {
           bottom: 0,
           left: 0,
           right: 0,
-          height: "8%",
+          height: showRekening ? "3%" : "8%",
           background: "#080C20",
           pointerEvents: "none",
           opacity: visible ? 1 : 0,
-          transition: `opacity 4s ${easeCinematic} 3s`,
+          transition: `opacity 4s ${easeCinematic} 3s, height 0.8s ease`,
         }}
       />
 
@@ -787,6 +796,17 @@ export function CelestialClosing() {
           to {
             opacity: 1;
             transform: translateY(0);
+          }
+        }
+
+        @keyframes celGiftPulse {
+          0%, 100% {
+            box-shadow: 0 0 24px rgba(201,169,110,0.08), inset 0 0 12px rgba(201,169,110,0.04);
+            border-color: rgba(201,169,110,0.4);
+          }
+          50% {
+            box-shadow: 0 0 36px rgba(201,169,110,0.16), 0 0 60px rgba(201,169,110,0.06), inset 0 0 16px rgba(201,169,110,0.06);
+            border-color: rgba(201,169,110,0.55);
           }
         }
       `}</style>

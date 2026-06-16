@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { NaukaCheckout } from "@/components/nauka/NaukaCheckout";
+import { NaukaFooter } from "@/components/nauka/NaukaFooter";
 
 interface TemplateDetail {
   id: string;
@@ -409,6 +410,9 @@ export default function DetailTemplatePage() {
         basicPrice={75}
         premiumPrice={99}
       />
+
+      {/* FOOTER — Closing Moment */}
+      <NaukaFooter />
     </main>
   );
 }

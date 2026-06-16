@@ -11,8 +11,8 @@ export function NaukaGerbang() {
     return () => clearTimeout(t);
   }, []);
 
-  const scrollToEtalase = () => {
-    const el = document.getElementById("nauka-etalase");
+  const scrollToSection = (id: string) => {
+    const el = document.getElementById(id);
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "start" });
     }
@@ -111,14 +111,14 @@ export function NaukaGerbang() {
           Pilih Jalur Anda
         </p>
 
-        {/* CARDS — scroll to etalase, not navigate */}
+        {/* CARDS — each scrolls to its own section */}
         <div
           className="mt-6 flex w-full flex-col gap-3 md:mt-[24px] md:flex-row md:gap-4"
           style={{ maxWidth: "420px" }}
         >
-          {/* Syar'i Collection */}
+          {/* Syar'i Collection → Sacred */}
           <button
-            onClick={scrollToEtalase}
+            onClick={() => scrollToSection("etalase-syari")}
             className="block w-full"
             style={{
               opacity: loaded ? 1 : 0,
@@ -165,9 +165,9 @@ export function NaukaGerbang() {
             </div>
           </button>
 
-          {/* Universal Collection */}
+          {/* Universal Collection → Celestial */}
           <button
-            onClick={scrollToEtalase}
+            onClick={() => scrollToSection("etalase-universal")}
             className="block w-full"
             style={{
               opacity: loaded ? 1 : 0,

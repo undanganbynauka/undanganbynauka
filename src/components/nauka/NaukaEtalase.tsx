@@ -13,7 +13,7 @@ interface Template {
   video?: string;
 }
 
-const allTemplates: Template[] = [
+const syariTemplates: Template[] = [
   {
     id: "sacred",
     name: "Sacred",
@@ -21,6 +21,9 @@ const allTemplates: Template[] = [
     href: "/detail/sacred",
     preview: "/etalase/sacred-preview.png",
   },
+];
+
+const universalTemplates: Template[] = [
   {
     id: "celestial",
     name: "Celestial",
@@ -29,7 +32,7 @@ const allTemplates: Template[] = [
     preview: "/etalase/celestial-preview.png",
     video: "/etalase/celestial-preview.mp4",
   },
-  // Heritage disimpan dulu, belum di-rebuild — akan digunakan untuk template ke-3
+  // Heritage disimpan dulu — akan digunakan untuk template ke-3
   // {
   //   id: "heritage",
   //   name: "Heritage",
@@ -89,7 +92,7 @@ function EtalaseCard({ tpl, delay }: { tpl: Template; delay: number }) {
           e.currentTarget.style.transform = "translateY(0)";
         }}
       >
-        {/* Preview — video for Celestial, image for others */}
+        {/* Preview */}
         <div
           style={{
             position: "relative",
@@ -101,7 +104,6 @@ function EtalaseCard({ tpl, delay }: { tpl: Template; delay: number }) {
         >
           {tpl.video ? (
             <>
-              {/* Static poster for initial load / SSR */}
               <Image
                 src={tpl.preview}
                 alt={`${tpl.name} preview`}
@@ -140,7 +142,7 @@ function EtalaseCard({ tpl, delay }: { tpl: Template; delay: number }) {
             />
           )}
 
-          {/* Subtle gradient overlay at bottom */}
+          {/* Gradient overlay at bottom */}
           <div
             className="pointer-events-none absolute inset-x-0 bottom-0"
             style={{
@@ -204,11 +206,19 @@ function EtalaseCard({ tpl, delay }: { tpl: Template; delay: number }) {
   );
 }
 
-export function NaukaEtalase({ start = 0, end }: { start?: number; end?: number }) {
+function EtalaseSection({
+  id,
+  collectionLabel,
+  collectionSubtext,
+  templates,
+}: {
+  id: string;
+  collectionLabel: string;
+  collectionSubtext: string;
+  templates: Template[];
+}) {
   const [visible, setVisible] = useState(false);
   const ref = useRef<HTMLElement>(null);
-
-  const templates = end !== undefined ? allTemplates.slice(start, end) : allTemplates.slice(start);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -224,11 +234,11 @@ export function NaukaEtalase({ start = 0, end }: { start?: number; end?: number 
   return (
     <section
       ref={ref}
-      id={start === 0 ? "nauka-etalase" : undefined}
+      id={id}
       className="nauka-grain relative"
       style={{
         background: "linear-gradient(180deg, #0B1120 0%, #111827 100%)",
-        padding: "80px 24px",
+        padding: "72px 24px",
       }}
     >
       {/* Ambient glow */}
@@ -243,6 +253,42 @@ export function NaukaEtalase({ start = 0, end }: { start?: number; end?: number 
       />
 
       <div className="relative z-10 mx-auto max-w-[960px]">
+        {/* Section header */}
+        <div
+          style={{
+            textAlign: "center",
+            marginBottom: "36px",
+            opacity: visible ? 1 : 0,
+            transform: visible ? "translateY(0)" : "translateY(16px)",
+            transition: "opacity 1.3s ease-out, transform 1.3s ease-out",
+          }}
+        >
+          <span
+            style={{
+              fontFamily: "var(--font-inter)",
+              fontSize: "10px",
+              letterSpacing: "0.25em",
+              textTransform: "uppercase",
+              color: "rgba(255,255,255,0.30)",
+              display: "block",
+              marginBottom: "8px",
+            }}
+          >
+            {collectionLabel}
+          </span>
+          <p
+            style={{
+              fontFamily: "var(--font-inter)",
+              fontSize: "12px",
+              fontWeight: 400,
+              lineHeight: 1.6,
+              color: "rgba(255,255,255,0.38)",
+            }}
+          >
+            {collectionSubtext}
+          </p>
+        </div>
+
         {/* Grid */}
         <div
           className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3"
@@ -250,14 +296,36 @@ export function NaukaEtalase({ start = 0, end }: { start?: number; end?: number 
             gap: "16px",
             opacity: visible ? 1 : 0,
             transform: visible ? "translateY(0)" : "translateY(24px)",
-            transition: "opacity 1.4s ease-out, transform 1.4s ease-out",
+            transition: "opacity 1.4s ease-out 0.15s, transform 1.4s ease-out 0.15s",
           }}
         >
           {templates.map((tpl, i) => (
-            <EtalaseCard key={tpl.id} tpl={tpl} delay={0.15 + i * 0.12} />
+            <EtalaseCard key={tpl.id} tpl={tpl} delay={0.2 + i * 0.12} />
           ))}
         </div>
       </div>
     </section>
+  );
+}
+
+export function NaukaEtalaseSyari() {
+  return (
+    <EtalaseSection
+      id="etalase-syari"
+      collectionLabel="Syar'i Collection"
+      collectionSubtext="Undangan yang menjaga kehormatan dan nilai syar'i dalam setiap detail"
+      templates={syariTemplates}
+    />
+  );
+}
+
+export function NaukaEtalaseUniversal() {
+  return (
+    <EtalaseSection
+      id="etalase-universal"
+      collectionLabel="Universal Collection"
+      collectionSubtext="Keanggunan universal untuk semua latar belakang dan kepercayaan"
+      templates={universalTemplates}
+    />
   );
 }

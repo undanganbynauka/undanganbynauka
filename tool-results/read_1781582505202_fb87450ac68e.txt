@@ -1,0 +1,795 @@
+     1→     1→"use client";
+     2→     2→
+     3→     3→import React, { useState, useEffect, useRef, useCallback } from "react";
+     4→     4→
+     5→     5→const BANK_ACCOUNTS = [
+     6→     6→  { name: "Ali Rahman", bank: "Bank Syariah Indonesia", number: "1234567890" },
+     7→     7→  { name: "Lyla Azzahra", bank: "Bank Muamalat Indonesia", number: "1234567890" },
+     8→     8→];
+     9→     9→
+    10→    10→export function CelestialClosing() {
+    11→    11→  const [visible, setVisible] = useState(false);
+    12→    12→  const [step, setStep] = useState(0);
+    13→    13→  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+    14→    14→  const [showRekening, setShowRekening] = useState(false);
+    15→    15→  const sectionRef = useRef<HTMLDivElement>(null);
+    16→    16→
+    17→    17→  // IntersectionObserver — trigger once
+    18→    18→  useEffect(() => {
+    19→    19→    const el = sectionRef.current;
+    20→    20→    if (!el) return;
+    21→    21→    const observer = new IntersectionObserver(
+    22→    22→      ([entry]) => {
+    23→    23→        if (entry.isIntersecting && !visible) setVisible(true);
+    24→    24→      },
+    25→    25→      { threshold: 0.1 }
+    26→    26→    );
+    27→    27→    observer.observe(el);
+    28→    28→    return () => observer.disconnect();
+    29→    29→  }, [visible]);
+    30→    30→
+    31→    31→  // Master animation sequence — slower, cinematic pacing
+    32→    32→  // Total ~14s — everything breathes slower than previous sections
+    33→    33→  useEffect(() => {
+    34→    34→    if (!visible) return;
+    35→    35→    const timers: ReturnType<typeof setTimeout>[] = [];
+    36→    36→
+    37→    37→    // 1. Slow atmospheric fade (bg + overlay already transitioning via CSS)
+    38→    38→    // 2. Particles appear very softly
+    39→    39→    timers.push(setTimeout(() => setStep(1), 300));
+    40→    40→
+    41→    41→    // 3. Shooting star — opening gesture
+    42→    42→    timers.push(setTimeout(() => setStep(2), 900));
+    43→    43→
+    44→    44→    // 4. Shooting star fades, light spreads
+    45→    45→    timers.push(setTimeout(() => setStep(3), 2200));
+    46→    46→
+    47→    47→    // 5. Crescent moon appears (very slow, 1.8s transition)
+    48→    48→    timers.push(setTimeout(() => setStep(4), 3000));
+    49→    49→
+    50→    50→    // 6. Doa line 1 — first breath
+    51→    51→    timers.push(setTimeout(() => setStep(5), 4800));
+    52→    52→
+    53→    53→    // 7. Doa line 2
+    54→    54→    timers.push(setTimeout(() => setStep(6), 6400));
+    55→    55→
+    56→    56→    // 8. Doa line 3
+    57→    57→    timers.push(setTimeout(() => setStep(7), 8000));
+    58→    58→
+    59→    59→    // 9. Author attribution
+    60→    60→    timers.push(setTimeout(() => setStep(8), 9200));
+    61→    61→
+    62→    62→    // 10. Ornamental divider
+    63→    63→    timers.push(setTimeout(() => setStep(9), 10100));
+    64→    64→
+    65→    65→    // 11. Couple names — focal point
+    66→    66→    timers.push(setTimeout(() => setStep(10), 11200));
+    67→    67→
+    68→    68→    // 12. Date
+    69→    69→    timers.push(setTimeout(() => setStep(11), 12300));
+    70→    70→
+    71→    71→    // 13. Rekening / Gift section
+    72→    72→    timers.push(setTimeout(() => setStep(12), 13400));
+    73→    73→
+    74→    74→    // 14. Nauka logo — final element
+    75→    75→    timers.push(setTimeout(() => setStep(13), 14000));
+    76→    76→
+    77→    77→    return () => timers.forEach(clearTimeout);
+    78→    78→  }, [visible]);
+    79→    79→
+    80→    80→  // Copy handler — calm, sacred feedback
+    81→    81→  const handleCopy = useCallback((num: string, key: string) => {
+    82→    82→    navigator.clipboard.writeText(num).catch(() => {
+    83→    83→      const ta = document.createElement("textarea");
+    84→    84→      ta.value = num;
+    85→    85→      document.body.appendChild(ta);
+    86→    86→      ta.select();
+    87→    87→      document.execCommand("copy");
+    88→    88→      document.body.removeChild(ta);
+    89→    89→    });
+    90→    90→    setCopiedKey(key);
+    91→    91→    setTimeout(() => setCopiedKey(null), 2000);
+    92→    92→  }, []);
+    93→    93→
+    94→    94→  const easeCinematic = "cubic-bezier(0.42, 0, 0.58, 1)";
+    95→    95→  const easeSacred = "cubic-bezier(0.25, 0.1, 0.25, 1)";
+    96→    96→
+    97→    97→  return (
+    98→    98→    <section
+    99→    99→      ref={sectionRef}
+   100→   100→      id="closing"
+   101→   101→      className="celestial-section"
+   102→   102→      style={{
+   103→   103→        position: "relative",
+   104→   104→        padding: 0,
+   105→   105→        minHeight: "100vh",
+   106→   106→        justifyContent: "center",
+   107→   107→        overflowX: "hidden",
+   108→   108→      }}
+   109→   109→    >
+   110→   110→      {/* ── Background image — slower, more intimate reveal ── */}
+   111→   111→      <div
+   112→   112→        style={{
+   113→   113→          position: "absolute",
+   114→   114→          inset: 0,
+   115→   115→          backgroundImage: "url('/celestial/cover.jpg')",
+   116→   116→          backgroundSize: "cover",
+   117→   117→          backgroundPosition: "center center",
+   118→   118→          backgroundRepeat: "no-repeat",
+   119→   119→          opacity: visible ? 1 : 0,
+   120→   120→          transition: `opacity 2.5s ${easeCinematic}`,
+   121→   121→        }}
+   122→   122→      />
+   123→   123→
+   124→   124→      {/* ── Dark overlay — deeper, more intimate than other sections ── */}
+   125→   125→      <div
+   126→   126→        style={{
+   127→   127→          position: "absolute",
+   128→   128→          inset: 0,
+   129→   129→          background:
+   130→   130→            "linear-gradient(180deg, rgba(8,12,32,0.70) 0%, rgba(8,12,32,0.55) 25%, rgba(8,12,32,0.50) 45%, rgba(8,12,32,0.60) 65%, rgba(8,12,32,0.90) 100%)",
+   131→   131→          opacity: visible ? 1 : 0,
+   132→   132→          transition: `opacity 2.5s ${easeCinematic} 0.3s`,
+   133→   133→        }}
+   134→   134→      />
+   135→   135→
+   136→   136→      {/* ── Top gradient fade — seamless blend from previous section ── */}
+   137→   137→      <div
+   138→   138→        style={{
+   139→   139→          position: "absolute",
+   140→   140→          top: 0,
+   141→   141→          left: 0,
+   142→   142→          right: 0,
+   143→   143→          height: "30%",
+   144→   144→          background:
+   145→   145→            "linear-gradient(to bottom, #0B1026 0%, rgba(11,16,38,0.6) 40%, transparent 100%)",
+   146→   146→          pointerEvents: "none",
+   147→   147→        }}
+   148→   148→      />
+   149→   149→
+   150→   150→      {/* ── Slower, sparser background particles — "everything slows down" ── */}
+   151→   151→      <div
+   152→   152→        style={{
+   153→   153→          position: "absolute",
+   154→   154→          inset: 0,
+   155→   155→          pointerEvents: "none",
+   156→   156→          overflow: "hidden",
+   157→   157→        }}
+   158→   158→      >
+   159→   159→        {Array.from({ length: 8 }).map((_, i) => (
+   160→   160→          <div
+   161→   161→            key={`particle-${i}`}
+   162→   162→            style={{
+   163→   163→              position: "absolute",
+   164→   164→              width: `${0.8 + Math.random() * 1.2}px`,
+   165→   165→              height: `${0.8 + Math.random() * 1.2}px`,
+   166→   166→              borderRadius: "50%",
+   167→   167→              background:
+   168→   168→                i % 3 === 0
+   169→   169→                  ? "rgba(201,169,110,0.35)"
+   170→   170→                  : "rgba(255,255,255,0.25)",
+   171→   171→              left: `${8 + Math.random() * 84}%`,
+   172→   172→              top: `${5 + Math.random() * 85}%`,
+   173→   173→              opacity: 0,
+   174→   174→              animation: step >= 1
+   175→   175→                ? `celClosingParticle ${8 + Math.random() * 10}s ease-in-out ${Math.random() * 5}s infinite`
+   176→   176→                : "none",
+   177→   177→            }}
+   178→   178→          />
+   179→   179→        ))}
+   180→   180→      </div>
+   181→   181→
+   182→   182→      {/* ── Shooting star — opening gesture ── */}
+   183→   183→      {step >= 2 && step < 4 && (
+   184→   184→        <div
+   185→   185→          style={{
+   186→   186→            position: "absolute",
+   187→   187→            top: "8%",
+   188→   188→            left: "5%",
+   189→   189→            pointerEvents: "none",
+   190→   190→            zIndex: 5,
+   191→   191→          }}
+   192→   192→        >
+   193→   193→          <div
+   194→   194→            style={{
+   195→   195→              width: "3px",
+   196→   196→              height: "3px",
+   197→   197→              borderRadius: "50%",
+   198→   198→              background: "#fff",
+   199→   199→              animation:
+   200→   200→                step === 2
+   201→   201→                  ? "celClosingShoot 2s ease-out forwards"
+   202→   202→                  : step >= 3
+   203→   203→                  ? "celClosingShootFade 1.2s ease-out forwards"
+   204→   204→                  : "none",
+   205→   205→            }}
+   206→   206→          />
+   207→   207→        </div>
+   208→   208→      )}
+   209→   209→
+   210→   210→      {/* ── Light spread after shooting star ── */}
+   211→   211→      {step >= 3 && (
+   212→   212→        <div
+   213→   213→          style={{
+   214→   214→            position: "absolute",
+   215→   215→            top: "14%",
+   216→   216→            right: "10%",
+   217→   217→            width: "80px",
+   218→   218→            height: "80px",
+   219→   219→            borderRadius: "50%",
+   220→   220→            background:
+   221→   221→              "radial-gradient(circle, rgba(201,169,110,0.08) 0%, transparent 70%)",
+   222→   222→            pointerEvents: "none",
+   223→   223→            animation: "celClosingLightSpread 2s ease-out forwards",
+   224→   224→          }}
+   225→   225→        />
+   226→   226→      )}
+   227→   227→
+   228→   228→      {/* ── Content — centered, breathable ── */}
+   229→   229→      <div
+   230→   230→        style={{
+   231→   231→          position: "relative",
+   232→   232→          textAlign: "center",
+   233→   233→          maxWidth: "22rem",
+   234→   234→          padding: "5rem 1.5rem 2rem",
+   235→   235→          minHeight: "100vh",
+   236→   236→          display: "flex",
+   237→   237→          flexDirection: "column",
+   238→   238→          alignItems: "center",
+   239→   239→          justifyContent: "center",
+   240→   240→        }}
+   241→   241→      >
+   242→   242→        {/* ── Crescent Moon — slower, more sacred ── */}
+   243→   243→        <div
+   244→   244→          style={{
+   245→   245→            position: "relative",
+   246→   246→            width: "100px",
+   247→   247→            height: "100px",
+   248→   248→            margin: "0 auto 3rem",
+   249→   249→            opacity: step >= 4 ? 1 : 0,
+   250→   250→            transform: step >= 4 ? "scale(1) translateY(0)" : "scale(0.92) translateY(8px)",
+   251→   251→            transition: `opacity 1.8s ${easeCinematic}, transform 1.8s ${easeCinematic}`,
+   252→   252→          }}
+   253→   253→        >
+   254→   254→          <img
+   255→   255→            src="/celestial/moon.png"
+   256→   256→            alt=""
+   257→   257→            style={{
+   258→   258→              width: "100%",
+   259→   259→              height: "100%",
+   260→   260→              objectFit: "contain",
+   261→   261→              filter: "brightness(1.05)",
+   262→   262→              animation: step >= 4
+   263→   263→                ? "celClosingMoonFloat 10s ease-in-out infinite, celClosingMoonGlow 7s ease-in-out infinite"
+   264→   264→                : "none",
+   265→   265→            }}
+   266→   266→          />
+   267→   267→        </div>
+   268→   268→
+   269→   269→        {/* ── Doa / Closing Text — breathable, read-aloud feel ── */}
+   270→   270→        <div
+   271→   271→          style={{
+   272→   272→            marginBottom: "1rem",
+   273→   273→            textAlign: "center",
+   274→   274→          }}
+   275→   275→        >
+   276→   276→          <p
+   277→   277→            style={{
+   278→   278→              fontFamily: "var(--font-cormorant)",
+   279→   279→              fontSize: "1.0625rem",
+   280→   280→              fontWeight: 400,
+   281→   281→              fontStyle: "italic",
+   282→   282→              color: "var(--cel-text)",
+   283→   283→              lineHeight: 2.6,
+   284→   284→              letterSpacing: "0.03em",
+   285→   285→              textShadow: "0 2px 18px rgba(0,0,0,0.5)",
+   286→   286→              margin: 0,
+   287→   287→              opacity: step >= 5 ? 1 : 0,
+   288→   288→              transform: step >= 5 ? "translateY(0)" : "translateY(10px)",
+   289→   289→              transition: `opacity 1.2s ${easeCinematic}, transform 1.2s ${easeCinematic}`,
+   290→   290→            }}
+   291→   291→          >
+   292→   292→            &ldquo;Cinta bukan tentang saling memandang,
+   293→   293→          </p>
+   294→   294→          <p
+   295→   295→            style={{
+   296→   296→              fontFamily: "var(--font-cormorant)",
+   297→   297→              fontSize: "1.0625rem",
+   298→   298→              fontWeight: 400,
+   299→   299→              fontStyle: "italic",
+   300→   300→              color: "var(--cel-text)",
+   301→   301→              lineHeight: 2.6,
+   302→   302→              letterSpacing: "0.03em",
+   303→   303→              textShadow: "0 2px 18px rgba(0,0,0,0.5)",
+   304→   304→              margin: 0,
+   305→   305→              opacity: step >= 6 ? 1 : 0,
+   306→   306→              transform: step >= 6 ? "translateY(0)" : "translateY(10px)",
+   307→   307→              transition: `opacity 1.2s ${easeCinematic}, transform 1.2s ${easeCinematic}`,
+   308→   308→            }}
+   309→   309→          >
+   310→   310→            tetapi tentang melihat
+   311→   311→          </p>
+   312→   312→          <p
+   313→   313→            style={{
+   314→   314→              fontFamily: "var(--font-cormorant)",
+   315→   315→              fontSize: "1.0625rem",
+   316→   316→              fontWeight: 400,
+   317→   317→              fontStyle: "italic",
+   318→   318→              color: "var(--cel-text)",
+   319→   319→              lineHeight: 2.6,
+   320→   320→              letterSpacing: "0.03em",
+   321→   321→              textShadow: "0 2px 18px rgba(0,0,0,0.5)",
+   322→   322→              margin: 0,
+   323→   323→              opacity: step >= 7 ? 1 : 0,
+   324→   324→              transform: step >= 7 ? "translateY(0)" : "translateY(10px)",
+   325→   325→              transition: `opacity 1.2s ${easeCinematic}, transform 1.2s ${easeCinematic}`,
+   326→   326→            }}
+   327→   327→          >
+   328→   328→            ke arah yang sama.&rdquo;
+   329→   329→          </p>
+   330→   330→        </div>
+   331→   331→
+   332→   332→        {/* ── Author — slide from left, slower ── */}
+   333→   333→        <p
+   334→   334→          style={{
+   335→   335→            fontFamily: "var(--font-inter)",
+   336→   336→            fontSize: "0.5625rem",
+   337→   337→            fontWeight: 400,
+   338→   338→            color: "var(--cel-accent)",
+   339→   339→            lineHeight: 1.8,
+   340→   340→            marginBottom: "2.5rem",
+   341→   341→            letterSpacing: "0.1em",
+   342→   342→            textShadow: "0 1px 12px rgba(0,0,0,0.4)",
+   343→   343→            opacity: step >= 8 ? 1 : 0,
+   344→   344→            transform: step >= 8 ? "translateX(0)" : "translateX(-12px)",
+   345→   345→            transition: `opacity 1s ${easeCinematic}, transform 1s ${easeCinematic}`,
+   346→   346→          }}
+   347→   347→        >
+   348→   348→          &mdash; Antoine de Saint-Exup&eacute;ry
+   349→   349→        </p>
+   350→   350→
+   351→   351→        {/* ── Ornament divider ── */}
+   352→   352→        <div
+   353→   353→          style={{
+   354→   354→            display: "flex",
+   355→   355→            alignItems: "center",
+   356→   356→            justifyContent: "center",
+   357→   357→            gap: "0.75rem",
+   358→   358→            marginBottom: "2.5rem",
+   359→   359→          }}
+   360→   360→        >
+   361→   361→          <div
+   362→   362→            style={{
+   363→   363→              width: step >= 9 ? "3.5rem" : "0",
+   364→   364→              height: "0.5px",
+   365→   365→              background: "linear-gradient(to right, transparent, var(--cel-accent))",
+   366→   366→              opacity: step >= 9 ? 0.3 : 0,
+   367→   367→              transition: `width 1.2s ${easeCinematic}, opacity 1.2s ${easeCinematic}`,
+   368→   368→              overflow: "hidden",
+   369→   369→            }}
+   370→   370→          />
+   371→   371→          <span
+   372→   372→            style={{
+   373→   373→              color: "var(--cel-accent)",
+   374→   374→              fontSize: "0.5rem",
+   375→   375→              opacity: step >= 9 ? 0.4 : 0,
+   376→   376→              transition: `opacity 0.8s ${easeCinematic} 0.6s`,
+   377→   377→            }}
+   378→   378→          >
+   379→   379→            ✦
+   380→   380→          </span>
+   381→   381→          <div
+   382→   382→            style={{
+   383→   383→              width: step >= 9 ? "3.5rem" : "0",
+   384→   384→              height: "0.5px",
+   385→   385→              background: "linear-gradient(to left, transparent, var(--cel-accent))",
+   386→   386→              opacity: step >= 9 ? 0.3 : 0,
+   387→   387→              transition: `width 1.2s ${easeCinematic}, opacity 1.2s ${easeCinematic}`,
+   388→   388→              overflow: "hidden",
+   389→   389→            }}
+   390→   390→          />
+   391→   391→        </div>
+   392→   392→
+   393→   393→        {/* ── Couple Names — focal point, subtle glow breathing ── */}
+   394→   394→        <p
+   395→   395→          style={{
+   396→   396→            fontFamily: "var(--font-cormorant)",
+   397→   397→            fontSize: "1.875rem",
+   398→   398→            fontWeight: 300,
+   399→   399→            color: "var(--cel-text)",
+   400→   400→            letterSpacing: "0.1em",
+   401→   401→            marginBottom: "0.625rem",
+   402→   402→            opacity: step >= 10 ? 1 : 0,
+   403→   403→            transform: step >= 10 ? "translateY(0)" : "translateY(12px)",
+   404→   404→            transition: `opacity 1.4s ${easeCinematic}, transform 1.4s ${easeCinematic}`,
+   405→   405→            ...(step >= 10 ? { animation: "celClosingNameBreath 8s ease-in-out infinite" } : {}),
+   406→   406→          }}
+   407→   407→        >
+   408→   408→          Ali{" "}
+   409→   409→          <span
+   410→   410→            style={{
+   411→   411→              color: "var(--cel-accent)",
+   412→   412→              ...(step >= 10 ? { animation: "celClosingAmpGlow 8s ease-in-out infinite" } : {}),
+   413→   413→            }}
+   414→   414→          >
+   415→   415→            &amp;
+   416→   416→          </span>{" "}
+   417→   417→          Lyla
+   418→   418→        </p>
+   419→   419→
+   420→   420→        {/* ── Date ── */}
+   421→   421→        <p
+   422→   422→          style={{
+   423→   423→            fontFamily: "var(--font-inter)",
+   424→   424→            fontSize: "0.5rem",
+   425→   425→            fontWeight: 400,
+   426→   426→            color: "var(--cel-text-muted)",
+   427→   427→            letterSpacing: "0.18em",
+   428→   428→            textTransform: "uppercase",
+   429→   429→            marginBottom: "3rem",
+   430→   430→            opacity: step >= 11 ? 0.5 : 0,
+   431→   431→            transition: `opacity 1.2s ${easeCinematic}`,
+   432→   432→          }}
+   433→   433→        >
+   434→   434→          5 Desember 2026
+   435→   435→        </p>
+   436→   436→
+   437→   437→        {/* ── Rekening / Gift Section — minimal, clean, sacred ── */}
+   438→   438→        {step >= 12 && (
+   439→   439→          <div
+   440→   440→            style={{
+   441→   441→              maxWidth: "20rem",
+   442→   442→              width: "100%",
+   443→   443→              opacity: 1,
+   444→   444→              animation: "celClosingReveal 1s cubic-bezier(0.42, 0, 0.58, 1) forwards",
+   445→   445→            }}
+   446→   446→          >
+   447→   447→            {!showRekening ? (
+   448→   448→              <button
+   449→   449→                onClick={() => setShowRekening(true)}
+   450→   450→                style={{
+   451→   451→                  padding: "0.5rem 1.5rem",
+   452→   452→                  border: "1px solid rgba(201,169,110,0.25)",
+   453→   453→                  borderRadius: "9999px",
+   454→   454→                  background: "rgba(201,169,110,0.04)",
+   455→   455→                  color: "var(--cel-accent)",
+   456→   456→                  fontFamily: "var(--font-inter)",
+   457→   457→                  fontSize: "0.5rem",
+   458→   458→                  fontWeight: 400,
+   459→   459→                  letterSpacing: "0.18em",
+   460→   460→                  textTransform: "uppercase",
+   461→   461→                  cursor: "pointer",
+   462→   462→                  transition: "all 0.5s ease",
+   463→   463→                  opacity: 0.7,
+   464→   464→                }}
+   465→   465→                onMouseEnter={(e) => {
+   466→   466→                  e.currentTarget.style.opacity = "1";
+   467→   467→                  e.currentTarget.style.borderColor = "rgba(201,169,110,0.45)";
+   468→   468→                  e.currentTarget.style.boxShadow = "0 0 20px rgba(201,169,110,0.08)";
+   469→   469→                }}
+   470→   470→                onMouseLeave={(e) => {
+   471→   471→                  e.currentTarget.style.opacity = "0.7";
+   472→   472→                  e.currentTarget.style.borderColor = "rgba(201,169,110,0.25)";
+   473→   473→                  e.currentTarget.style.boxShadow = "none";
+   474→   474→                }}
+   475→   475→              >
+   476→   476→                Tanda Kasih
+   477→   477→              </button>
+   478→   478→            ) : (
+   479→   479→              <div
+   480→   480→                style={{
+   481→   481→                  display: "flex",
+   482→   482→                  flexDirection: "column",
+   483→   483→                  gap: "0.75rem",
+   484→   484→                  animation: "celClosingReveal 0.8s cubic-bezier(0.42, 0, 0.58, 1) forwards",
+   485→   485→                }}
+   486→   486→              >
+   487→   487→                {BANK_ACCOUNTS.map((acc) => (
+   488→   488→                  <div
+   489→   489→                    key={acc.name}
+   490→   490→                    style={{
+   491→   491→                      background: "rgba(255,255,255,0.02)",
+   492→   492→                      border: "1px solid rgba(201,169,110,0.08)",
+   493→   493→                      borderRadius: "14px",
+   494→   494→                      padding: "0.875rem 1.125rem",
+   495→   495→                      transition: "all 0.4s ease",
+   496→   496→                    }}
+   497→   497→                    onMouseEnter={(e) => {
+   498→   498→                      e.currentTarget.style.borderColor = "rgba(201,169,110,0.18)";
+   499→   499→                      e.currentTarget.style.background = "rgba(255,255,255,0.04)";
+   500→   500→                    }}
+   501→   501→                    onMouseLeave={(e) => {
+   502→   502→                      e.currentTarget.style.borderColor = "rgba(201,169,110,0.08)";
+   503→   503→                      e.currentTarget.style.background = "rgba(255,255,255,0.02)";
+   504→   504→                    }}
+   505→   505→                  >
+   506→   506→                    <p
+   507→   507→                      style={{
+   508→   508→                        fontFamily: "var(--font-cormorant)",
+   509→   509→                        fontSize: "0.875rem",
+   510→   510→                        fontWeight: 400,
+   511→   511→                        color: "var(--cel-text)",
+   512→   512→                        marginBottom: "0.125rem",
+   513→   513→                        opacity: 0.9,
+   514→   514→                      }}
+   515→   515→                    >
+   516→   516→                      {acc.name}
+   517→   517→                    </p>
+   518→   518→                    <p
+   519→   519→                      style={{
+   520→   520→                        fontFamily: "var(--font-inter)",
+   521→   521→                        fontSize: "0.5rem",
+   522→   522→                        color: "var(--cel-text-muted)",
+   523→   523→                        letterSpacing: "0.08em",
+   524→   524→                        marginBottom: "0.5rem",
+   525→   525→                        opacity: 0.7,
+   526→   526→                      }}
+   527→   527→                    >
+   528→   528→                      {acc.bank}
+   529→   529→                    </p>
+   530→   530→                    <div
+   531→   531→                      style={{
+   532→   532→                        display: "flex",
+   533→   533→                        alignItems: "center",
+   534→   534→                        gap: "0.625rem",
+   535→   535→                      }}
+   536→   536→                    >
+   537→   537→                      <p
+   538→   538→                        style={{
+   539→   539→                          fontFamily: "var(--font-inter)",
+   540→   540→                          fontSize: "0.75rem",
+   541→   541→                          color: "var(--cel-accent)",
+   542→   542→                          letterSpacing: "0.05em",
+   543→   543→                          fontWeight: 400,
+   544→   544→                          opacity: 0.85,
+   545→   545→                        }}
+   546→   546→                      >
+   547→   547→                        {acc.number}
+   548→   548→                      </p>
+   549→   549→                      <button
+   550→   550→                        onClick={() => handleCopy(acc.number, acc.name)}
+   551→   551→                        style={{
+   552→   552→                          background: "none",
+   553→   553→                          border: "1px solid rgba(201,169,110,0.15)",
+   554→   554→                          borderRadius: "6px",
+   555→   555→                          padding: "0.25rem 0.5rem",
+   556→   556→                          cursor: "pointer",
+   557→   557→                          fontFamily: "var(--font-inter)",
+   558→   558→                          fontSize: "0.4375rem",
+   559→   559→                          fontWeight: 400,
+   560→   560→                          letterSpacing: "0.12em",
+   561→   561→                          textTransform: "uppercase",
+   562→   562→                          color: "var(--cel-accent)",
+   563→   563→                          opacity: 0.6,
+   564→   564→                          transition: "all 0.4s ease",
+   565→   565→                          transform: copiedKey === acc.name ? "scale(1.08)" : "scale(1)",
+   566→   566→                          boxShadow: copiedKey === acc.name
+   567→   567→                            ? "0 0 12px rgba(201,169,110,0.15)"
+   568→   568→                            : "none",
+   569→   569→                        }}
+   570→   570→                      >
+   571→   571→                        {copiedKey === acc.name ? "Tersalin" : "Salin"}
+   572→   572→                      </button>
+   573→   573→                    </div>
+   574→   574→                  </div>
+   575→   575→                ))}
+   576→   576→
+   577→   577→                {/* Kado Fisik */}
+   578→   578→                <div
+   579→   579→                  style={{
+   580→   580→                    background: "rgba(255,255,255,0.02)",
+   581→   581→                    border: "1px solid rgba(201,169,110,0.08)",
+   582→   582→                    borderRadius: "14px",
+   583→   583→                    padding: "0.875rem 1.125rem",
+   584→   584→                    transition: "all 0.4s ease",
+   585→   585→                  }}
+   586→   586→                  onMouseEnter={(e) => {
+   587→   587→                    e.currentTarget.style.borderColor = "rgba(201,169,110,0.18)";
+   588→   588→                    e.currentTarget.style.background = "rgba(255,255,255,0.04)";
+   589→   589→                  }}
+   590→   590→                  onMouseLeave={(e) => {
+   591→   591→                    e.currentTarget.style.borderColor = "rgba(201,169,110,0.08)";
+   592→   592→                    e.currentTarget.style.background = "rgba(255,255,255,0.02)";
+   593→   593→                  }}
+   594→   594→                >
+   595→   595→                  <p
+   596→   596→                    style={{
+   597→   597→                      fontFamily: "var(--font-inter)",
+   598→   598→                      fontSize: "0.5rem",
+   599→   599→                      fontWeight: 500,
+   600→   600→                      letterSpacing: "0.15em",
+   601→   601→                      textTransform: "uppercase",
+   602→   602→                      color: "var(--cel-accent)",
+   603→   603→                      marginBottom: "0.5rem",
+   604→   604→                      opacity: 0.8,
+   605→   605→                    }}
+   606→   606→                  >
+   607→   607→                    Kado Fisik
+   608→   608→                  </p>
+   609→   609→                  <p
+   610→   610→                    style={{
+   611→   611→                      fontFamily: "var(--font-inter)",
+   612→   612→                      fontSize: "0.6875rem",
+   613→   613→                      color: "var(--cel-text-dim)",
+   614→   614→                      lineHeight: 1.7,
+   615→   615→                      opacity: 0.8,
+   616→   616→                    }}
+   617→   617→                  >
+   618→   618→                    Lyla Azzahra<br />
+   619→   619→                    Kebon Jahe Kober 1, Jakarta Pusat
+   620→   620→                  </p>
+   621→   621→                </div>
+   622→   622→              </div>
+   623→   623→            )}
+   624→   624→          </div>
+   625→   625→        )}
+   626→   626→      </div>
+   627→   627→
+   628→   628→      {/* ── Final Fade-to-Black — like film ending ── */}
+   629→   629→      <div
+   630→   630→        style={{
+   631→   631→          position: "absolute",
+   632→   632→          bottom: 0,
+   633→   633→          left: 0,
+   634→   634→          right: 0,
+   635→   635→          height: "35%",
+   636→   636→          background:
+   637→   637→            "linear-gradient(to top, rgba(8,12,32,0.98) 0%, rgba(8,12,32,0.7) 30%, rgba(8,12,32,0.3) 60%, transparent 100%)",
+   638→   638→          pointerEvents: "none",
+   639→   639→          opacity: visible ? 1 : 0,
+   640→   640→          transition: `opacity 3s ${easeCinematic} 2s`,
+   641→   641→        }}
+   642→   642→      />
+   643→   643→
+   644→   644→      {/* ── Very bottom — absolute darkness ── */}
+   645→   645→      <div
+   646→   646→        style={{
+   647→   647→          position: "absolute",
+   648→   648→          bottom: 0,
+   649→   649→          left: 0,
+   650→   650→          right: 0,
+   651→   651→          height: "8%",
+   652→   652→          background: "#080C20",
+   653→   653→          pointerEvents: "none",
+   654→   654→          opacity: visible ? 1 : 0,
+   655→   655→          transition: `opacity 4s ${easeCinematic} 3s`,
+   656→   656→        }}
+   657→   657→      />
+   658→   658→
+   659→   659→      {/* ── Nauka Logo — on top of everything, bottom center ── */}
+   660→   660→      <div
+   661→   661→        style={{
+   662→   662→          position: "absolute",
+   663→   663→          bottom: "1.5rem",
+   664→   664→          left: "50%",
+   665→   665→          transform: `translateX(-50%) ${step >= 13 ? "translateY(0)" : "translateY(6px)"}`,
+   666→   666→          opacity: step >= 13 ? 0.5 : 0,
+   667→   667→          transition: `opacity 2s ${easeCinematic}, transform 2s ${easeCinematic}`,
+   668→   668→          zIndex: 10,
+   669→   669→        }}
+   670→   670→      >
+   671→   671→        <img
+   672→   672→          src="/nauka-logo-new.png"
+   673→   673→          alt="Undangan by Nauka"
+   674→   674→          style={{
+   675→   675→            width: "3.5rem",
+   676→   676→            height: "auto",
+   677→   677→            filter: "brightness(0) invert(1)",
+   678→   678→          }}
+   679→   679→        />
+   680→   680→      </div>
+   681→   681→
+   682→   682→      {/* ── Keyframes — slower, cinematic ── */}
+   683→   683→      <style>{`
+   684→   684→        @keyframes celClosingParticle {
+   685→   685→          0%, 100% {
+   686→   686→            opacity: 0;
+   687→   687→            transform: translateY(0) translateX(0);
+   688→   688→          }
+   689→   689→          15% {
+   690→   690→            opacity: 0.15;
+   691→   691→          }
+   692→   692→          50% {
+   693→   693→            opacity: 0.06;
+   694→   694→            transform: translateY(-10px) translateX(3px);
+   695→   695→          }
+   696→   696→          85% {
+   697→   697→            opacity: 0.12;
+   698→   698→          }
+   699→   699→        }
+   700→   700→
+   701→   701→        @keyframes celClosingShoot {
+   702→   702→          0% {
+   703→   703→            transform: translateX(0) translateY(0);
+   704→   704→            box-shadow:
+   705→   705→              0 0 6px 2px rgba(255,255,255,0.85),
+   706→   706→              0 0 12px 4px rgba(201,169,110,0.45),
+   707→   707→              -8px 4px 10px 2px rgba(201,169,110,0.25),
+   708→   708→              -16px 8px 14px 1px rgba(255,255,255,0.1),
+   709→   709→              -24px 12px 18px 0 rgba(201,169,110,0.05);
+   710→   710→            opacity: 1;
+   711→   711→          }
+   712→   712→          60% {
+   713→   713→            opacity: 1;
+   714→   714→            box-shadow:
+   715→   715→              0 0 4px 1px rgba(255,255,255,0.5),
+   716→   716→              0 0 8px 2px rgba(201,169,110,0.25),
+   717→   717→              -6px 3px 8px 1px rgba(201,169,110,0.12);
+   718→   718→          }
+   719→   719→          100% {
+   720→   720→            transform: translateX(280px) translateY(140px);
+   721→   721→            box-shadow: 0 0 2px 1px rgba(201,169,110,0.1);
+   722→   722→            opacity: 0;
+   723→   723→          }
+   724→   724→        }
+   725→   725→
+   726→   726→        @keyframes celClosingShootFade {
+   727→   727→          from { opacity: 0.8; }
+   728→   728→          to { opacity: 0; }
+   729→   729→        }
+   730→   730→
+   731→   731→        @keyframes celClosingLightSpread {
+   732→   732→          0% {
+   733→   733→            transform: scale(0.2);
+   734→   734→            opacity: 0;
+   735→   735→          }
+   736→   736→          35% {
+   737→   737→            opacity: 0.5;
+   738→   738→          }
+   739→   739→          100% {
+   740→   740→            transform: scale(3);
+   741→   741→            opacity: 0;
+   742→   742→          }
+   743→   743→        }
+   744→   744→
+   745→   745→        @keyframes celClosingMoonFloat {
+   746→   746→          0%, 100% {
+   747→   747→            transform: translateY(0px);
+   748→   748→          }
+   749→   749→          50% {
+   750→   750→            transform: translateY(-3px);
+   751→   751→          }
+   752→   752→        }
+   753→   753→
+   754→   754→        @keyframes celClosingMoonGlow {
+   755→   755→          0%, 100% {
+   756→   756→            filter: brightness(1.05) drop-shadow(0 0 12px rgba(201,169,110,0.1));
+   757→   757→          }
+   758→   758→          50% {
+   759→   759→            filter: brightness(1.1) drop-shadow(0 0 24px rgba(201,169,110,0.18));
+   760→   760→          }
+   761→   761→        }
+   762→   762→
+   763→   763→        @keyframes celClosingNameBreath {
+   764→   764→          0%, 100% {
+   765→   765→            text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+   766→   766→          }
+   767→   767→          50% {
+   768→   768→            text-shadow: 0 2px 20px rgba(0,0,0,0.5), 0 0 20px rgba(201,169,110,0.08), 0 0 40px rgba(201,169,110,0.03);
+   769→   769→          }
+   770→   770→        }
+   771→   771→
+   772→   772→        @keyframes celClosingAmpGlow {
+   773→   773→          0%, 100% {
+   774→   774→            text-shadow: 0 0 15px rgba(201,169,110,0.45), 0 0 35px rgba(201,169,110,0.15);
+   775→   775→          }
+   776→   776→          50% {
+   777→   777→            text-shadow: 0 0 20px rgba(201,169,110,0.6), 0 0 45px rgba(201,169,110,0.25), 0 0 55px rgba(201,169,110,0.06);
+   778→   778→          }
+   779→   779→        }
+   780→   780→
+   781→   781→        @keyframes celClosingReveal {
+   782→   782→          from {
+   783→   783→            opacity: 0;
+   784→   784→            transform: translateY(8px);
+   785→   785→          }
+   786→   786→          to {
+   787→   787→            opacity: 1;
+   788→   788→            transform: translateY(0);
+   789→   789→          }
+   790→   790→        }
+   791→   791→      `}</style>
+   792→   792→    </section>
+   793→   793→  );
+   794→   794→}
+   795→   795→

@@ -4,7 +4,6 @@ import React, { useEffect, useRef, useState } from "react";
 
 export function NaukaFooter() {
   const [visible, setVisible] = useState(false);
-  const [paymentOpen, setPaymentOpen] = useState(false);
   const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -180,116 +179,36 @@ export function NaukaFooter() {
           }}
         />
 
-        {/* ─── 3. PAYMENT SECTION (COLLAPSIBLE) ─── */}
+        {/* ─── 3. PAYMENT — QRIS ONLY ─── */}
         <div
           style={{
             opacity: visible ? 1 : 0,
             transition: "opacity 1.3s ease-out 0.4s",
           }}
         >
-          {/* Toggle header */}
-          <button
-            onClick={() => setPaymentOpen(!paymentOpen)}
+          <span
             style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              width: "100%",
-              background: "none",
-              border: "none",
-              padding: 0,
-              cursor: "pointer",
+              fontFamily: "var(--font-inter)",
+              fontSize: "10px",
+              letterSpacing: "0.2em",
+              textTransform: "uppercase",
+              color: "rgba(255,255,255,0.25)",
+              display: "block",
+              marginBottom: "14px",
             }}
           >
-            <span
-              style={{
-                fontFamily: "var(--font-inter)",
-                fontSize: "10px",
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                color: "rgba(255,255,255,0.25)",
-              }}
-            >
-              Pembayaran
-            </span>
-            <span
-              style={{
-                fontFamily: "var(--font-inter)",
-                fontSize: "10px",
-                letterSpacing: "0.1em",
-                color: "rgba(255,255,255,0.18)",
-                transition: "transform 0.3s ease, color 0.3s ease",
-                transform: paymentOpen ? "rotate(180deg)" : "rotate(0deg)",
-              }}
-            >
-              ▾
-            </span>
-          </button>
+            Pembayaran
+          </span>
 
-          {/* Summary — always visible */}
-          <div style={{ marginTop: "14px", display: "flex", gap: "16px", flexWrap: "wrap" }}>
-            <span
-              style={{
-                fontFamily: "var(--font-inter)",
-                fontSize: "12px",
-                color: "rgba(255,255,255,0.30)",
-              }}
-            >
-              QRIS tersedia
-            </span>
-            <span
-              style={{
-                fontFamily: "var(--font-inter)",
-                fontSize: "12px",
-                color: "rgba(255,255,255,0.20)",
-              }}
-            >
-              ·
-            </span>
-            <span
-              style={{
-                fontFamily: "var(--font-inter)",
-                fontSize: "12px",
-                color: "rgba(255,255,255,0.30)",
-              }}
-            >
-              Transfer bank / e-wallet
-            </span>
-          </div>
-
-          {/* Expandable detail */}
-          <div
+          <span
             style={{
-              maxHeight: paymentOpen ? "200px" : "0",
-              overflow: "hidden",
-              transition: "max-height 0.5s ease-out, opacity 0.4s ease-out",
-              opacity: paymentOpen ? 1 : 0,
+              fontFamily: "var(--font-inter)",
+              fontSize: "12px",
+              color: "rgba(255,255,255,0.38)",
             }}
           >
-            <div
-              style={{
-                marginTop: "18px",
-                paddingTop: "18px",
-                borderTop: "1px solid rgba(255,255,255,0.05)",
-                display: "flex",
-                flexDirection: "column",
-                gap: "10px",
-              }}
-            >
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <span style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(255,255,255,0.28)" }}>Bank Jago Syariah</span>
-                <span style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(255,255,255,0.40)", letterSpacing: "0.04em" }}>503564771009</span>
-              </div>
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <span style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(255,255,255,0.28)" }}>SeaBank</span>
-                <span style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(255,255,255,0.40)", letterSpacing: "0.04em" }}>901344361441</span>
-              </div>
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <span style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(255,255,255,0.28)" }}>GoPay / OVO / DANA</span>
-                <span style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(255,255,255,0.40)", letterSpacing: "0.04em" }}>0896-555-9292-5</span>
-              </div>
-            </div>
-          </div>
+            QRIS — via semua aplikasi pembayaran &amp; mobile banking
+          </span>
         </div>
 
         {/* Divider */}
@@ -303,7 +222,7 @@ export function NaukaFooter() {
           }}
         />
 
-        {/* ─── CLOSING TAGLINE (from emotional hierarchy) ─── */}
+        {/* ─── CLOSING TAGLINE ─── */}
         <p
           style={{
             fontFamily: "var(--font-bodoni)",

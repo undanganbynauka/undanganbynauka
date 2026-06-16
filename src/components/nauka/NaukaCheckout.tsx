@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 
 interface CheckoutProps {
   templateName: string;
@@ -31,12 +32,8 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
   const price = selected === "basic" ? basicPrice : premiumPrice;
   const packageName = selected === "basic" ? "Basic" : "Premium";
 
-  const waMessage = `Halo Nauka, saya ingin order undangan.%0A%0ATemplate: ${templateName}%0APaket: ${packageName}%0AHarga: Rp${price.toLocaleString("id-ID")}`;
+  const waMessage = `Halo Nauka, saya ingin order undangan.%0A%0ATemplate: ${templateName}%0APaket: ${packageName}%0AHarga: Rp${price.toLocaleString("id-ID")}%0AMetode: QRIS`;
   const waLink = `https://wa.me/${WA_BASE}?text=${waMessage}`;
-
-  const handleConfirm = () => {
-    setConfirmed(true);
-  };
 
   return (
     <section
@@ -59,7 +56,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
       />
 
       <div className="relative z-10 mx-auto max-w-[520px]">
-        {/* Section title */}
+        {/* ─── 1. TITLE ─── */}
         <h2
           style={{
             fontFamily: "var(--font-bodoni)",
@@ -88,7 +85,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
           }}
         />
 
-        {/* Header: Template + Package selector */}
+        {/* ─── 2. TEMPLATE NAME + PACKAGE SELECTOR ─── */}
         <div
           style={{
             opacity: visible ? 1 : 0,
@@ -215,7 +212,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
           }}
         />
 
-        {/* Ringkasan */}
+        {/* ─── 3. RINGKASAN ─── */}
         <div
           style={{
             opacity: visible ? 1 : 0,
@@ -264,16 +261,143 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
           </div>
         </div>
 
-        {/* Info proses */}
+        {/* Divider */}
         <div
           style={{
-            marginTop: "28px",
+            height: "1px",
+            background: "rgba(255,255,255,0.06)",
+            margin: "32px 0",
+            opacity: visible ? 1 : 0,
+            transition: "opacity 1.2s ease-out 0.4s",
+          }}
+        />
+
+        {/* ─── 4. PEMBAYARAN — QRIS ONLY ─── */}
+        <div
+          style={{
+            opacity: visible ? 1 : 0,
+            transform: visible ? "translateY(0)" : "translateY(16px)",
+            transition: "opacity 1.3s ease-out 0.4s, transform 1.3s ease-out 0.4s",
+          }}
+        >
+          {/* Title */}
+          <h3
+            style={{
+              fontFamily: "var(--font-bodoni)",
+              fontSize: "16px",
+              fontWeight: 400,
+              letterSpacing: "0.04em",
+              color: "rgba(255,255,255,0.80)",
+              textAlign: "center",
+            }}
+          >
+            Pembayaran
+          </h3>
+
+          {/* Subtitle */}
+          <p
+            style={{
+              fontFamily: "var(--font-inter)",
+              fontSize: "12px",
+              fontWeight: 400,
+              lineHeight: 1.6,
+              color: "rgba(255,255,255,0.38)",
+              textAlign: "center",
+              marginTop: "8px",
+            }}
+          >
+            Scan QR untuk menyelesaikan pembayaran
+          </p>
+
+          {/* QR Code — premium glass card */}
+          <div
+            style={{
+              marginTop: "28px",
+              padding: "28px 24px",
+              borderRadius: "16px",
+              border: "1px solid rgba(255,255,255,0.07)",
+              background: "rgba(255,255,255,0.025)",
+              boxShadow: "0 4px 32px rgba(0,0,0,0.2), 0 0 80px rgba(201,169,110,0.02)",
+              textAlign: "center",
+            }}
+          >
+            {/* QR Image */}
+            <div
+              style={{
+                width: "200px",
+                height: "200px",
+                margin: "0 auto",
+                borderRadius: "12px",
+                overflow: "hidden",
+                position: "relative",
+                background: "#ffffff",
+                padding: "12px",
+              }}
+            >
+              <Image
+                src="/qris.png"
+                alt="QRIS Payment"
+                fill
+                sizes="200px"
+                className="object-contain"
+                style={{ borderRadius: "8px" }}
+                priority
+              />
+            </div>
+
+            {/* QRIS label */}
+            <span
+              style={{
+                fontFamily: "var(--font-inter)",
+                fontSize: "13px",
+                fontWeight: 500,
+                letterSpacing: "0.06em",
+                color: "rgba(255,255,255,0.60)",
+                display: "block",
+                marginTop: "18px",
+              }}
+            >
+              QRIS
+            </span>
+            <span
+              style={{
+                fontFamily: "var(--font-inter)",
+                fontSize: "10px",
+                letterSpacing: "0.04em",
+                color: "rgba(255,255,255,0.25)",
+                display: "block",
+                marginTop: "4px",
+              }}
+            >
+              GoPay Merchant
+            </span>
+
+            {/* Micro info */}
+            <p
+              style={{
+                fontFamily: "var(--font-inter)",
+                fontSize: "11px",
+                fontWeight: 400,
+                lineHeight: 1.5,
+                color: "rgba(255,255,255,0.28)",
+                marginTop: "16px",
+              }}
+            >
+              Dapat dibayar melalui semua aplikasi pembayaran &amp; mobile banking
+            </p>
+          </div>
+        </div>
+
+        {/* ─── 5. INFO PROSES ─── */}
+        <div
+          style={{
+            marginTop: "24px",
             padding: "16px 18px",
             borderRadius: "10px",
             border: "1px solid rgba(255,255,255,0.05)",
             background: "rgba(255,255,255,0.015)",
             opacity: visible ? 1 : 0,
-            transition: "opacity 1.3s ease-out 0.45s",
+            transition: "opacity 1.3s ease-out 0.5s",
           }}
         >
           <p
@@ -285,22 +409,22 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               color: "rgba(255,255,255,0.38)",
             }}
           >
-            Setelah pembayaran berhasil, Anda akan diarahkan ke Google Form untuk pengisian detail undangan.
+            Setelah pembayaran berhasil, konfirmasi melalui WhatsApp. Anda akan diarahkan ke Google Form untuk pengisian detail undangan.
           </p>
         </div>
 
-        {/* Payment / Confirm */}
+        {/* ─── 6. CTA BUTTON ─── */}
         <div
           style={{
             marginTop: "32px",
             opacity: visible ? 1 : 0,
             transform: visible ? "translateY(0)" : "translateY(16px)",
-            transition: "opacity 1.3s ease-out 0.5s, transform 1.3s ease-out 0.5s",
+            transition: "opacity 1.3s ease-out 0.55s, transform 1.3s ease-out 0.55s",
           }}
         >
           {!confirmed ? (
             <button
-              onClick={handleConfirm}
+              onClick={() => setConfirmed(true)}
               style={{
                 width: "100%",
                 padding: "16px 24px",
@@ -339,7 +463,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                   lineHeight: 1.6,
                 }}
               >
-                Silakan lakukan pembayaran melalui WhatsApp. Kami akan memandu proses selanjutnya.
+                Terima kasih. Silakan konfirmasi pembayaran Anda melalui WhatsApp untuk memproses pesanan.
               </p>
               <a
                 href={waLink}
@@ -370,7 +494,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                   e.currentTarget.style.color = "rgba(201,169,110,0.8)";
                 }}
               >
-                Bayar via WhatsApp
+                Konfirmasi via WhatsApp
               </a>
             </div>
           )}
@@ -382,7 +506,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
             marginTop: "24px",
             textAlign: "center",
             opacity: visible ? 1 : 0,
-            transition: "opacity 1.3s ease-out 0.6s",
+            transition: "opacity 1.3s ease-out 0.65s",
           }}
         >
           <a

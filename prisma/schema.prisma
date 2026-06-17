@@ -13,20 +13,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Wedding {
+  id          String   @id @default(cuid())
+  brideName   String
+  groomName   String
+  slug        String   @unique
+  package     String   @default("basic") // "basic" | "premium"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  guests      Guest[]
 }
 
-model Post {
-  id        String   @id @default(cuid())
-  title     String
-  content   String?
-  published Boolean  @default(false)
-  authorId  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Guest {
+  id          String   @id @default(cuid())
+  weddingId   String
+  name        String
+  slug        String
+  createdAt   DateTime @default(now())
+
+  wedding     Wedding  @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+
+  @@unique([weddingId, slug])
 }

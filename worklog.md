@@ -205,4 +205,4 @@ Stage Summary:
 - User gets visual nota/receipt on screen after confirming payment
 - Nota can be screenshotted as proof of order
 - Flow: Confirm → WA notif to owner + Nota appears + Google Form CTA
-- GOOGLE_FORM_URL still placeholder — waiting for actual URL
+- GOOGLE_FORM_URL still placeholder — waiting for actual URL.

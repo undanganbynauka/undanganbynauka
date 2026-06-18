@@ -19,7 +19,7 @@
 const WA_NUMBER = "6289655592925";
 
 /** ⚠️ GANTI dengan Google Form URL asli Nauka */
-export const GOOGLE_FORM_URL = "https://forms.gle/PLACEHOLDER_NAUKA_FORM";
+export const GOOGLE_FORM_URL = null;
 
 /** Prefilled message for general inquiry */
 const WA_INQUIRY_TEXT = "Halo Nauka, saya ingin menanyakan tentang undangan digital.";

@@ -28,7 +28,7 @@ function formatDateTime(): string {
   return now.toLocaleDateString("id-ID", opts);
 }
 
-export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPrice }: CheckoutProps) {
+ export function NaukaCheckout({ templateName, templateId }: CheckoutProps) {
   const [selected, setSelected] = useState<"basic" | "premium">("premium");
   const [confirmed, setConfirmed] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -47,7 +47,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
     return () => observer.disconnect();
   }, []);
 
-  const price = selected === "basic" ? basicPrice : premiumPrice;
+  const price = selected === "basic" ? PRICING.basic : PRICING.premium;
   const packageName = selected === "basic" ? "Basic" : "Premium";
   const waNotifLink = getWAOrderNotifLink(templateName, packageName, price);
 

@@ -337,8 +337,8 @@ export default function DetailTemplatePage() {
       <NaukaCheckout
         templateName={tpl.name}
         templateId={tpl.id}
-        basicPrice={75}
-        premiumPrice={99}
+        basicPrice={75000}
+        premiumPrice={99000}
       />
 
       {/* CONTEXTUAL WA SUPPORT — small secondary fallback */}

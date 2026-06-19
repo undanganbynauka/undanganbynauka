@@ -1,3 +1,4 @@
+import { PRICING, formatIDR } from "@/lib/pricing";
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
@@ -7,8 +8,6 @@ import { getWAOrderNotifLink, GOOGLE_FORM_URL } from "@/lib/whatsapp";
 interface CheckoutProps {
   templateName: string;
   templateId: string;
-  basicPrice: number;
-  premiumPrice: number;
 }
 
 function generateOrderId(templateId: string): string {

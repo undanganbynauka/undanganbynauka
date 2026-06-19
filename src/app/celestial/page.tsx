@@ -22,7 +22,8 @@ type Phase = "checking" | "gate" | "opening" | "inside";
 const STORAGE_KEY = "nauka-celestial-opened";
 
 function CelestialContent() {
-  const [phase, setPhase] = useState<Phase>("checking");
+  if (phase === "checking") {
+  const [phase, setPhase] = useState("gate");
   const searchParams = useSearchParams();
   const isPreview = searchParams.get("preview") === "true";
 

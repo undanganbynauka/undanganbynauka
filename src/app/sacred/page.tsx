@@ -22,7 +22,7 @@ type Phase = "checking" | "gate" | "opening" | "inside";
 const STORAGE_KEY = "nauka-sacred-opened";
 
 function SacredContent() {
-  const [phase, setPhase] = useState<Phase>("checking");
+  const [phase, setPhase] = useState<Phase>("gate");
   const searchParams = useSearchParams();
   const isPreview = searchParams.get("preview") === "true";
 

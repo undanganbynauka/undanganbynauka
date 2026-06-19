@@ -177,7 +177,7 @@ function formatDateTime(): string {
                   transition: "color 0.3s ease",
                 }}
               >
-                {basicPrice}rb
+                {formatIDR(PRICING.basic)}
               </span>
             </button>
 
@@ -219,7 +219,7 @@ function formatDateTime(): string {
                   transition: "color 0.3s ease",
                 }}
               >
-                {premiumPrice}rb
+                {formatIDR(PRICING.premium)}
               </span>
             </button>
           </div>

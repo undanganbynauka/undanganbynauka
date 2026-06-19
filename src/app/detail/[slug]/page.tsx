@@ -30,12 +30,12 @@ const templates: Record<string, TemplateDetail> = {
     previewHref: "/sacred?preview=true",
     preview: "/etalase/sacred-preview.png",
     description:
-      "Sacred dirancang untuk pasangan yang mengutamakan kesederhanaan syar'i dalam setiap detail undangannya.",
+      "Sacred dirancang untuk pasangan yang mengutamakan kesederhanaan syar'i dalam setiap detail undangan.",
     highlights: [
       "Desain tanpa foto",
-      "Audio vokal atau alam",
+      "Audio sederhana",
       "Ornamen islami",
-      "Bahasa syar'i",
+      "Bahasa elegan",
     ],
     emotionalNote: "Undangan yang menjaga kehormatan momen Anda.",
   },
@@ -48,9 +48,9 @@ const templates: Record<string, TemplateDetail> = {
     previewHref: "/celestial?preview=true",
     preview: "/etalase/celestial-preview.png",
     description:
-      "Celestial menghadirkan keanggunan universal dalam desain undangan digital.",
+      "Celestial menghadirkan desain undangan digital yang elegan dan universal.",
     highlights: [
-      "Animasi sinematik",
+      "Animasi halus",
       "Tipografi elegan",
       "Desain modern",
       "Universal",
@@ -116,7 +116,7 @@ export default function DetailTemplatePage() {
         </div>
       </section>
 
-      {/* CHECKOUT (FIXED - SINGLE COMPONENT ONLY) */}
+      {/* CHECKOUT — FIXED (ONLY ONE INSTANCE) */}
       <NaukaCheckout
         templateName={tpl.name}
         templateId={tpl.id}
@@ -124,6 +124,7 @@ export default function DetailTemplatePage() {
 
       {/* FOOTER */}
       <NaukaFooter />
+
       <NaukaWhatsAppFloat />
     </main>
   );

@@ -6,7 +6,6 @@ import { NaukaEtalaseSyari, NaukaEtalaseUniversal } from "@/components/nauka/Nau
 import { NaukaHarga } from "@/components/nauka/NaukaHarga";
 import { NaukaBayanganMomen } from "@/components/nauka/NaukaBayanganMomen";
 import { NaukaFooter } from "@/components/nauka/NaukaFooter";
-import { NaukaFloatingNav } from "@/components/nauka/NaukaFloatingNav";
 
 export default function NaukaLanding() {
   return (
@@ -31,9 +30,6 @@ export default function NaukaLanding() {
 
       {/* 7. FOOTER — Closing Moment */}
       <NaukaFooter />
-
-      {/* FLOATING QUICK-ACCESS NAV — appears after scroll past hero */}
-      <NaukaFloatingNav />
     </main>
   );
 }

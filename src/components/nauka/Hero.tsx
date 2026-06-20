@@ -62,7 +62,8 @@ export default function Hero() {
           flexDirection: 'column',
           alignItems: 'center',
           gap: '24px',
-          maxWidth: '720px',
+          maxWidth: '480px',
+          width: '100%',
         }}
       >
         <Image
@@ -74,50 +75,52 @@ export default function Hero() {
           style={{
             width: '100%',
             height: 'auto',
-            maxWidth: '160px',
+            maxWidth: '180px',
             objectFit: 'contain',
+            filter: 'brightness(0) invert(1)',
           }}
         />
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <h1
             style={{
               color: NAUKA_COLORS.primaryText,
               fontFamily: 'Georgia, "Times New Roman", serif',
-              fontSize: 'clamp(28px, 5vw, 44px)',
+              fontSize: 'clamp(26px, 5vw, 40px)',
               fontWeight: 400,
               margin: 0,
               lineHeight: 1.3,
               letterSpacing: '0.01em',
             }}
           >
-            Langkah awal menuju momen bahagia.
+            Langkah awal menuju momen bahagia
           </h1>
 
           <p
             style={{
-              color: NAUKA_COLORS.secondaryText,
-              fontSize: 'clamp(14px, 2vw, 16px)',
-              lineHeight: 1.7,
+              color: NAUKA_COLORS.accent,
+              fontSize: 'clamp(12px, 2vw, 13px)',
+              letterSpacing: '0.2em',
+              textTransform: 'uppercase',
               margin: 0,
-              maxWidth: '460px',
             }}
           >
-            Pilih gaya undangan yang paling sesuai dengan cerita kalian.
+            Pilih Jalur Anda
           </p>
         </div>
 
         <div
           style={{
             display: 'flex',
-            flexWrap: 'wrap',
-            gap: '16px',
-            justifyContent: 'center',
+            flexDirection: 'column',
+            gap: '14px',
+            width: '100%',
+            maxWidth: '320px',
             marginTop: '16px',
           }}
         >
-          <HeroButton href="/syar-i" label="Syar'i" />
-          <HeroButton href="/universal" label="Universal" />
+          <HeroButton href="/syar-i" label="Syar'i Collection" />
+          <HeroButton href="/universal" label="Universal Collection" />
         </div>
       </div>
     </section>
@@ -129,8 +132,8 @@ function HeroButton({ href, label }: { href: string; label: string }) {
     <Link
       href={href}
       style={{
-        display: 'inline-block',
-        padding: '14px 40px',
+        display: 'block',
+        padding: '16px 32px',
         borderRadius: '999px',
         color: NAUKA_COLORS.primaryText,
         fontFamily: 'Georgia, "Times New Roman", serif',
@@ -142,6 +145,7 @@ function HeroButton({ href, label }: { href: string; label: string }) {
         border: '1px solid rgba(201, 169, 110, 0.35)',
         transition: 'all 0.3s ease',
         backdropFilter: 'blur(4px)',
+        textAlign: 'center',
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.boxShadow = '0 0 24px rgba(201, 169, 110, 0.4)';

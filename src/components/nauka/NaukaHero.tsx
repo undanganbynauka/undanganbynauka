@@ -8,7 +8,7 @@ interface NaukaHeroProps {
   onEnter: () => void;
 }
 
-export function NaukaHero({ onEnter }: NaukaHeroProps) {
+export default function NaukaHero({ onEnter }: NaukaHeroProps) {
   return (
     <section className="nauka-canvas-hero relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 pb-32 pt-20">
       {/* Floating blur shapes */}

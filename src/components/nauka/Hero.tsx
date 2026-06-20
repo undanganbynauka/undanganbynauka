@@ -20,6 +20,7 @@ export default function Hero() {
         overflow: 'hidden',
       }}
     >
+      {/* Decorative glow — kiri bawah */}
       <div
         aria-hidden
         style={{
@@ -37,6 +38,7 @@ export default function Hero() {
         }}
       />
 
+      {/* Decorative glow — kanan atas */}
       <div
         aria-hidden
         style={{
@@ -54,6 +56,7 @@ export default function Hero() {
         }}
       />
 
+      {/* Cluster atas: logo + headline */}
       <div
         style={{
           position: 'relative',
@@ -97,6 +100,7 @@ export default function Hero() {
         </h1>
       </div>
 
+      {/* Cluster bawah: subtext + tombol collection */}
       <div
         style={{
           position: 'relative',
@@ -120,8 +124,8 @@ export default function Hero() {
         >
           Pilih Jalur Anda
         </p>
-        <HeroButton href="/syar-i" label="Syar'i Collection" />
-        <HeroButton href="/universal" label="Universal Collection" />
+        <HeroButton href="/#etalase-syari" label="Syar'i Collection" />
+        <HeroButton href="/#etalase-universal" label="Universal Collection" />
       </div>
     </section>
   );

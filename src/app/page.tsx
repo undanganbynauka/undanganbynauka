@@ -1,12 +1,31 @@
-import Link from "next/link";
+import NaukaHero from '@/components/nauka/NaukaHero';
+import NaukaEtalase from '@/components/nauka/NaukaEtalase';
+import NaukaKenapa from '@/components/nauka/NaukaKenapa';
+import NaukaPrinsip from '@/components/nauka/NaukaPrinsip';
+import NaukaBayanganMomen from '@/components/nauka/NaukaBayanganMomen';
+import NaukaMockup from '@/components/nauka/NaukaMockup';
+import NaukaHarga from '@/components/nauka/NaukaHarga';
+import NaukaCheckout from '@/components/nauka/NaukaCheckout';
+import NaukaCTA from '@/components/nauka/NaukaCTA';
+import NaukaFooter from '@/components/nauka/NaukaFooter';
 
 export default function Home() {
   return (
-    <main style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh", gap: "20px" }}>
-      <h1>Nauka</h1>
+    <main>
+      <NaukaHero />
+      <NaukaEtalase />
 
-      <Link href="/sacred">Sacred</Link>
-      <Link href="/celestial">Celestial</Link>
+      <NaukaKenapa />
+      <NaukaPrinsip />
+
+      <NaukaBayanganMomen />
+      <NaukaMockup />
+
+      <NaukaHarga />
+      <NaukaCheckout />
+
+      <NaukaCTA />
+      <NaukaFooter />
     </main>
   );
 }

@@ -7,7 +7,7 @@ interface Props {
   templateId: string;
 }
 
-type Step = "paket" | "pemesan" | "undangan" | "review" | "done";
+type Step = "paket" | "pemesan" | "undangan" | "review" | "submitting" | "done";
 
 const PRICING = {
   basic: 75000,
@@ -91,11 +91,13 @@ function buildWhatsAppMessage(
   customerName: string,
   customerPhone: string,
   customerEmail: string,
-  data: WeddingData
+  data: WeddingData,
+  orderId: string
 ): string {
   const lines: string[] = [
     "Halo Nauka, saya ingin konfirmasi pesanan.",
     "",
+    `*No. Pesanan:* ${orderId}`,
     `*Template:* ${templateName}`,
     `*Paket:* ${selectedPackage === "basic" ? "Basic" : "Premium"}`,
     `*Harga:* ${formatIDR(price)}`,
@@ -125,6 +127,7 @@ function buildWhatsAppMessage(
       `Lokasi: ${data.resepsiAddress}`
     );
   }
+  lines.push("", "(Pesan otomatis dari undanganbynauka.vercel.app)");
   return lines.join("\n");
 }
 
@@ -137,6 +140,8 @@ export const NaukaCheckout: React.FC<Props> = ({ templateName, templateId }) => 
   const [customerEmail, setCustomerEmail] = useState("");
   const [weddingData, setWeddingData] = useState<WeddingData>(EMPTY_WEDDING);
   const [error, setError] = useState<string | null>(null);
+  const [orderId, setOrderId] = useState<string | null>(null);
+  const [waUrl, setWaUrl] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -177,19 +182,56 @@ export const NaukaCheckout: React.FC<Props> = ({ templateName, templateId }) => 
     setStep("review");
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     setSubmitting(true);
-    const msg = encodeURIComponent(
-      buildWhatsAppMessage(
-        templateName, selectedPackage, price,
-        customerName, customerPhone, customerEmail,
-        weddingData
-      )
-    );
-    const waUrl = `https://wa.me/${WA_NUMBER}?text=${msg}`;
-    window.open(waUrl, "_blank");
-    setSubmitting(false);
-    setStep("done");
+    setError(null);
+    setStep("submitting");
+
+    try {
+      // Step 1: Simpan ke database via API
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          template: templateId,
+          package: selectedPackage,
+          customer_name: customerName,
+          customer_phone: customerPhone,
+          customer_email: customerEmail,
+          wedding_data: weddingData,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Gagal membuat pesanan");
+      }
+
+      const newOrderId = data.data.order_id;
+      setOrderId(newOrderId);
+
+      // Step 2: Build WhatsApp URL dengan order ID
+      const msg = encodeURIComponent(
+        buildWhatsAppMessage(
+          templateName, selectedPackage, price,
+          customerName, customerPhone, customerEmail,
+          weddingData, newOrderId
+        )
+      );
+      const url = `https://wa.me/${WA_NUMBER}?text=${msg}`;
+      setWaUrl(url);
+
+      // Step 3: Auto-open WhatsApp di tab baru
+      window.open(url, "_blank");
+
+      setStep("done");
+    } catch (err: any) {
+      setError(err.message || "Terjadi kesalahan. Silakan coba lagi.");
+      setStep("review");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   function reset() {
@@ -200,6 +242,8 @@ export const NaukaCheckout: React.FC<Props> = ({ templateName, templateId }) => 
     setCustomerEmail("");
     setWeddingData(EMPTY_WEDDING);
     setError(null);
+    setOrderId(null);
+    setWaUrl(null);
     setOpen(false);
   }
 
@@ -229,8 +273,7 @@ export const NaukaCheckout: React.FC<Props> = ({ templateName, templateId }) => 
   }
 
   const stepNum = step === "paket" ? 1 : step === "pemesan" ? 2 : step === "undangan" ? 3 : step === "review" ? 4 : 5;
-
-  return (
+    return (
     <div
       style={{
         position: "fixed",
@@ -269,13 +312,15 @@ export const NaukaCheckout: React.FC<Props> = ({ templateName, templateId }) => 
             {step === "pemesan" && "Data Pemesan"}
             {step === "undangan" && "Data Undangan"}
             {step === "review" && "Ringkasan Pesanan"}
+            {step === "submitting" && "Memproses..."}
             {step === "done" && "Pesanan Terkirim"}
           </h3>
           <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 6 }}>
             {templateName} · {selectedPackage === "basic" ? "Basic" : "Premium"}
           </p>
         </div>
-                {step === "paket" && (
+
+        {step === "paket" && (
           <div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
               <button
@@ -483,7 +528,7 @@ export const NaukaCheckout: React.FC<Props> = ({ templateName, templateId }) => 
             </div>
 
             <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 11, color: "rgba(255,255,255,0.4)", textAlign: "center", marginBottom: 16, lineHeight: 1.6 }}>
-              Klik "Kirim via WhatsApp" — Anda akan diarahkan ke WhatsApp dengan pesan otomatis berisi data pesanan di atas.
+              Klik "Kirim Pesanan" — data akan tersimpan otomatis ke database Nauka, dan WhatsApp akan terbuka dengan pesan konfirmasi berisi No. Pesanan Anda.
             </p>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 10 }}>
@@ -496,11 +541,22 @@ export const NaukaCheckout: React.FC<Props> = ({ templateName, templateId }) => 
                   background: "rgba(201,169,110,0.15)",
                   borderColor: "rgba(201,169,110,0.5)",
                   color: "rgba(201,169,110,0.95)",
+                  opacity: submitting ? 0.6 : 1,
+                  cursor: submitting ? "wait" : "pointer",
                 }}
               >
-                {submitting ? "Memproses..." : "Kirim via WhatsApp →"}
+                {submitting ? "Memproses..." : "Kirim Pesanan →"}
               </button>
             </div>
+          </div>
+        )}
+
+        {step === "submitting" && (
+          <div style={{ textAlign: "center", padding: "40px 0" }}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>⏳</div>
+            <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 13, color: "rgba(255,255,255,0.6)" }}>
+              Sedang menyimpan pesanan...
+            </p>
           </div>
         )}
 
@@ -510,17 +566,45 @@ export const NaukaCheckout: React.FC<Props> = ({ templateName, templateId }) => 
             <h4 style={{ fontFamily: "var(--font-bodoni, Georgia, serif)", fontSize: 22, fontWeight: 400, color: "rgba(255,255,255,0.92)", margin: "0 0 12px" }}>
               Pesanan Terkirim
             </h4>
+            {orderId && (
+              <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 12, color: "rgba(201,169,110,0.85)", letterSpacing: "0.1em", margin: "0 0 16px" }}>
+                No. Pesanan: {orderId}
+              </p>
+            )}
             <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.7, marginBottom: 24 }}>
-              Terima kasih! Pesanan Anda telah dikirim ke WhatsApp Nauka. Tim kami akan menghubungi Anda untuk konfirmasi pembayaran dan proses selanjutnya.
+              Pesanan Anda telah tersimpan. WhatsApp juga telah terbuka otomatis — silakan kirim pesan konfirmasi ke Nauka. Tim kami akan menghubungi Anda untuk pembayaran.
             </p>
+            {waUrl && (
+              <a
+                href={waUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "inline-block",
+                  padding: "12px 24px",
+                  borderRadius: "999px",
+                  border: "1px solid rgba(201,169,110,0.35)",
+                  background: "rgba(201,169,110,0.06)",
+                  color: "rgba(201,169,110,0.85)",
+                  fontFamily: "var(--font-inter, sans-serif)",
+                  fontSize: 12,
+                  letterSpacing: "0.1em",
+                  textDecoration: "none",
+                  marginRight: 8,
+                  marginBottom: 8,
+                }}
+              >
+                Buka WhatsApp Lagi
+              </a>
+            )}
             <button
               onClick={reset}
               style={{
                 padding: "12px 24px",
                 borderRadius: "999px",
-                border: "1px solid rgba(201,169,110,0.35)",
-                background: "rgba(201,169,110,0.06)",
-                color: "rgba(201,169,110,0.85)",
+                border: "1px solid rgba(255,255,255,0.15)",
+                background: "transparent",
+                color: "rgba(255,255,255,0.6)",
                 fontFamily: "var(--font-inter, sans-serif)",
                 fontSize: 12,
                 letterSpacing: "0.1em",
@@ -541,3 +625,4 @@ export const NaukaCheckout: React.FC<Props> = ({ templateName, templateId }) => 
     </div>
   );
 };
+  

@@ -1,13 +1,31 @@
-import Link from "next/link";
+"use client";
 
+import Hero from "@/components/nauka/Hero";
+import { NaukaMockup } from "@/components/nauka/NaukaMockup";
+import { NaukaEtalaseSyari, NaukaEtalaseUniversal } from "@/components/nauka/NaukaEtalase";
+import { NaukaHarga } from "@/components/nauka/NaukaHarga";
+import { NaukaBayanganMomen } from "@/components/nauka/NaukaBayanganMomen";
+import { NaukaFooter } from "@/components/nauka/NaukaFooter";
+import { NaukaFloatingNav } from "@/components/nauka/NaukaFloatingNav";
 
-export default function Home() {
+export default function NaukaLanding() {
   return (
-    <main style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh", gap: "20px" }}>
-      <h1>Nauka</h1>
+    <main className="min-h-screen" style={{ background: "#0B1120" }}>
+      <Hero />
 
-      <Link href="/sacred">Sacred</Link>
-      <Link href="/celestial">Celestial</Link>
+      <NaukaMockup />
+
+      <NaukaEtalaseSyari />
+
+      <NaukaHarga />
+
+      <NaukaBayanganMomen />
+
+      <NaukaEtalaseUniversal />
+
+      <NaukaFooter />
+
+      <NaukaFloatingNav />
     </main>
   );
 }

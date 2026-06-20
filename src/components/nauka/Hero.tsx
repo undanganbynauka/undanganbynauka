@@ -7,6 +7,7 @@ import { NAUKA_COLORS } from '@/lib/design-tokens';
 export default function Hero() {
   return (
     <section
+      className="nauka-grain"
       style={{
         position: 'relative',
         minHeight: '100vh',
@@ -16,7 +17,7 @@ export default function Hero() {
         justifyContent: 'space-between',
         textAlign: 'center',
         padding: '80px 24px 80px',
-        background: NAUKA_COLORS.background,
+        background: '#0B1120',
         overflow: 'hidden',
       }}
     >
@@ -88,12 +89,12 @@ export default function Hero() {
         <h1
           style={{
             color: NAUKA_COLORS.primaryText,
-            fontFamily: 'Georgia, "Times New Roman", serif',
+            fontFamily: 'var(--font-bodoni)',
             fontSize: 'clamp(26px, 5vw, 40px)',
             fontWeight: 400,
             margin: 0,
             lineHeight: 1.3,
-            letterSpacing: '0.01em',
+            letterSpacing: '0.02em',
           }}
         >
           Langkah awal menuju momen bahagia

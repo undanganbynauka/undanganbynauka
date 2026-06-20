@@ -15,7 +15,7 @@ export default function Hero() {
         alignItems: 'center',
         justifyContent: 'center',
         textAlign: 'center',
-        padding: '48px 24px',
+        padding: '48px 24px 120px',
         background: NAUKA_COLORS.background,
         overflow: 'hidden',
       }}
@@ -61,7 +61,7 @@ export default function Hero() {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: '24px',
+          gap: '20px',
           maxWidth: '480px',
           width: '100%',
         }}
@@ -75,7 +75,7 @@ export default function Hero() {
           style={{
             width: '100%',
             height: 'auto',
-            maxWidth: '180px',
+            maxWidth: '130px',
             objectFit: 'contain',
             filter: 'brightness(0) invert(1)',
           }}
@@ -116,7 +116,7 @@ export default function Hero() {
             gap: '14px',
             width: '100%',
             maxWidth: '320px',
-            marginTop: '16px',
+            marginTop: '4px',
           }}
         >
           <HeroButton href="/syar-i" label="Syar'i Collection" />

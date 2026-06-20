@@ -92,15 +92,64 @@ export default function DetailTemplatePage() {
             {tpl.name}
           </h1>
 
-          <Image
-            src={tpl.preview}
-            alt={tpl.name}
-            width={600}
-            height={900}
-            style={{ marginTop: 20, borderRadius: 12 }}
-          />
+          {/* Preview image — clickable ke live preview */}
+          <Link
+            href={tpl.previewHref}
+            style={{ display: "block", marginTop: 20 }}
+          >
+            <Image
+              src={tpl.preview}
+              alt={tpl.name}
+              width={600}
+              height={900}
+              style={{
+                borderRadius: 12,
+                cursor: "pointer",
+                transition: "opacity 0.3s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.opacity = "0.85";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.opacity = "1";
+              }}
+            />
+          </Link>
 
-          <p style={{ color: "rgba(255,255,255,0.6)", marginTop: 20 }}>
+          {/* Tombol preview emas — prominent */}
+          <div style={{ textAlign: "center", marginTop: 24 }}>
+            <Link
+              href={tpl.previewHref}
+              style={{
+                display: "inline-block",
+                padding: "14px 36px",
+                borderRadius: "999px",
+                fontFamily: "var(--font-inter, sans-serif)",
+                fontSize: "13px",
+                fontWeight: 500,
+                letterSpacing: "0.1em",
+                color: "rgba(201,169,110,0.95)",
+                textDecoration: "none",
+                background: "rgba(201,169,110,0.06)",
+                border: "1px solid rgba(201,169,110,0.35)",
+                transition: "all 0.3s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = "0 0 24px rgba(201,169,110,0.4)";
+                e.currentTarget.style.borderColor = "rgba(201,169,110,0.8)";
+                e.currentTarget.style.background = "rgba(201,169,110,0.10)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = "none";
+                e.currentTarget.style.borderColor = "rgba(201,169,110,0.35)";
+                e.currentTarget.style.background = "rgba(201,169,110,0.06)";
+              }}
+            >
+              Lihat Preview Live →
+            </Link>
+          </div>
+
+          <p style={{ color: "rgba(255,255,255,0.6)", marginTop: 28 }}>
             {tpl.description}
           </p>
 

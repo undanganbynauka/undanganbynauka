@@ -13,9 +13,9 @@ export default function Hero() {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'space-between',
         textAlign: 'center',
-        padding: '48px 24px 120px',
+        padding: '80px 24px 80px',
         background: NAUKA_COLORS.background,
         overflow: 'hidden',
       }}
@@ -64,6 +64,7 @@ export default function Hero() {
           gap: '20px',
           maxWidth: '480px',
           width: '100%',
+          paddingTop: '40px',
         }}
       >
         <Image
@@ -108,20 +109,22 @@ export default function Hero() {
             Pilih Jalur Anda
           </p>
         </div>
+      </div>
 
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '14px',
-            width: '100%',
-            maxWidth: '320px',
-            marginTop: '4px',
-          }}
-        >
-          <HeroButton href="/syar-i" label="Syar'i Collection" />
-          <HeroButton href="/universal" label="Universal Collection" />
-        </div>
+      <div
+        style={{
+          position: 'relative',
+          zIndex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '14px',
+          width: '100%',
+          maxWidth: '320px',
+          paddingBottom: '40px',
+        }}
+      >
+        <HeroButton href="/syar-i" label="Syar'i Collection" />
+        <HeroButton href="/universal" label="Universal Collection" />
       </div>
     </section>
   );

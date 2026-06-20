@@ -82,33 +82,19 @@ export default function Hero() {
           }}
         />
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <h1
-            style={{
-              color: NAUKA_COLORS.primaryText,
-              fontFamily: 'Georgia, "Times New Roman", serif',
-              fontSize: 'clamp(26px, 5vw, 40px)',
-              fontWeight: 400,
-              margin: 0,
-              lineHeight: 1.3,
-              letterSpacing: '0.01em',
-            }}
-          >
-            Langkah awal menuju momen bahagia
-          </h1>
-
-          <p
-            style={{
-              color: NAUKA_COLORS.accent,
-              fontSize: 'clamp(12px, 2vw, 13px)',
-              letterSpacing: '0.2em',
-              textTransform: 'uppercase',
-              margin: 0,
-            }}
-          >
-            Pilih Jalur Anda
-          </p>
-        </div>
+        <h1
+          style={{
+            color: NAUKA_COLORS.primaryText,
+            fontFamily: 'Georgia, "Times New Roman", serif',
+            fontSize: 'clamp(26px, 5vw, 40px)',
+            fontWeight: 400,
+            margin: 0,
+            lineHeight: 1.3,
+            letterSpacing: '0.01em',
+          }}
+        >
+          Langkah awal menuju momen bahagia
+        </h1>
       </div>
 
       <div
@@ -123,6 +109,17 @@ export default function Hero() {
           paddingBottom: '40px',
         }}
       >
+        <p
+          style={{
+            color: NAUKA_COLORS.accent,
+            fontSize: 'clamp(12px, 2vw, 13px)',
+            letterSpacing: '0.2em',
+            textTransform: 'uppercase',
+            margin: '0 0 6px 0',
+          }}
+        >
+          Pilih Jalur Anda
+        </p>
         <HeroButton href="/syar-i" label="Syar'i Collection" />
         <HeroButton href="/universal" label="Universal Collection" />
       </div>

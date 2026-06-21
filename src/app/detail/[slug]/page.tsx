@@ -338,11 +338,12 @@ export default function TemplateDetailPage() {
       </section>
 
       {/* CHECKOUT — FIXED (ONLY ONE INSTANCE) */}
-      <NaukaCheckout
+            <NaukaCheckout
         templateName={tpl.name}
         templateId={tpl.id}
         basicPrice={75}
         premiumPrice={99}
+        freeAvailable
       />
 
       {/* FOOTER */}

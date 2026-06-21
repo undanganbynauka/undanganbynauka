@@ -158,4 +158,4 @@ export async function GET(req: NextRequest) {
     const message = err instanceof Error ? err.message : "Internal server error";
     return NextResponse.json({ data: [], error: message }, { status: 500 });
   }
-      
+}

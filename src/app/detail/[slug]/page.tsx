@@ -343,7 +343,6 @@ export default function TemplateDetailPage() {
         templateId={tpl.id}
         basicPrice={75}
         premiumPrice={99}
-        freeAvailable
       />
 
       {/* FOOTER */}

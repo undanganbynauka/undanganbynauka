@@ -48,120 +48,292 @@ const templates: Record<string, TemplateDetail> = {
     previewHref: "/celestial?preview=true",
     preview: "/etalase/celestial-preview.png",
     description:
-      "Celestial menghadirkan desain undangan digital yang elegan dan universal.",
+      "Celestial membawa keanggunan universal yang cocok untuk semua latar belakang dan kepercayaan.",
     highlights: [
+      "Desain elegan",
       "Animasi halus",
-      "Tipografi elegan",
-      "Desain modern",
-      "Universal",
+      "Audio ambient",
+      "Layout fleksibel",
     ],
-    emotionalNote: "Momen Anda layak diungkapkan dengan keindahan.",
+    emotionalNote: "Keanggunan yang dirancang untuk momen sakral Anda.",
   },
 };
 
-export default function DetailTemplatePage() {
+export default function TemplateDetailPage() {
   const params = useParams();
-  const slug = params.slug as string;
+  const slug = String(params.slug || "");
   const tpl = templates[slug];
-
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    const t = setTimeout(() => setLoaded(true), 80);
-    return () => clearTimeout(t);
-  }, []);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   if (!tpl) {
     return (
-      <main style={{ minHeight: "100vh", background: "#0B1120", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <p style={{ color: "white" }}>Template tidak ditemukan</p>
+      <main style={{ background: "#0B1120", color: "#fff", minHeight: "100vh", padding: "60px 24px", textAlign: "center" }}>
+        <h1 style={{ fontFamily: "var(--font-bodoni, Georgia, serif)", fontSize: 28, marginBottom: 12 }}>
+          Template tidak ditemukan
+        </h1>
+        <p style={{ color: "rgba(255,255,255,0.5)", marginBottom: 24 }}>
+          Maaf, template yang Anda cari tidak tersedia.
+        </p>
+        <Link href="/" style={{ color: "rgba(201,169,110,0.85)" }}>
+          ← Kembali ke Beranda
+        </Link>
       </main>
     );
   }
 
   return (
-    <main style={{ background: "#0B1120", minHeight: "100vh" }}>
+    <main style={{ background: "#0B1120", color: "#fff", minHeight: "100vh" }}>
       {/* HEADER */}
-      <section style={{ padding: "60px 24px" }}>
-        <div style={{ maxWidth: 600, margin: "0 auto" }}>
-          <Link href="/" style={{ color: "rgba(255,255,255,0.5)" }}>
-            ← Kembali
-          </Link>
+      <section
+        style={{
+          padding: "120px 24px 80px",
+          textAlign: "center",
+          position: "relative",
+        }}
+      >
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse at center top, rgba(201,169,110,0.05) 0%, transparent 60%)",
+          }}
+        />
 
-          <h1 style={{ color: "white", marginTop: 20 }}>
+        <div className="relative z-10 mx-auto max-w-[720px]">
+          <span
+            style={{
+              fontFamily: "var(--font-inter, sans-serif)",
+              fontSize: 10,
+              letterSpacing: "0.25em",
+              textTransform: "uppercase",
+              color: "rgba(201,169,110,0.55)",
+              display: "block",
+              marginBottom: 16,
+            }}
+          >
+            {tpl.collectionLabel}
+          </span>
+
+          <h1
+            style={{
+              fontFamily: "var(--font-bodoni, Georgia, serif)",
+              fontSize: "clamp(40px, 8vw, 64px)",
+              fontWeight: 400,
+              letterSpacing: "0.02em",
+              color: "rgba(255,255,255,0.92)",
+              margin: "0 0 24px",
+              lineHeight: 1.1,
+            }}
+          >
             {tpl.name}
           </h1>
 
-          {/* Preview image — clickable ke live preview */}
-          <Link
-            href={tpl.previewHref}
-            style={{ display: "block", marginTop: 20 }}
+          <p
+            style={{
+              fontFamily: "var(--font-inter, sans-serif)",
+              fontSize: 14,
+              lineHeight: 1.8,
+              color: "rgba(255,255,255,0.55)",
+              maxWidth: 480,
+              margin: "0 auto 36px",
+            }}
           >
-            <Image
-              src={tpl.preview}
-              alt={tpl.name}
-              width={600}
-              height={900}
-              style={{
-                borderRadius: 12,
-                cursor: "pointer",
-                transition: "opacity 0.3s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.opacity = "0.85";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.opacity = "1";
-              }}
-            />
-          </Link>
-
-          {/* Tombol preview emas — prominent */}
-          <div style={{ textAlign: "center", marginTop: 24 }}>
-            <Link
-              href={tpl.previewHref}
-              style={{
-                display: "inline-block",
-                padding: "14px 36px",
-                borderRadius: "999px",
-                fontFamily: "var(--font-inter, sans-serif)",
-                fontSize: "13px",
-                fontWeight: 500,
-                letterSpacing: "0.1em",
-                color: "rgba(201,169,110,0.95)",
-                textDecoration: "none",
-                background: "rgba(201,169,110,0.06)",
-                border: "1px solid rgba(201,169,110,0.35)",
-                transition: "all 0.3s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = "0 0 24px rgba(201,169,110,0.4)";
-                e.currentTarget.style.borderColor = "rgba(201,169,110,0.8)";
-                e.currentTarget.style.background = "rgba(201,169,110,0.10)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = "none";
-                e.currentTarget.style.borderColor = "rgba(201,169,110,0.35)";
-                e.currentTarget.style.background = "rgba(201,169,110,0.06)";
-              }}
-            >
-              Lihat Preview Live →
-            </Link>
-          </div>
-
-          <p style={{ color: "rgba(255,255,255,0.6)", marginTop: 28 }}>
             {tpl.description}
           </p>
 
-          <ul style={{ color: "rgba(255,255,255,0.6)" }}>
-            {tpl.highlights.map((h, i) => (
-              <li key={i}>{h}</li>
-            ))}
-          </ul>
+          {/* Preview link */}
+          <Link
+            href={tpl.previewHref}
+            target="_blank"
+            style={{
+              display: "inline-block",
+              padding: "14px 32px",
+              borderRadius: "999px",
+              border: "1px solid rgba(201,169,110,0.35)",
+              background: "rgba(201,169,110,0.06)",
+              color: "rgba(201,169,110,0.95)",
+              fontFamily: "var(--font-inter, sans-serif)",
+              fontSize: 12,
+              letterSpacing: "0.15em",
+              textTransform: "uppercase",
+              textDecoration: "none",
+              transition: "all 0.3s ease",
+            }}
+          >
+            Lihat Live Preview →
+          </Link>
+        </div>
+      </section>
 
-          <p style={{ color: "rgba(255,255,255,0.5)", fontStyle: "italic" }}>
+      {/* PREVIEW MOCKUP */}
+      <section style={{ padding: "0 24px 80px" }}>
+        <div
+          className="mx-auto"
+          style={{
+            maxWidth: 320,
+            aspectRatio: "9 / 16",
+            borderRadius: 16,
+            overflow: "hidden",
+            border: "1px solid rgba(255,255,255,0.08)",
+            background: "#000",
+            position: "relative",
+          }}
+        >
+          {mounted && (
+            <Image
+              src={tpl.preview}
+              alt={`${tpl.name} preview`}
+              fill
+              sizes="320px"
+              className="object-cover"
+              style={{ opacity: 0.85 }}
+            />
+          )}
+        </div>
+      </section>
+
+      {/* HIGHLIGHTS */}
+      <section style={{ padding: "60px 24px", background: "rgba(255,255,255,0.015)" }}>
+        <div className="mx-auto max-w-[640px]">
+          <h2
+            style={{
+              fontFamily: "var(--font-bodoni, Georgia, serif)",
+              fontSize: 28,
+              fontWeight: 400,
+              color: "rgba(255,255,255,0.92)",
+              textAlign: "center",
+              margin: "0 0 36px",
+            }}
+          >
+            Yang Anda Dapatkan
+          </h2>
+
+          <div className="grid grid-cols-2 gap-3">
+            {tpl.highlights.map((h, i) => (
+              <div
+                key={i}
+                style={{
+                  padding: "16px 14px",
+                  borderRadius: 12,
+                  border: "1px solid rgba(255,255,255,0.06)",
+                  background: "rgba(255,255,255,0.02)",
+                }}
+              >
+                <div
+                  style={{
+                    width: 24,
+                    height: 24,
+                    borderRadius: 6,
+                    background: "rgba(201,169,110,0.12)",
+                    color: "rgba(201,169,110,0.85)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontFamily: "var(--font-bodoni, Georgia, serif)",
+                    fontSize: 12,
+                    marginBottom: 8,
+                  }}
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </div>
+                <p
+                  style={{
+                    fontFamily: "var(--font-inter, sans-serif)",
+                    fontSize: 12,
+                    color: "rgba(255,255,255,0.75)",
+                    lineHeight: 1.5,
+                    margin: 0,
+                  }}
+                >
+                  {h}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <p
+            style={{
+              fontFamily: "var(--font-inter, sans-serif)",
+              fontSize: 13,
+              fontStyle: "italic",
+              color: "rgba(255,255,255,0.45)",
+              textAlign: "center",
+              marginTop: 32,
+              lineHeight: 1.7,
+            }}
+          >
             {tpl.emotionalNote}
           </p>
+        </div>
+      </section>
+
+      {/* PRICING TEASER */}
+      <section style={{ padding: "60px 24px", textAlign: "center" }}>
+        <div className="mx-auto max-w-[480px]">
+          <span
+            style={{
+              fontFamily: "var(--font-inter, sans-serif)",
+              fontSize: 10,
+              letterSpacing: "0.25em",
+              textTransform: "uppercase",
+              color: "rgba(255,255,255,0.40)",
+              display: "block",
+              marginBottom: 12,
+            }}
+          >
+            Mulai dari
+          </span>
+          <p
+            style={{
+              fontFamily: "var(--font-bodoni, Georgia, serif)",
+              fontSize: 36,
+              fontWeight: 400,
+              color: "rgba(201,169,110,0.92)",
+              margin: "0 0 8px",
+            }}
+          >
+            Rp75.000
+          </p>
+          <p
+            style={{
+              fontFamily: "var(--font-inter, sans-serif)",
+              fontSize: 12,
+              color: "rgba(255,255,255,0.50)",
+              marginBottom: 28,
+            }}
+          >
+            Paket Basic · atau Rp99.000 untuk Premium
+          </p>
+          <p
+            style={{
+              fontFamily: "var(--font-inter, sans-serif)",
+              fontSize: 11,
+              color: "rgba(255,255,255,0.40)",
+              marginBottom: 24,
+            }}
+          >
+            Atau hubungi kami dulu untuk pertanyaan:
+          </p>
+          <a
+            href={WA_INQUIRY_LINK}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "inline-block",
+              padding: "12px 24px",
+              borderRadius: "999px",
+              border: "1px solid rgba(255,255,255,0.12)",
+              background: "transparent",
+              color: "rgba(255,255,255,0.70)",
+              fontFamily: "var(--font-inter, sans-serif)",
+              fontSize: 11,
+              letterSpacing: "0.1em",
+              textDecoration: "none",
+            }}
+          >
+            Tanya via WhatsApp
+          </a>
         </div>
       </section>
 
@@ -169,6 +341,8 @@ export default function DetailTemplatePage() {
       <NaukaCheckout
         templateName={tpl.name}
         templateId={tpl.id}
+        basicPrice={75}
+        premiumPrice={99}
       />
 
       {/* FOOTER */}

@@ -22,6 +22,7 @@ const syariTemplates: Template[] = [
     href: "/detail/sacred",
     preview: "/etalase/sacred-preview.png",
     liveHref: "/sacred?preview=true",
+    video: "/etalase/sacred-preview.mp4",
   },
 ];
 

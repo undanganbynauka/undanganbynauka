@@ -9,6 +9,8 @@ interface CheckoutProps {
   templateId: string;
   basicPrice: number;
   premiumPrice: number;
+  /** Tampilkan opsi paket Free (gratis, tanpa QRIS). Default: false. */
+  freeAvailable?: boolean;
 }
 
 const WA_BASE = "6289655592925";
@@ -24,22 +26,25 @@ const STEP_TITLES: Record<Step, string> = {
   done: "Selesai",
 };
 
+// ── Helper: format Rupiah dari harga (basicPrice/premiumPrice dalam ribuan) ──
 function formatRupiah(priceInRb: number): string {
   return `Rp${priceInRb.toLocaleString("id-ID")}rb`;
 }
 
+// ── Helper: build WhatsApp URL dengan data lengkap ──
 function buildWaUrl(
   orderId: string,
   templateName: string,
-  packageName: "basic" | "premium",
+  packageName: "free" | "basic" | "premium",
   data: WeddingData
 ): string {
+  const packageLabel = packageName === "free" ? "Free (GRATIS)" : packageName === "basic" ? "Basic" : "Premium";
   const lines = [
     `Halo Nauka, saya ingin konfirmasi pesanan.`,
     ``,
     `*Nomor Pesanan:* ${orderId}`,
     `*Template:* ${templateName}`,
-    `*Paket:* ${packageName === "basic" ? "Basic" : "Premium"}`,
+    `*Paket:* ${packageLabel}`,
     ``,
     `*DATA MEMPELAI*`,
     `Pria: ${data.groomFullName}`,
@@ -65,8 +70,13 @@ function buildWaUrl(
   lines.push(
     `*UNDANGAN*`,
     `Slug: ${data.slug}`,
-    `Saya sudah melakukan pembayaran QRIS sesuai nominal.`,
   );
+
+  if (packageName === "free") {
+    lines.push(`Pesanan GRATIS — tidak perlu pembayaran QRIS.`);
+  } else {
+    lines.push(`Saya sudah melakukan pembayaran QRIS sesuai nominal.`);
+  }
 
   if (data.groomRekening || data.brideRekening) {
     lines.push(``, `*KADO DIGITAL*`);
@@ -89,18 +99,29 @@ function buildWaUrl(
   return `https://wa.me/${WA_BASE}?text=${encodeURIComponent(lines.join("\n"))}`;
 }
 
-export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPrice }: CheckoutProps) {
-  const [selected, setSelected] = useState<"basic" | "premium">("premium");
+export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPrice, freeAvailable = false }: CheckoutProps) {
+  const [selected, setSelected] = useState<"free" | "basic" | "premium">("premium");
   const [visible, setVisible] = useState(false);
+
+  // ── Step state ──
   const [step, setStep] = useState<Step>("paket");
+
+  // ── Customer info (Step 2) ──
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
+
+  // ── Wedding data (Step 3) ──
   const [weddingData, setWeddingData] = useState<WeddingData | null>(null);
+
+  // ── Order (created at Review → Pembayaran transition) ──
   const [orderId, setOrderId] = useState<string | null>(null);
   const [orderDbId, setOrderDbId] = useState<number | null>(null);
+
+  // ── Submission state ──
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
   const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -114,16 +135,23 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
     return () => observer.disconnect();
   }, []);
 
+  // Scroll to top saat step berubah (UX: user selalu lihat header step baru)
   useEffect(() => {
     if (ref.current) {
       ref.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, [step]);
 
-  const price = selected === "basic" ? basicPrice : premiumPrice;
-  const packageName = selected === "basic" ? "Basic" : "Premium";
+  const price = selected === "free" ? 0 : selected === "basic" ? basicPrice : premiumPrice;
+  const packageName = selected === "free" ? "Free" : selected === "basic" ? "Basic" : "Premium";
   const priceInIdr = price * 1000;
+  const isFree = selected === "free";
 
+  // ════════════════════════════════════════════════════════════════
+  // Handlers
+  // ════════════════════════════════════════════════════════════════
+
+  // ── Step 2 → Step 3: validate customer info ──
   function goToUndangan() {
     setSubmitError(null);
     if (!customerName.trim()) {
@@ -137,17 +165,21 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
     setStep("undangan");
   }
 
+  // ── Step 3 → Step 4: FormDataUndangan submit ──
   function handleUndanganSubmit(data: WeddingData) {
     setWeddingData(data);
     setStep("review");
   }
 
+  // ── Step 4 → Step 5: POST /api/orders ──
   async function createOrder() {
     setSubmitError(null);
+
     if (!weddingData) {
       setSubmitError("Data undangan belum lengkap. Silakan kembali ke step Data Undangan.");
       return;
     }
+
     setSubmitting(true);
     try {
       const res = await fetch("/api/orders", {
@@ -170,7 +202,13 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
       }
       setOrderId(data.order_id);
       setOrderDbId(data.id);
-      setStep("pembayaran");
+      // Free package: skip pembayaran, langsung ke done.
+      // API sudah set status='awaiting_confirmation' untuk free.
+      if (isFree) {
+        setStep("done");
+      } else {
+        setStep("pembayaran");
+      }
     } catch (err) {
       console.error("[checkout] create order error:", err);
       setSubmitError("Terjadi kesalahan jaringan. Silakan coba lagi.");
@@ -179,9 +217,11 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
     }
   }
 
+  // ── Step 5 → Step 6: POST /api/orders/[id]/confirm-payment ──
   async function confirmPayment() {
     setSubmitError(null);
     if (!orderId) return;
+
     setSubmitting(true);
     try {
       const res = await fetch(`/api/orders/${orderId}/confirm-payment`, {
@@ -203,6 +243,9 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
     }
   }
 
+  // ════════════════════════════════════════════════════════════════
+  // Render
+  // ════════════════════════════════════════════════════════════════
   return (
     <section
       ref={ref}
@@ -212,6 +255,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
         padding: "80px 24px",
       }}
     >
+      {/* Ambient glow */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
@@ -223,6 +267,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
       />
 
       <div className="relative z-10 mx-auto max-w-[520px]">
+        {/* ─── TITLE (dynamic per step) ─── */}
         <h2
           style={{
             fontFamily: "var(--font-bodoni)",
@@ -240,6 +285,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
           {STEP_TITLES[step]}
         </h2>
 
+        {/* ─── STEP INDICATOR (1/6, 2/6, ...) ─── */}
         <div
           style={{
             display: "flex",
@@ -274,6 +320,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
           })}
         </div>
 
+        {/* Divider */}
         <div
           style={{
             height: "1px",
@@ -282,7 +329,12 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
             opacity: visible ? 1 : 0,
             transition: "opacity 1.2s ease-out 0.15s",
           }}
-        />        {step === "paket" && (
+        />
+
+        {/* ════════════════════════════════════════════════════════════ */}
+        {/* STEP 1: PAKET — pilih Free/Basic/Premium                        */}
+        {/* ════════════════════════════════════════════════════════════ */}
+        {step === "paket" && (
           <div
             style={{
               opacity: visible ? 1 : 0,
@@ -316,14 +368,71 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               Pilih paket yang sesuai kebutuhan Anda. Perubahan paket masih bisa dilakukan nanti di step Ringkasan.
             </p>
 
+            {/* Package toggle — 2 kolom default, 3 kolom kalau freeAvailable */}
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "1fr 1fr",
+                gridTemplateColumns: freeAvailable ? "1fr 1fr 1fr" : "1fr 1fr",
                 gap: "12px",
                 marginTop: "28px",
               }}
             >
+              {/* Free option (hanya kalau freeAvailable) */}
+              {freeAvailable && (
+                <button
+                  onClick={() => setSelected("free")}
+                  style={{
+                    padding: "16px 8px",
+                    borderRadius: "12px",
+                    border: selected === "free" ? "1px solid rgba(201,169,110,0.25)" : "1px solid rgba(255,255,255,0.06)",
+                    background: selected === "free" ? "rgba(201,169,110,0.04)" : "transparent",
+                    cursor: "pointer",
+                    transition: "border-color 0.3s ease, background 0.3s ease",
+                    textAlign: "center",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontFamily: "var(--font-inter)",
+                      fontSize: "10px",
+                      letterSpacing: "0.15em",
+                      textTransform: "uppercase",
+                      color: selected === "free" ? "rgba(201,169,110,0.75)" : "rgba(255,255,255,0.35)",
+                      display: "block",
+                      transition: "color 0.3s ease",
+                    }}
+                  >
+                    Free
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: "var(--font-bodoni)",
+                      fontSize: "20px",
+                      fontWeight: 400,
+                      color: selected === "free" ? "rgba(201,169,110,0.8)" : "rgba(255,255,255,0.35)",
+                      display: "block",
+                      marginTop: "8px",
+                      transition: "color 0.3s ease",
+                    }}
+                  >
+                    GRATIS
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: "var(--font-inter)",
+                      fontSize: "9px",
+                      color: "rgba(255,255,255,0.30)",
+                      display: "block",
+                      marginTop: "6px",
+                      letterSpacing: "0.05em",
+                    }}
+                  >
+                    tanpa QRIS
+                  </span>
+                </button>
+              )}
+
+              {/* Basic option */}
               <button
                 onClick={() => setSelected("basic")}
                 style={{
@@ -364,6 +473,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                 </span>
               </button>
 
+              {/* Premium option */}
               <button
                 onClick={() => setSelected("premium")}
                 style={{
@@ -406,6 +516,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               </button>
             </div>
 
+            {/* Total */}
             <div
               style={{
                 marginTop: "28px",
@@ -430,6 +541,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               </div>
             </div>
 
+            {/* CTA: Lanjut ke Data Pemesan */}
             <button
               onClick={() => {
                 setSubmitError(null);
@@ -466,6 +578,9 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
           </div>
         )}
 
+        {/* ════════════════════════════════════════════════════════════ */}
+        {/* STEP 2: PEMESAN — nama, WA, email                              */}
+        {/* ════════════════════════════════════════════════════════════ */}
         {step === "pemesan" && (
           <div
             style={{
@@ -474,6 +589,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               transition: "opacity 1.3s ease-out 0.2s, transform 1.3s ease-out 0.2s",
             }}
           >
+            {/* Recap ringkas: template + paket yang dipilih */}
             <div
               style={{
                 padding: "14px 16px",
@@ -489,14 +605,15 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
                 <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>Paket</span>
-                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: selected === "premium" ? "rgba(201,169,110,0.7)" : "rgba(255,255,255,0.72)" }}>{packageName}</span>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: selected === "premium" || selected === "free" ? "rgba(201,169,110,0.7)" : "rgba(255,255,255,0.72)" }}>{packageName}</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>Total</span>
-                <span style={{ fontFamily: "var(--font-bodoni)", fontSize: "13px", color: "rgba(255,255,255,0.85)" }}>{formatRupiah(price)}</span>
+                <span style={{ fontFamily: "var(--font-bodoni)", fontSize: "13px", color: "rgba(255,255,255,0.85)" }}>{isFree ? "GRATIS" : formatRupiah(price)}</span>
               </div>
             </div>
 
+            {/* Form */}
             <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
               <div>
                 <label
@@ -552,7 +669,8 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                   }}
                 >
                   No. WhatsApp <span style={{ color: "rgba(201,169,110,0.7)" }}>*</span>
-                </label>                <input
+                </label>
+                <input
                   id="cust-phone"
                   type="tel"
                   value={customerPhone}
@@ -642,6 +760,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               </p>
             )}
 
+            {/* Buttons: Kembali + Lanjut */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "10px", marginTop: "32px" }}>
               <button
                 onClick={() => setStep("paket")}
@@ -698,8 +817,12 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
           </div>
         )}
 
+        {/* ════════════════════════════════════════════════════════════ */}
+        {/* STEP 3: UNDANGAN — form panjang (render FormDataUndangan)       */}
+        {/* ════════════════════════════════════════════════════════════ */}
         {step === "undangan" && (
           <div>
+            {/* Kembali button di atas */}
             <button
               onClick={() => setStep("pemesan")}
               style={{
@@ -735,6 +858,9 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
           </div>
         )}
 
+        {/* ════════════════════════════════════════════════════════════ */}
+        {/* STEP 4: REVIEW — ringkasan semua data sebelum create order      */}
+        {/* ════════════════════════════════════════════════════════════ */}
         {step === "review" && weddingData && (
           <div
             style={{
@@ -753,21 +879,24 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                 lineHeight: 1.6,
               }}
             >
-              Mohon periksa kembali semua data di bawah. Setelah klik <strong style={{ color: "rgba(201,169,110,0.85)" }}>Lanjut ke Pembayaran</strong>, pesanan akan dibuat dengan nomor <code style={{ color: "rgba(201,169,110,0.85)" }}>NAUKA-{new Date().getFullYear()}-...</code> dan tidak dapat diubah.
+              Mohon periksa kembali semua data di bawah. Setelah klik <strong style={{ color: "rgba(201,169,110,0.85)" }}>{isFree ? "Kirim Pesanan" : "Lanjut ke Pembayaran"}</strong>, pesanan akan dibuat dengan nomor <code style={{ color: "rgba(201,169,110,0.85)" }}>NAUKA-{new Date().getFullYear()}-...</code> dan tidak dapat diubah.
             </p>
 
+            {/* Card: Pesanan */}
             <ReviewSection title="Pesanan">
               <ReviewRow label="Template" value={templateName} />
-              <ReviewRow label="Paket" value={packageName} highlight={selected === "premium"} />
-              <ReviewRow label="Total" value={formatRupiah(price)} bold />
+              <ReviewRow label="Paket" value={packageName} highlight={selected === "premium" || selected === "free"} />
+              <ReviewRow label="Total" value={isFree ? "GRATIS" : formatRupiah(price)} bold />
             </ReviewSection>
 
+            {/* Card: Pemesan */}
             <ReviewSection title="Data Pemesan">
               <ReviewRow label="Nama" value={customerName} />
               <ReviewRow label="No. WhatsApp" value={customerPhone} />
               {customerEmail && <ReviewRow label="Email" value={customerEmail} />}
             </ReviewSection>
 
+            {/* Card: Mempelai */}
             <ReviewSection title="Data Mempelai">
               <ReviewRow label="Mempelai Pria" value={weddingData.groomFullName} />
               {weddingData.groomNickname && <ReviewRow label="Panggilan Pria" value={weddingData.groomNickname} />}
@@ -775,6 +904,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               {weddingData.brideNickname && <ReviewRow label="Panggilan Wanita" value={weddingData.brideNickname} />}
             </ReviewSection>
 
+            {/* Card: Akad */}
             <ReviewSection title="Akad">
               <ReviewRow label="Tanggal" value={weddingData.akadDate} />
               <ReviewRow label="Waktu" value={`${weddingData.akadStartTime}${weddingData.akadEndTime ? ` - ${weddingData.akadEndTime}` : ""}`} />
@@ -782,6 +912,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               {weddingData.akadCity && <ReviewRow label="Kota" value={weddingData.akadCity} />}
             </ReviewSection>
 
+            {/* Card: Resepsi (hanya kalau ada) */}
             {weddingData.hasResepsi && (
               <ReviewSection title="Resepsi">
                 <ReviewRow label="Tanggal" value={weddingData.resepsiDate || "-"} />
@@ -791,11 +922,13 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               </ReviewSection>
             )}
 
+            {/* Card: Konfigurasi Undangan */}
             <ReviewSection title="Konfigurasi Undangan">
               <ReviewRow label="Slug" value={`/detail/${weddingData.slug}`} />
               <ReviewRow label="BGM" value={weddingData.bgmType === "hening" ? "Hening (tanpa musik)" : weddingData.bgmType} />
               {weddingData.quote && <ReviewRow label="Quote" value={weddingData.quote} />}
             </ReviewSection>
+
             {submitError && (
               <p
                 style={{
@@ -814,6 +947,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               </p>
             )}
 
+            {/* Buttons */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "10px", marginTop: "32px" }}>
               <button
                 onClick={() => setStep("undangan")}
@@ -870,12 +1004,15 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                   e.currentTarget.style.color = "rgba(201,169,110,0.85)";
                 }}
               >
-                {submitting ? "Membuat pesanan..." : "Lanjut ke Pembayaran"}
+                {submitting ? "Membuat pesanan..." : isFree ? "Kirim Pesanan (Gratis)" : "Lanjut ke Pembayaran"}
               </button>
             </div>
           </div>
         )}
 
+        {/* ════════════════════════════════════════════════════════════ */}
+        {/* STEP 5: PEMBAYARAN — QRIS + order_id + tombol "saya sudah bayar" */}
+        {/* ════════════════════════════════════════════════════════════ */}
         {step === "pembayaran" && orderId && (
           <div
             style={{
@@ -884,6 +1021,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               transition: "opacity 0.6s ease-out, transform 0.6s ease-out",
             }}
           >
+            {/* Status badge */}
             <div style={{ textAlign: "center", marginBottom: "24px" }}>
               <div
                 style={{
@@ -919,6 +1057,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               </div>
             </div>
 
+            {/* Order ID — prominent */}
             <div style={{ textAlign: "center", marginBottom: "24px" }}>
               <p
                 style={{
@@ -945,6 +1084,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               </p>
             </div>
 
+            {/* Total */}
             <div
               style={{
                 padding: "16px 18px",
@@ -979,6 +1119,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               </p>
             </div>
 
+            {/* QR Code card */}
             <div
               style={{
                 padding: "28px 24px",
@@ -1040,6 +1181,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               </p>
             </div>
 
+            {/* Info proses */}
             <div
               style={{
                 marginTop: "24px",
@@ -1080,6 +1222,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               </p>
             )}
 
+            {/* CTA: Saya sudah bayar */}
             <button
               onClick={confirmPayment}
               disabled={submitting}
@@ -1118,6 +1261,10 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
             </p>
           </div>
         )}
+
+        {/* ════════════════════════════════════════════════════════════ */}
+        {/* STEP 6: DONE — Terima kasih + WA konfirmasi                     */}
+        {/* ════════════════════════════════════════════════════════════ */}
         {step === "done" && orderId && weddingData && (
           <div
             style={{
@@ -1127,6 +1274,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               textAlign: "center",
             }}
           >
+            {/* Success icon */}
             <div
               style={{
                 display: "inline-flex",
@@ -1178,9 +1326,14 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               Pesanan Anda <strong style={{ color: "rgba(201,169,110,0.85)" }}>{orderId}</strong> telah kami terima bersama seluruh data undangan.
               <br />
               <br />
-              Konfirmasi pembayaran Anda telah tercatat dengan status <em>menunggu verifikasi admin</em>. Pengerjaan undangan akan dimulai setelah admin memverifikasi pembayaran.
+              {isFree ? (
+                <>Pesanan <strong style={{ color: "rgba(201,169,110,0.85)" }}>Free (Gratis)</strong> Anda akan segera diproses oleh admin tanpa perlu pembayaran. Tidak ada QRIS yang perlu dipindai.</>
+              ) : (
+                <>Konfirmasi pembayaran Anda telah tercatat dengan status <em>menunggu verifikasi admin</em>. Pengerjaan undangan akan dimulai setelah admin memverifikasi pembayaran.</>
+              )}
             </p>
 
+            {/* Recap card */}
             <div
               style={{
                 padding: "20px",
@@ -1209,10 +1362,11 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               </div>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>Status</span>
-                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(201,169,110,0.7)" }}>Menunggu verifikasi admin</span>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(201,169,110,0.7)" }}>{isFree ? "Menunggu review admin" : "Menunggu verifikasi admin"}</span>
               </div>
             </div>
 
+            {/* WA konfirmasi — explicit, tidak auto-open */}
             <p
               style={{
                 fontFamily: "var(--font-inter)",
@@ -1271,6 +1425,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
           </div>
         )}
 
+        {/* Fallback: state tidak valid (seharusnya tidak tercapai) */}
         {step === "done" && !orderId && (
           <div style={{ textAlign: "center", padding: "40px" }}>
             <p style={{ fontFamily: "var(--font-inter)", fontSize: "13px", color: "rgba(255,255,255,0.55)" }}>
@@ -1304,6 +1459,10 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
     </section>
   );
 }
+
+// ════════════════════════════════════════════════════════════════
+// Helper components for Review step
+// ════════════════════════════════════════════════════════════════
 
 function ReviewSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -1369,4 +1528,4 @@ function ReviewRow({
       </span>
     </div>
   );
-                           }
+}

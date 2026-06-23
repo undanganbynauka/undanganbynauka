@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { NaukaFooter } from "@/components/nauka/NaukaFooter";
+import { LunaClaimForm } from "@/components/nauka/LunaClaimForm";
 
 export default function LunaDetailPage() {
   const [loaded, setLoaded] = useState(false);
@@ -194,38 +195,34 @@ export default function LunaDetailPage() {
               Buka Preview Luna →
             </Link>
 
-            {/* Secondary: Klaim via WhatsApp */}
+            {/* Secondary: scroll ke form klaim */}
             <a
-              href={`https://wa.me/6289655592925?text=${encodeURIComponent(
-                "Halo Nauka, saya tertarik memakai Luna (template free) untuk undangan pernikahan saya. Mohon info lebih lanjut ya, terima kasih."
-              )}`}
-              target="_blank"
-              rel="noopener noreferrer"
+              href="#luna-claim"
               style={{
                 display: "block",
                 padding: "14px 24px",
                 borderRadius: "10px",
-                border: "1px solid rgba(255,255,255,0.16)",
-                background: "transparent",
-                color: "rgba(255,255,255,0.78)",
+                border: "1px solid rgba(201,169,110,0.30)",
+                background: "rgba(201,169,110,0.06)",
+                color: "rgba(201,169,110,0.9)",
                 fontFamily: "var(--font-inter)",
                 fontSize: "12px",
                 fontWeight: 500,
                 letterSpacing: "0.1em",
                 textAlign: "center",
                 textDecoration: "none",
-                transition: "border-color 0.3s ease, color 0.3s ease",
+                transition: "border-color 0.3s ease, background 0.3s ease",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "rgba(255,255,255,0.32)";
-                e.currentTarget.style.color = "rgba(255,255,255,0.95)";
+                e.currentTarget.style.borderColor = "rgba(201,169,110,0.45)";
+                e.currentTarget.style.background = "rgba(201,169,110,0.10)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "rgba(255,255,255,0.16)";
-                e.currentTarget.style.color = "rgba(255,255,255,0.78)";
+                e.currentTarget.style.borderColor = "rgba(201,169,110,0.30)";
+                e.currentTarget.style.background = "rgba(201,169,110,0.06)";
               }}
             >
-              Klaim Luna Gratis via WhatsApp
+              Klaim Luna Gratis — Isi Data
             </a>
           </div>
 
@@ -355,7 +352,12 @@ export default function LunaDetailPage() {
         </div>
       </section>
 
+      {/* KLAIM FORM — Isi data + kirim ke WhatsApp */}
+      <div id="luna-claim">
+        <LunaClaimForm />
+      </div>
+
       <NaukaFooter />
     </main>
   );
-                }
+}

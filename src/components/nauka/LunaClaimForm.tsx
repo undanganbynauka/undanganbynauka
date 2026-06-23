@@ -47,6 +47,8 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps) {
 
   const [slug, setSlug] = useState("");
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [orderId, setOrderId] = useState<string | null>(null);
 
   const ref = useRef<HTMLElement>(null);
 
@@ -106,14 +108,21 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps) {
   }
 
   // ── Build WA URL with all data ──
-  function buildWaUrl(): string {
+  function buildWaUrl(orderIdArg?: string | null): string {
     const lines = [
       `Halo Nauka, saya ingin klaim Luna (template gratis) untuk undangan pernikahan saya.`,
+    ];
+    if (orderIdArg) {
+      lines.push(``, `*Nomor Pesanan:* ${orderIdArg}`);
+    }
+    lines.push(
       ``,
       `*DATA PEMESAN*`,
       `Nama: ${customerName}`,
       `WhatsApp: ${customerPhone}`,
-      customerEmail ? `Email: ${customerEmail}` : null,
+    );
+    if (customerEmail) lines.push(`Email: ${customerEmail}`);
+    lines.push(
       ``,
       `*DATA MEMPELAI*`,
       `Pria: ${groomFullName}`,
@@ -125,7 +134,7 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps) {
       `Tanggal: ${akadDate}`,
       `Waktu: ${akadStartTime}${akadEndTime ? ` - ${akadEndTime}` : ""}`,
       `Lokasi: ${akadAddress}`,
-    ];
+    );
     if (hasResepsi) {
       lines.push(``, `*RESEPSI*`,
         `Tanggal: ${resepsiDate}`,
@@ -876,17 +885,64 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps) {
                 ← Edit
               </button>
 
-              <a
-                href={buildWaUrl()}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setStep("done")}
+              <button
+                onClick={async () => {
+                  setSubmitError(null);
+                  setSubmitting(true);
+                  try {
+                    // ── POST to /api/orders ──
+                    // Luna = free tier, price = 0, status awal 'pending_whatsapp'
+                    const weddingPayload = {
+                      groomFullName, groomFatherName, groomMotherName,
+                      brideFullName, brideFatherName, brideMotherName,
+                      akadDate, akadStartTime, akadEndTime, akadAddress,
+                      hasResepsi,
+                      resepsiDate, resepsiStartTime, resepsiEndTime, resepsiAddress,
+                      slug,
+                    };
+                    const res = await fetch("/api/orders", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        template: "luna",
+                        package: "free",
+                        price: 0,
+                        customer_name: customerName.trim(),
+                        customer_phone: customerPhone.trim(),
+                        customer_email: customerEmail.trim() || undefined,
+                        wedding_data: weddingPayload,
+                      }),
+                    });
+                    const data = await res.json();
+                    if (!res.ok) {
+                      setSubmitError(data.error || "Gagal membuat pesanan. Silakan coba lagi.");
+                      setSubmitting(false);
+                      return;
+                    }
+                    setOrderId(data.order_id);
+
+                    // ── Open WhatsApp in new tab ──
+                    const waUrl = buildWaUrl(data.order_id);
+                    window.open(waUrl, "_blank", "noopener,noreferrer");
+
+                    // ── Move to done state ──
+                    setStep("done");
+                  } catch (err) {
+                    console.error("[luna claim] create order error:", err);
+                    setSubmitError("Terjadi kesalahan jaringan. Silakan coba lagi.");
+                  } finally {
+                    setSubmitting(false);
+                  }
+                }}
+                disabled={submitting}
                 style={{
                   flex: 1,
                   display: "block",
                   padding: "16px 24px",
                   borderRadius: "12px",
-                  background: "linear-gradient(180deg, rgba(247,242,234,0.96) 0%, rgba(232,226,214,0.92) 100%)",
+                  background: submitting
+                    ? "rgba(247,242,234,0.55)"
+                    : "linear-gradient(180deg, rgba(247,242,234,0.96) 0%, rgba(232,226,214,0.92) 100%)",
                   color: "#3A4D3F",
                   fontFamily: "var(--font-inter)",
                   fontSize: "13px",
@@ -895,18 +951,28 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps) {
                   textAlign: "center",
                   textDecoration: "none",
                   boxShadow: "0 4px 18px rgba(247,242,234,0.10)",
-                  transition: "transform 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-1px)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
+                  transition: "transform 0.2s ease, opacity 0.2s ease",
+                  cursor: submitting ? "not-allowed" : "pointer",
+                  border: "none",
+                  opacity: submitting ? 0.7 : 1,
                 }}
               >
-                Kirim ke WhatsApp →
-              </a>
+                {submitting ? "Memproses..." : "Kirim ke WhatsApp →"}
+              </button>
             </div>
+            {submitError && (
+              <p
+                style={{
+                  marginTop: "14px",
+                  fontFamily: "var(--font-inter)",
+                  fontSize: "12px",
+                  color: "rgba(255,150,150,0.85)",
+                  textAlign: "center",
+                }}
+              >
+                {submitError}
+              </p>
+            )}
           </div>
         )}
 
@@ -979,6 +1045,12 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps) {
                 margin: "0 auto 24px",
               }}
             >
+              {orderId && (
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                  <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>No. Pesanan</span>
+                  <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(201,169,110,0.85)", fontWeight: 500 }}>{orderId}</span>
+                </div>
+              )}
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
                 <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>Template</span>
                 <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.80)" }}>Luna (Gratis)</span>
@@ -1013,7 +1085,7 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps) {
             {/* Buttons */}
             <div style={{ display: "flex", flexDirection: "column", gap: "10px", maxWidth: "420px", margin: "0 auto" }}>
               <a
-                href={buildWaUrl()}
+                href={buildWaUrl(orderId)}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{

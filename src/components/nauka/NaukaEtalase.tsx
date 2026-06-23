@@ -12,6 +12,9 @@ interface Template {
   preview: string;
   liveHref?: string;
   video?: string;
+  tier?: "free" | "premium";
+  tagline?: string;
+  price?: string;
 }
 
 const syariTemplates: Template[] = [
@@ -22,11 +25,22 @@ const syariTemplates: Template[] = [
     href: "/detail/sacred",
     preview: "/etalase/sacred-preview.png",
     liveHref: "/sacred?preview=true",
-    video: "/etalase/sacred-preview.mp4",
   },
 ];
 
 const universalTemplates: Template[] = [
+  {
+    id: "luna",
+    name: "Luna",
+    collection: "Universal",
+    href: "/luna",
+    preview: "/nauka/couple-illustration-sage.png",
+    liveHref: "/luna",
+    tier: "free",
+    price: "Gratis",
+    tagline:
+      "Setiap cinta layak dirayakan. Luna hadir untuk memastikan undangan Anda tetap indah, walau sederhana di hati.",
+  },
   {
     id: "celestial",
     name: "Celestial",
@@ -154,6 +168,53 @@ function EtalaseCard({ tpl, delay }: { tpl: Template; delay: number }) {
               background: "linear-gradient(to top, rgba(11,17,32,0.7) 0%, transparent 100%)",
             }}
           />
+
+          {/* FREE badge for free-tier templates */}
+          {tpl.tier === "free" && (
+            <div
+              style={{
+                position: "absolute",
+                top: "10px",
+                left: "10px",
+                padding: "4px 10px",
+                borderRadius: "999px",
+                background: "rgba(247, 242, 234, 0.95)",
+                color: "#3A4D3F",
+                fontFamily: "var(--font-inter)",
+                fontSize: "9px",
+                fontWeight: 600,
+                letterSpacing: "0.18em",
+                textTransform: "uppercase",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.18)",
+              }}
+            >
+              Free
+            </div>
+          )}
+
+          {/* Tagline overlay for free tier */}
+          {tpl.tier === "free" && tpl.tagline && (
+            <div
+              className="pointer-events-none absolute inset-x-0 bottom-0"
+              style={{
+                padding: "16px 14px 14px",
+              }}
+            >
+              <p
+                style={{
+                  fontFamily: "var(--font-inter)",
+                  fontSize: "10.5px",
+                  fontWeight: 400,
+                  lineHeight: 1.55,
+                  color: "rgba(247, 242, 234, 0.92)",
+                  margin: 0,
+                  textShadow: "0 1px 4px rgba(0,0,0,0.45)",
+                }}
+              >
+                {tpl.tagline}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Info bar */}
@@ -185,12 +246,15 @@ function EtalaseCard({ tpl, delay }: { tpl: Template; delay: number }) {
                 fontWeight: 400,
                 letterSpacing: "0.14em",
                 textTransform: "uppercase",
-                color: "rgba(255,255,255,0.28)",
+                color:
+                  tpl.tier === "free"
+                    ? "rgba(201,169,110,0.85)"
+                    : "rgba(255,255,255,0.28)",
                 display: "block",
                 marginTop: "2px",
               }}
             >
-              {tpl.collection} · 75rb – 99rb
+              {tpl.collection} · {tpl.price ?? "75rb – 99rb"}
             </span>
           </div>
           <span

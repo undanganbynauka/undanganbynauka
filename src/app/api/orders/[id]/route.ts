@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { getSupabaseServer, isAdminAuthorized } from "@/lib/supabase-server";
 
 // Field yang DIKEMBALIKAN ke publik via GET single.
 // Aman untuk ditampilkan di Bukti Pembayaran & tracking status.
@@ -34,6 +35,7 @@ const ADMIN_ORDER_FIELDS = [
 
 export type OrderStatus =
   | "pending_payment"
+  | "pending_whatsapp"
   | "awaiting_confirmation"
   | "paid"
   | "in_production"
@@ -42,6 +44,7 @@ export type OrderStatus =
 
 const VALID_STATUSES: OrderStatus[] = [
   "pending_payment",
+  "pending_whatsapp",
   "awaiting_confirmation",
   "paid",
   "in_production",
@@ -51,7 +54,10 @@ const VALID_STATUSES: OrderStatus[] = [
 
 /**
  * GET /api/orders/[id]
- * Fetch single order. Public — returns ONLY public fields (no PII / wedding_data).
+ * Fetch single order.
+ *
+ * - Tanpa admin secret: return PUBLIC fields only (no PII / wedding_data)
+ * - Dengan admin secret valid: return ADMIN fields (full data)
  *
  * Path param:
  *   - id: order_id (NAUKA-{YYYY}-{NNN}) atau numeric id
@@ -77,9 +83,16 @@ export async function GET(
     const column = isNumeric ? "id" : "order_id";
     const value = isNumeric ? Number(rawId) : rawId.toUpperCase();
 
+    // Cek apakah request punya admin secret
+    const hasAdminSecret = isAdminAuthorized(req);
+
+    const fieldsToSelect = hasAdminSecret
+      ? ADMIN_ORDER_FIELDS.join(",")
+      : PUBLIC_ORDER_FIELDS.join(",");
+
     const { data, error } = await supabase
       .from("orders")
-      .select(PUBLIC_ORDER_FIELDS.join(","))
+      .select(fieldsToSelect)
       .eq(column, value)
       .single();
 
@@ -100,10 +113,11 @@ export async function GET(
 
 /**
  * PATCH /api/orders/[id]
- * Update order. Public — no admin secret required.
+ * Update order status / admin_notes. ADMIN ONLY.
  *
- * ⚠️  INSECURE FOR PRODUCTION — anyone can update any order status.
- *     For production, add admin auth check (x-admin-secret header).
+ * 🔒 Proteksi:
+ *   - Wajib header x-admin-secret yang valid
+ *   - Pakai service role client (bypass RLS — sama dengan POST /api/orders)
  *
  * Body (all optional):
  *   - status: OrderStatus
@@ -111,13 +125,30 @@ export async function GET(
  *
  * Path param:
  *   - id: order_id (NAUKA-{YYYY}-{NNN}) atau numeric id
+ *
+ * Response:
+ *   200 { data: AdminOrder }  — return full admin fields
+ *   400 { error: "Status tidak valid / Tidak ada field yang di-update" }
+ *   401 { error: "Unauthorized. Admin secret required." }
+ *   404 { error: "Pesanan tidak ditemukan atau gagal di-update." }
+ *   503 { error: "Database belum dikonfigurasi" }
  */
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    if (!supabase) {
+    // ── Layer 1: Admin secret check ──
+    if (!isAdminAuthorized(req)) {
+      return NextResponse.json(
+        { error: "Unauthorized. Admin secret required." },
+        { status: 401 }
+      );
+    }
+
+    // ── Layer 2: Service role client (bypass RLS) ──
+    const supabaseAdmin = getSupabaseServer();
+    if (!supabaseAdmin) {
       return NextResponse.json(
         { error: "Database belum dikonfigurasi." },
         { status: 503 }
@@ -155,25 +186,19 @@ export async function PATCH(
       );
     }
 
-    if (!supabase) {
-      return NextResponse.json(
-        { error: "Database belum dikonfigurasi." },
-        { status: 503 }
-      );
-    }
-
     const isNumericId = /^\d+$/.test(rawId);
-    let query = supabase.from("orders").update(updatePayload);
+    let query = supabaseAdmin.from("orders").update(updatePayload);
     if (isNumericId) {
       query = query.eq("id", Number(rawId));
     } else {
       query = query.eq("order_id", rawId.toUpperCase());
     }
 
-    // Return ONLY public fields (no PII / wedding_data leak via response)
-    const { data, error } = await query.select(PUBLIC_ORDER_FIELDS.join(",")).single();
+    // Return ADMIN fields (endpoint ini admin-only, jadi aman untuk expose PII)
+    const { data, error } = await query.select(ADMIN_ORDER_FIELDS.join(",")).single();
 
     if (error || !data) {
+      console.error("[orders/[id] PATCH] update error:", error);
       return NextResponse.json(
         { error: "Pesanan tidak ditemukan atau gagal di-update." },
         { status: 404 }

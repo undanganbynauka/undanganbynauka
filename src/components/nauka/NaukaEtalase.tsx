@@ -33,7 +33,7 @@ const universalTemplates: Template[] = [
     id: "luna",
     name: "Luna",
     collection: "Universal",
-    href: "/luna",
+    href: "/detail/luna",
     preview: "/nauka/couple-illustration-sage.png",
     liveHref: "/luna",
     tier: "free",

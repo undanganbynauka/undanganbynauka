@@ -4,12 +4,13 @@ import React, { useEffect, useRef, useState } from "react";
 
 const WA_BASE = "6289655592925";
 
-type Step = "pemesan" | "undangan" | "review";
+type Step = "pemesan" | "undangan" | "review" | "done";
 
 const STEP_TITLES: Record<Step, string> = {
   pemesan: "Data Pemesan",
   undangan: "Data Undangan",
   review: "Konfirmasi WhatsApp",
+  done: "Selesai",
 };
 
 interface LunaClaimFormProps {
@@ -218,8 +219,8 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps) {
             transition: "opacity 1.4s ease-out 0.1s",
           }}
         >
-          {(["pemesan", "undangan", "review"] as Step[]).map((s, i) => {
-            const order: Step[] = ["pemesan", "undangan", "review"];
+          {(["pemesan", "undangan", "review", "done"] as Step[]).map((s, i) => {
+            const order: Step[] = ["pemesan", "undangan", "review", "done"];
             const currentIdx = order.indexOf(step);
             const isActive = i === currentIdx;
             const isPast = i < currentIdx;
@@ -879,6 +880,7 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps) {
                 href={buildWaUrl()}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => setStep("done")}
                 style={{
                   flex: 1,
                   display: "block",
@@ -903,6 +905,171 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps) {
                 }}
               >
                 Kirim ke WhatsApp →
+              </a>
+            </div>
+          </div>
+        )}
+
+        {/* ════════ STEP 4: DONE ════════ */}
+        {step === "done" && (
+          <div
+            style={{
+              opacity: visible ? 1 : 0,
+              transform: visible ? "translateY(0)" : "translateY(16px)",
+              transition: "opacity 1.3s ease-out 0.2s, transform 1.3s ease-out 0.2s",
+              textAlign: "center",
+              padding: "32px 20px",
+            }}
+          >
+            {/* Checkmark */}
+            <div
+              style={{
+                width: "64px",
+                height: "64px",
+                borderRadius: "50%",
+                background: "rgba(201,169,110,0.10)",
+                border: "1px solid rgba(201,169,110,0.30)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "0 auto 24px",
+                fontSize: "28px",
+                color: "rgba(201,169,110,0.85)",
+              }}
+            >
+              ✓
+            </div>
+
+            <h3
+              style={{
+                fontFamily: "var(--font-bodoni)",
+                fontSize: "22px",
+                fontWeight: 400,
+                letterSpacing: "0.04em",
+                color: "rgba(255,255,255,0.92)",
+                marginBottom: "14px",
+              }}
+            >
+              Pesanan Luna Anda Sudah Dikirim
+            </h3>
+
+            <p
+              style={{
+                fontFamily: "var(--font-inter)",
+                fontSize: "13px",
+                lineHeight: 1.7,
+                color: "rgba(255,255,255,0.55)",
+                maxWidth: "420px",
+                margin: "0 auto 24px",
+              }}
+            >
+              Terima kasih sudah mempercayakan undangan Anda kepada Nauka. Tim kami akan menghubungi Anda melalui WhatsApp di <strong style={{ color: "rgba(201,169,110,0.85)", fontWeight: 500 }}>{customerPhone}</strong> dalam <strong style={{ color: "rgba(255,255,255,0.75)", fontWeight: 500 }}>1×24 jam</strong> untuk konfirmasi dan proses pembuatan undangan.
+            </p>
+
+            {/* Ringkasan singkat */}
+            <div
+              style={{
+                padding: "16px 20px",
+                borderRadius: "12px",
+                border: "1px solid rgba(255,255,255,0.06)",
+                background: "rgba(255,255,255,0.015)",
+                marginBottom: "24px",
+                textAlign: "left",
+                maxWidth: "420px",
+                margin: "0 auto 24px",
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>Template</span>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.80)" }}>Luna (Gratis)</span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>Pemesan</span>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.80)" }}>{customerName}</span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>Mempelai</span>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.80)" }}>{groomFullName} & {brideFullName}</span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>URL Undangan</span>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(201,169,110,0.75)" }}>.../{slug}</span>
+              </div>
+            </div>
+
+            <p
+              style={{
+                fontFamily: "var(--font-inter)",
+                fontSize: "11px",
+                color: "rgba(255,255,255,0.35)",
+                maxWidth: "380px",
+                margin: "0 auto 28px",
+                lineHeight: 1.6,
+              }}
+            >
+              Pastikan WhatsApp Anda aktif dan dapat dihubungi. Jika belum dihubungi dalam 24 jam, jangan ragu untuk chat langsung ke kami.
+            </p>
+
+            {/* Buttons */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px", maxWidth: "420px", margin: "0 auto" }}>
+              <a
+                href={buildWaUrl()}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "block",
+                  padding: "14px 24px",
+                  borderRadius: "12px",
+                  border: "1px solid rgba(201,169,110,0.30)",
+                  background: "rgba(201,169,110,0.06)",
+                  color: "rgba(201,169,110,0.9)",
+                  fontFamily: "var(--font-inter)",
+                  fontSize: "12px",
+                  fontWeight: 500,
+                  letterSpacing: "0.1em",
+                  textAlign: "center",
+                  textDecoration: "none",
+                  transition: "border-color 0.3s ease, background 0.3s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(201,169,110,0.45)";
+                  e.currentTarget.style.background = "rgba(201,169,110,0.10)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(201,169,110,0.30)";
+                  e.currentTarget.style.background = "rgba(201,169,110,0.06)";
+                }}
+              >
+                Buka Ulang Pesan WhatsApp
+              </a>
+
+              <a
+                href="/"
+                style={{
+                  display: "block",
+                  padding: "14px 24px",
+                  borderRadius: "12px",
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  background: "transparent",
+                  color: "rgba(255,255,255,0.55)",
+                  fontFamily: "var(--font-inter)",
+                  fontSize: "12px",
+                  fontWeight: 400,
+                  letterSpacing: "0.1em",
+                  textAlign: "center",
+                  textDecoration: "none",
+                  transition: "border-color 0.3s ease, color 0.3s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.25)";
+                  e.currentTarget.style.color = "rgba(255,255,255,0.80)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)";
+                  e.currentTarget.style.color = "rgba(255,255,255,0.55)";
+                }}
+              >
+                Kembali ke Beranda
               </a>
             </div>
           </div>

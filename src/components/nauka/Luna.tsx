@@ -875,3 +875,121 @@ function AudioToggle() {
     </button>
   );
 }
+function QuoteAndCountdown() {
+  const { days, hours, minutes, seconds } = useCountdown("2026-12-05T09:00:00+07:00");
+  const units: Array<{ label: string; value: number }> = [
+    { label: "Hari", value: days },
+    { label: "Jam", value: hours },
+    { label: "Menit", value: minutes },
+    { label: "Detik", value: seconds },
+  ];
+
+  return (
+    <Section
+      style={{ paddingTop: "84px", paddingBottom: "84px" }}
+    >
+      <Reveal>
+        <p
+          style={{
+            fontFamily: FONT_SERIF,
+            fontSize: "clamp(15px, 4vw, 20px)",
+            fontWeight: 400,
+            lineHeight: 1.55,
+            color: C.primary,
+            textAlign: "center",
+            maxWidth: "300px",
+            margin: "0 auto 48px",
+          }}
+        >
+          &ldquo;Dan di antara jutaan kemungkinan, takdir mempertemukan dua hati untuk
+          berjalan menuju masa depan yang sama.&rdquo;
+        </p>
+      </Reveal>
+      <Reveal delay={120}>
+        <p
+          style={{
+            fontFamily: FONT_SANS,
+            fontSize: "10px",
+            fontWeight: 500,
+            letterSpacing: "0.32em",
+            textTransform: "uppercase",
+            color: C.accent,
+            textAlign: "center",
+            margin: "0 0 32px",
+          }}
+        >
+          Menuju Hari Bahagia
+        </p>
+      </Reveal>
+      <Reveal delay={200}>
+        <p
+          style={{
+            fontFamily: FONT_SERIF,
+            fontSize: "12px",
+            fontWeight: 500,
+            letterSpacing: "0.3em",
+            textTransform: "uppercase",
+            color: C.secondary,
+            textAlign: "center",
+            margin: "0 0 24px",
+          }}
+        >
+          Save The Date
+        </p>
+      </Reveal>
+      <Reveal delay={280}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(4, 1fr)",
+            gap: "8px",
+            maxWidth: "340px",
+            margin: "0 auto",
+          }}
+        >
+          {units.map((u) => (
+            <div
+              key={u.label}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "14px 4px",
+                border: `1px solid ${C.cardBorder}`,
+                borderRadius: "10px",
+                background: C.cardSurface,
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: FONT_SERIF,
+                  fontSize: "clamp(18px, 5vw, 24px)",
+                  fontWeight: 500,
+                  color: C.primary,
+                  lineHeight: 1,
+                  fontVariantNumeric: "tabular-nums",
+                }}
+              >
+                {String(u.value).padStart(2, "0")}
+              </span>
+              <span
+                style={{
+                  fontFamily: FONT_SANS,
+                  fontSize: "8px",
+                  fontWeight: 500,
+                  letterSpacing: "0.2em",
+                  textTransform: "uppercase",
+                  color: C.accent,
+                  marginTop: "6px",
+                }}
+              >
+                {u.label}
+              </span>
+            </div>
+          ))}
+        </div>
+      </Reveal>
+    </Section>
+  );
+}

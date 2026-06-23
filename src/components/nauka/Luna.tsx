@@ -11,9 +11,13 @@ const C = {
   primary: "#F7F2EA",
   secondary: "#E8DCCF",
   accent: "#DCCFBE",
+  // Solid sage — matches the perceived bg color of the hero illustration
+  // (sampled from the upper-third of couple-illustration-sage.png)
   contentBg: "#8B876A",
+  // Button fill = bg color slightly darker
   buttonBg: "#6B6B4E",
   buttonBgHover: "#5A5A40",
+  // Button border = text font color
   buttonBorder: "#F7F2EA",
   textShadow: "0 1px 3px rgba(0, 0, 0, 0.15)",
   textShadowSoft: "0 1px 2px rgba(0, 0, 0, 0.10)",
@@ -165,6 +169,7 @@ function Hero({ opened, onOpen }: { opened: boolean; onOpen: () => void }) {
           backgroundColor: "#3A4D3F",
         }}
       />
+      {/* Top block — Names only (with fade-up animation on mount) */}
       <div
         style={{
           position: "relative",
@@ -238,6 +243,7 @@ function Hero({ opened, onOpen }: { opened: boolean; onOpen: () => void }) {
           Lyla
         </h1>
       </div>
+      {/* Bottom block — Date + Kepada Yth + Open Invitation button (animated, delayed) */}
       <div
         style={{
           position: "relative",
@@ -254,6 +260,7 @@ function Hero({ opened, onOpen }: { opened: boolean; onOpen: () => void }) {
           animation: "lunaFadeUp 0.9s ease-out 1.0s both",
         }}
       >
+        {/* Date — small, below the hands */}
         <p
           style={{
             fontFamily: FONT_SANS,
@@ -268,6 +275,7 @@ function Hero({ opened, onOpen }: { opened: boolean; onOpen: () => void }) {
         >
           Sabtu, 5 Desember 2026
         </p>
+        {/* Kepada Yth — directly above Open Invitation */}
         <div
           style={{
             padding: "6px 16px",
@@ -304,6 +312,7 @@ function Hero({ opened, onOpen }: { opened: boolean; onOpen: () => void }) {
             Bapak/Ibu/Saudara/i
           </p>
         </div>
+        {/* Open Invitation button — border = text color, fill = bg darker */}
         <button
           onClick={onOpen}
           aria-label="Open Invitation"
@@ -334,15 +343,169 @@ function Hero({ opened, onOpen }: { opened: boolean; onOpen: () => void }) {
           Open Invitation
         </button>
       </div>
+      {/* Keyframes for fade-up animation */}
       <style>{`
         @keyframes lunaFadeUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
       `}</style>
     </section>
   );
 }
+
+function Section({
+  children,
+  background,
+  style,
+}: {
+  children: React.ReactNode;
+  background?: string;
+  style?: React.CSSProperties;
+}) {
+  return (
+    <section
+      style={{
+        position: "relative",
+        width: "100%",
+        padding: "80px 24px",
+        background: background || C.contentBg,
+        boxSizing: "border-box",
+        ...style,
+      }}
+    >
+      <div style={{ maxWidth: "480px", margin: "0 auto", position: "relative" }}>
+        {children}
+      </div>
+    </section>
+  );
+}
+
+function QuoteAndCountdown() {
+  const { days, hours, minutes, seconds } = useCountdown("2026-12-05T09:00:00+07:00");
+  const units: Array<{ label: string; value: number }> = [
+    { label: "Hari", value: days },
+    { label: "Jam", value: hours },
+    { label: "Menit", value: minutes },
+    { label: "Detik", value: seconds },
+  ];
+
+  return (
+    <Section
+      style={{ paddingTop: "84px", paddingBottom: "84px" }}
+    >
+      <Reveal>
+        <p
+          style={{
+            fontFamily: FONT_SERIF,
+            fontSize: "clamp(15px, 4vw, 20px)",
+            fontWeight: 400,
+            lineHeight: 1.55,
+            color: C.primary,
+            textAlign: "center",
+            maxWidth: "300px",
+            margin: "0 auto 48px",
+          }}
+        >
+          &ldquo;Dan di antara jutaan kemungkinan, takdir mempertemukan dua hati untuk
+          berjalan menuju masa depan yang sama.&rdquo;
+        </p>
+      </Reveal>
+      <Reveal delay={120}>
+        <p
+          style={{
+            fontFamily: FONT_SANS,
+            fontSize: "10px",
+            fontWeight: 500,
+            letterSpacing: "0.32em",
+            textTransform: "uppercase",
+            color: C.accent,
+            textAlign: "center",
+            margin: "0 0 32px",
+          }}
+        >
+          Menuju Hari Bahagia
+        </p>
+      </Reveal>
+      <Reveal delay={200}>
+        <p
+          style={{
+            fontFamily: FONT_SERIF,
+            fontSize: "12px",
+            fontWeight: 500,
+            letterSpacing: "0.3em",
+            textTransform: "uppercase",
+            color: C.secondary,
+            textAlign: "center",
+            margin: "0 0 24px",
+          }}
+        >
+          Save The Date
+        </p>
+      </Reveal>
+      <Reveal delay={280}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(4, 1fr)",
+            gap: "8px",
+            maxWidth: "340px",
+            margin: "0 auto",
+          }}
+        >
+          {units.map((u) => (
+            <div
+              key={u.label}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "14px 4px",
+                border: `1px solid ${C.cardBorder}`,
+                borderRadius: "10px",
+                background: C.cardSurface,
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: FONT_SERIF,
+                  fontSize: "clamp(18px, 5vw, 24px)",
+                  fontWeight: 500,
+                  color: C.primary,
+                  lineHeight: 1,
+                  fontVariantNumeric: "tabular-nums",
+                }}
+              >
+                {String(u.value).padStart(2, "0")}
+              </span>
+              <span
+                style={{
+                  fontFamily: FONT_SANS,
+                  fontSize: "8px",
+                  fontWeight: 500,
+                  letterSpacing: "0.2em",
+                  textTransform: "uppercase",
+                  color: C.accent,
+                  marginTop: "6px",
+                }}
+              >
+                {u.label}
+              </span>
+            </div>
+          ))}
+        </div>
+      </Reveal>
+    </Section>
+  );
+}
+
 function Pembuka() {
   return (
     <Section style={{ paddingTop: "84px", paddingBottom: "0" }}>
@@ -566,430 +729,4 @@ function Acara() {
                 border: `1px solid ${C.cardBorder}`,
                 borderRadius: "12px",
                 background: C.cardSurface,
-                textAlign: "center",
-              }}
-            >
-              <h3
-                style={{
-                  fontFamily: FONT_SERIF,
-                  fontSize: "18px",
-                  fontWeight: 500,
-                  color: C.primary,
-                  margin: "0 0 14px",
-                  letterSpacing: "0.02em",
-                }}
-              >
-                {ev.title}
-              </h3>
-              <p
-                style={{
-                  fontFamily: FONT_SANS,
-                  fontSize: "12px",
-                  fontWeight: 400,
-                  color: C.secondary,
-                  margin: "0 0 4px",
-                  letterSpacing: "0.05em",
-                }}
-              >
-                {ev.date}
-              </p>
-              <p
-                style={{
-                  fontFamily: FONT_SERIF,
-                  fontSize: "14px",
-                  fontWeight: 500,
-                  color: C.primary,
-                  margin: "0 0 12px",
-                }}
-              >
-                {ev.time}
-              </p>
-              <p
-                style={{
-                  fontFamily: FONT_SANS,
-                  fontSize: "11px",
-                  fontWeight: 400,
-                  color: C.accent,
-                  margin: "0 0 20px",
-                  letterSpacing: "0.05em",
-                }}
-              >
-                {ev.place}
-              </p>
-              <a
-                href={mapUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: "inline-block",
-                  padding: "8px 20px",
-                  fontFamily: FONT_SANS,
-                  fontSize: "9px",
-                  fontWeight: 500,
-                  letterSpacing: "0.28em",
-                  textTransform: "uppercase",
-                  color: C.primary,
-                  background: "transparent",
-                  border: `1px solid ${C.accent}`,
-                  borderRadius: "999px",
-                  textDecoration: "none",
-                  transition: "background 0.3s ease, color 0.3s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = C.accent;
-                  e.currentTarget.style.color = "#3A4D3F";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "transparent";
-                  e.currentTarget.style.color = C.primary;
-                }}
-              >
-                Lihat Lokasi
-              </a>
-            </div>
-          </Reveal>
-        ))}
-      </div>
-    </Section>
-  );
-}
-
-function TwoRingsDivider() {
-  return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "8px",
-        margin: "0 0 28px",
-        opacity: 0.85,
-      }}
-    >
-      <div style={{ width: "28px", height: "1px", background: C.hairline }} />
-      <svg
-        width="18"
-        height="10"
-        viewBox="0 0 18 10"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden
-      >
-        <circle cx="6" cy="5" r="3.5" stroke={C.accent} strokeWidth="0.8" fill="none" />
-        <circle cx="12" cy="5" r="3.5" stroke={C.accent} strokeWidth="0.8" fill="none" />
-      </svg>
-      <div style={{ width: "28px", height: "1px", background: C.hairline }} />
-    </div>
-  );
-}
-
-function Penutup() {
-  return (
-    <Section
-      style={{ paddingTop: "84px", paddingBottom: "72px" }}
-    >
-      <Reveal>
-        <div style={{ textAlign: "center", maxWidth: "320px", margin: "0 auto" }}>
-          <p
-            style={{
-              fontFamily: FONT_SANS,
-              fontSize: "13px",
-              fontWeight: 300,
-              lineHeight: 1.85,
-              color: C.secondary,
-              margin: "0 0 18px",
-            }}
-          >
-            Semoga hari ini menjadi awal dari kisah yang penuh kebahagiaan, cinta,
-            dan kenangan indah yang akan terus tumbuh seiring waktu.
-          </p>
-          <p
-            style={{
-              fontFamily: FONT_SANS,
-              fontSize: "13px",
-              fontWeight: 300,
-              lineHeight: 1.85,
-              color: C.secondary,
-              margin: "0 0 32px",
-            }}
-          >
-            Terima kasih atas kehadiran, doa, dan segala kebaikan yang diberikan
-            kepada kami.
-          </p>
-          <TwoRingsDivider />
-          <p
-            style={{
-              fontFamily: FONT_SANS,
-              fontSize: "10px",
-              fontWeight: 500,
-              letterSpacing: "0.3em",
-              textTransform: "uppercase",
-              color: C.accent,
-              margin: "0 0 14px",
-            }}
-          >
-            Dengan penuh rasa syukur,
-          </p>
-          <h3
-            style={{
-              fontFamily: FONT_SERIF,
-              fontSize: "26px",
-              fontWeight: 500,
-              color: C.primary,
-              margin: "0 0 10px",
-            }}
-          >
-            Ali &amp; Lyla
-          </h3>
-          <p
-            style={{
-              fontFamily: FONT_SANS,
-              fontSize: "11px",
-              fontWeight: 400,
-              letterSpacing: "0.18em",
-              textTransform: "uppercase",
-              color: C.secondary,
-              margin: 0,
-            }}
-          >
-            Sabtu, 5 Desember 2026
-          </p>
-        </div>
-      </Reveal>
-    </Section>
-  );
-}
-
-function NaukaFooter() {
-  return (
-    <footer
-      style={{
-        background: C.contentBg,
-        padding: "28px 24px 40px",
-        textAlign: "center",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <img
-        src="/nauka-logo-new.png"
-        alt="Nauka"
-        style={{
-          width: "64px",
-          height: "auto",
-          opacity: 0.85,
-          filter: "brightness(0) invert(0.97) sepia(0.12) saturate(0.6)",
-        }}
-      />
-    </footer>
-  );
-}
-
-// ════════════════════════════════════════════════════════════════
-// AUDIO TOGGLE — Floating music button (default OFF, plays bird sound)
-// ════════════════════════════════════════════════════════════════
-function AudioToggle() {
-  const [playing, setPlaying] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  useEffect(() => {
-    const audio = new Audio("/nauka/birds-morning.mp3");
-    audio.loop = true;
-    audio.volume = 0.4;
-    audio.preload = "auto";
-    audioRef.current = audio;
-    return () => {
-      audio.pause();
-      audioRef.current = null;
-    };
-  }, []);
-
-  const toggle = useCallback(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    if (playing) {
-      audio.pause();
-      setPlaying(false);
-    } else {
-      audio.play().then(() => setPlaying(true)).catch(() => setPlaying(false));
-    }
-  }, [playing]);
-
-  return (
-    <button
-      onClick={toggle}
-      aria-label={playing ? "Matikan suara" : "Nyalakan suara"}
-      style={{
-        position: "fixed",
-        bottom: "20px",
-        right: "20px",
-        zIndex: 999,
-        width: "44px",
-        height: "44px",
-        borderRadius: "999px",
-        background: "rgba(107, 107, 78, 0.85)",
-        border: `1px solid ${C.buttonBorder}`,
-        color: C.primary,
-        cursor: "pointer",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
-        backdropFilter: "blur(4px)",
-        transition: "background 0.3s ease, transform 0.2s ease",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.background = "rgba(90, 90, 64, 0.95)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.background = "rgba(107, 107, 78, 0.85)";
-      }}
-    >
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        style={{ opacity: playing ? 1 : 0.6 }}
-      >
-        {playing ? (
-          <>
-            <path d="M9 18V5l12-2v13" />
-            <circle cx="6" cy="18" r="3" />
-            <circle cx="18" cy="16" r="3" />
-          </>
-        ) : (
-          <>
-            <path d="M9 18V5l12-2v13" />
-            <circle cx="6" cy="18" r="3" />
-            <circle cx="18" cy="16" r="3" />
-            <line x1="3" y1="3" x2="21" y2="21" />
-          </>
-        )}
-      </svg>
-    </button>
-  );
-}
-function QuoteAndCountdown() {
-  const { days, hours, minutes, seconds } = useCountdown("2026-12-05T09:00:00+07:00");
-  const units: Array<{ label: string; value: number }> = [
-    { label: "Hari", value: days },
-    { label: "Jam", value: hours },
-    { label: "Menit", value: minutes },
-    { label: "Detik", value: seconds },
-  ];
-
-  return (
-    <Section
-      style={{ paddingTop: "84px", paddingBottom: "84px" }}
-    >
-      <Reveal>
-        <p
-          style={{
-            fontFamily: FONT_SERIF,
-            fontSize: "clamp(15px, 4vw, 20px)",
-            fontWeight: 400,
-            lineHeight: 1.55,
-            color: C.primary,
-            textAlign: "center",
-            maxWidth: "300px",
-            margin: "0 auto 48px",
-          }}
-        >
-          &ldquo;Dan di antara jutaan kemungkinan, takdir mempertemukan dua hati untuk
-          berjalan menuju masa depan yang sama.&rdquo;
-        </p>
-      </Reveal>
-      <Reveal delay={120}>
-        <p
-          style={{
-            fontFamily: FONT_SANS,
-            fontSize: "10px",
-            fontWeight: 500,
-            letterSpacing: "0.32em",
-            textTransform: "uppercase",
-            color: C.accent,
-            textAlign: "center",
-            margin: "0 0 32px",
-          }}
-        >
-          Menuju Hari Bahagia
-        </p>
-      </Reveal>
-      <Reveal delay={200}>
-        <p
-          style={{
-            fontFamily: FONT_SERIF,
-            fontSize: "12px",
-            fontWeight: 500,
-            letterSpacing: "0.3em",
-            textTransform: "uppercase",
-            color: C.secondary,
-            textAlign: "center",
-            margin: "0 0 24px",
-          }}
-        >
-          Save The Date
-        </p>
-      </Reveal>
-      <Reveal delay={280}>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            gap: "8px",
-            maxWidth: "340px",
-            margin: "0 auto",
-          }}
-        >
-          {units.map((u) => (
-            <div
-              key={u.label}
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                padding: "14px 4px",
-                border: `1px solid ${C.cardBorder}`,
-                borderRadius: "10px",
-                background: C.cardSurface,
-              }}
-            >
-              <span
-                style={{
-                  fontFamily: FONT_SERIF,
-                  fontSize: "clamp(18px, 5vw, 24px)",
-                  fontWeight: 500,
-                  color: C.primary,
-                  lineHeight: 1,
-                  fontVariantNumeric: "tabular-nums",
-                }}
-              >
-                {String(u.value).padStart(2, "0")}
-              </span>
-              <span
-                style={{
-                  fontFamily: FONT_SANS,
-                  fontSize: "8px",
-                  fontWeight: 500,
-                  letterSpacing: "0.2em",
-                  textTransform: "uppercase",
-                  color: C.accent,
-                  marginTop: "6px",
-                }}
-              >
-                {u.label}
-              </span>
-            </div>
-          ))}
-        </div>
-      </Reveal>
-    </Section>
-  );
-}
+                textAlign: "

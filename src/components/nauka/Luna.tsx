@@ -343,3 +343,535 @@ function Hero({ opened, onOpen }: { opened: boolean; onOpen: () => void }) {
     </section>
   );
 }
+function Pembuka() {
+  return (
+    <Section style={{ paddingTop: "84px", paddingBottom: "0" }}>
+      <Reveal>
+        <div style={{ textAlign: "center", maxWidth: "320px", margin: "0 auto" }}>
+          <p
+            style={{
+              fontFamily: FONT_SANS,
+              fontSize: "13px",
+              fontWeight: 300,
+              lineHeight: 1.85,
+              color: C.secondary,
+              margin: "0 0 18px",
+            }}
+          >
+            Dengan penuh rasa syukur dan kebahagiaan, kami mengundang
+            Bapak/Ibu/Saudara/i untuk hadir dan menjadi bagian dari momen
+            istimewa dalam perjalanan hidup kami.
+          </p>
+          <p
+            style={{
+              fontFamily: FONT_SANS,
+              fontSize: "13px",
+              fontWeight: 300,
+              lineHeight: 1.85,
+              color: C.secondary,
+              margin: 0,
+            }}
+          >
+            Kehadiran serta doa restu yang diberikan akan menjadi kebahagiaan dan
+            kehormatan bagi kami.
+          </p>
+        </div>
+      </Reveal>
+    </Section>
+  );
+}
+
+function ProfilMempelai() {
+  return (
+    <Section style={{ paddingTop: "40px", paddingBottom: "84px" }}>
+      <Reveal>
+        <p
+          style={{
+            fontFamily: FONT_SANS,
+            fontSize: "10px",
+            fontWeight: 500,
+            letterSpacing: "0.32em",
+            textTransform: "uppercase",
+            color: C.accent,
+            textAlign: "center",
+            margin: "0 0 36px",
+          }}
+        >
+          Mempelai
+        </p>
+      </Reveal>
+      <Reveal delay={120}>
+        <div
+          style={{
+            maxWidth: "340px",
+            margin: "0 auto",
+            padding: "40px 28px",
+            border: `1px solid ${C.cardBorder}`,
+            borderRadius: "12px",
+            background: C.cardSurface,
+            textAlign: "center",
+          }}
+        >
+          {/* Groom */}
+          <div>
+            <p
+              style={{
+                fontFamily: FONT_SERIF,
+                fontSize: "44px",
+                fontWeight: 500,
+                color: C.accent,
+                margin: "0 0 10px",
+                lineHeight: 1,
+                opacity: 0.9,
+              }}
+            >
+              A
+            </p>
+            <h3
+              style={{
+                fontFamily: FONT_SERIF,
+                fontSize: "20px",
+                fontWeight: 500,
+                color: C.primary,
+                margin: "0 0 8px",
+                letterSpacing: "0.02em",
+              }}
+            >
+              Ali Rahman
+            </h3>
+            <p
+              style={{
+                fontFamily: FONT_SANS,
+                fontSize: "11px",
+                fontWeight: 400,
+                color: C.secondary,
+                margin: 0,
+                letterSpacing: "0.05em",
+                lineHeight: 1.6,
+              }}
+            >
+              Putra dari
+              <br />
+              Bapak Hendri dan Ibu Ningsih
+            </p>
+          </div>
+          {/* Divider */}
+          <div
+            aria-hidden
+            style={{
+              margin: "22px auto",
+              width: "56%",
+              height: "1px",
+              background: C.hairline,
+            }}
+          />
+          {/* Bride */}
+          <div>
+            <p
+              style={{
+                fontFamily: FONT_SERIF,
+                fontSize: "44px",
+                fontWeight: 500,
+                color: C.accent,
+                margin: "0 0 10px",
+                lineHeight: 1,
+                opacity: 0.9,
+              }}
+            >
+              L
+            </p>
+            <h3
+              style={{
+                fontFamily: FONT_SERIF,
+                fontSize: "20px",
+                fontWeight: 500,
+                color: C.primary,
+                margin: "0 0 8px",
+                letterSpacing: "0.02em",
+              }}
+            >
+              Lyla Azzahra
+            </h3>
+            <p
+              style={{
+                fontFamily: FONT_SANS,
+                fontSize: "11px",
+                fontWeight: 400,
+                color: C.secondary,
+                margin: 0,
+                letterSpacing: "0.05em",
+                lineHeight: 1.6,
+              }}
+            >
+              Putri dari
+              <br />
+              Bapak Yusuf dan Ibu Rahayu
+            </p>
+          </div>
+        </div>
+      </Reveal>
+    </Section>
+  );
+}
+
+function Acara() {
+  const mapUrl = "https://www.google.com/maps/search/?api=1&query=Tanah+Abang+1+Jakarta+Pusat";
+  const events: Array<{ title: string; date: string; time: string; place: string }> = [
+    {
+      title: "Akad Nikah",
+      date: "Sabtu, 5 Desember 2026",
+      time: "09.00 WIB – Selesai",
+      place: "Tanah Abang 1, Jakarta Pusat",
+    },
+    {
+      title: "Resepsi",
+      date: "Sabtu, 5 Desember 2026",
+      time: "10.00 WIB – Selesai",
+      place: "Tanah Abang 1, Jakarta Pusat",
+    },
+  ];
+
+  return (
+    <Section style={{ paddingTop: "84px", paddingBottom: "84px" }}>
+      <Reveal>
+        <p
+          style={{
+            fontFamily: FONT_SERIF,
+            fontSize: "10px",
+            fontWeight: 500,
+            letterSpacing: "0.32em",
+            textTransform: "uppercase",
+            color: C.accent,
+            textAlign: "center",
+            margin: "0 0 36px",
+          }}
+        >
+          Acara
+        </p>
+      </Reveal>
+      <div
+        style={{
+          maxWidth: "340px",
+          margin: "0 auto",
+          display: "flex",
+          flexDirection: "column",
+          gap: "16px",
+        }}
+      >
+        {events.map((ev, i) => (
+          <Reveal key={ev.title} delay={i * 120}>
+            <div
+              style={{
+                padding: "26px 22px",
+                border: `1px solid ${C.cardBorder}`,
+                borderRadius: "12px",
+                background: C.cardSurface,
+                textAlign: "center",
+              }}
+            >
+              <h3
+                style={{
+                  fontFamily: FONT_SERIF,
+                  fontSize: "18px",
+                  fontWeight: 500,
+                  color: C.primary,
+                  margin: "0 0 14px",
+                  letterSpacing: "0.02em",
+                }}
+              >
+                {ev.title}
+              </h3>
+              <p
+                style={{
+                  fontFamily: FONT_SANS,
+                  fontSize: "12px",
+                  fontWeight: 400,
+                  color: C.secondary,
+                  margin: "0 0 4px",
+                  letterSpacing: "0.05em",
+                }}
+              >
+                {ev.date}
+              </p>
+              <p
+                style={{
+                  fontFamily: FONT_SERIF,
+                  fontSize: "14px",
+                  fontWeight: 500,
+                  color: C.primary,
+                  margin: "0 0 12px",
+                }}
+              >
+                {ev.time}
+              </p>
+              <p
+                style={{
+                  fontFamily: FONT_SANS,
+                  fontSize: "11px",
+                  fontWeight: 400,
+                  color: C.accent,
+                  margin: "0 0 20px",
+                  letterSpacing: "0.05em",
+                }}
+              >
+                {ev.place}
+              </p>
+              <a
+                href={mapUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "inline-block",
+                  padding: "8px 20px",
+                  fontFamily: FONT_SANS,
+                  fontSize: "9px",
+                  fontWeight: 500,
+                  letterSpacing: "0.28em",
+                  textTransform: "uppercase",
+                  color: C.primary,
+                  background: "transparent",
+                  border: `1px solid ${C.accent}`,
+                  borderRadius: "999px",
+                  textDecoration: "none",
+                  transition: "background 0.3s ease, color 0.3s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = C.accent;
+                  e.currentTarget.style.color = "#3A4D3F";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "transparent";
+                  e.currentTarget.style.color = C.primary;
+                }}
+              >
+                Lihat Lokasi
+              </a>
+            </div>
+          </Reveal>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function TwoRingsDivider() {
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "8px",
+        margin: "0 0 28px",
+        opacity: 0.85,
+      }}
+    >
+      <div style={{ width: "28px", height: "1px", background: C.hairline }} />
+      <svg
+        width="18"
+        height="10"
+        viewBox="0 0 18 10"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden
+      >
+        <circle cx="6" cy="5" r="3.5" stroke={C.accent} strokeWidth="0.8" fill="none" />
+        <circle cx="12" cy="5" r="3.5" stroke={C.accent} strokeWidth="0.8" fill="none" />
+      </svg>
+      <div style={{ width: "28px", height: "1px", background: C.hairline }} />
+    </div>
+  );
+}
+
+function Penutup() {
+  return (
+    <Section
+      style={{ paddingTop: "84px", paddingBottom: "72px" }}
+    >
+      <Reveal>
+        <div style={{ textAlign: "center", maxWidth: "320px", margin: "0 auto" }}>
+          <p
+            style={{
+              fontFamily: FONT_SANS,
+              fontSize: "13px",
+              fontWeight: 300,
+              lineHeight: 1.85,
+              color: C.secondary,
+              margin: "0 0 18px",
+            }}
+          >
+            Semoga hari ini menjadi awal dari kisah yang penuh kebahagiaan, cinta,
+            dan kenangan indah yang akan terus tumbuh seiring waktu.
+          </p>
+          <p
+            style={{
+              fontFamily: FONT_SANS,
+              fontSize: "13px",
+              fontWeight: 300,
+              lineHeight: 1.85,
+              color: C.secondary,
+              margin: "0 0 32px",
+            }}
+          >
+            Terima kasih atas kehadiran, doa, dan segala kebaikan yang diberikan
+            kepada kami.
+          </p>
+          <TwoRingsDivider />
+          <p
+            style={{
+              fontFamily: FONT_SANS,
+              fontSize: "10px",
+              fontWeight: 500,
+              letterSpacing: "0.3em",
+              textTransform: "uppercase",
+              color: C.accent,
+              margin: "0 0 14px",
+            }}
+          >
+            Dengan penuh rasa syukur,
+          </p>
+          <h3
+            style={{
+              fontFamily: FONT_SERIF,
+              fontSize: "26px",
+              fontWeight: 500,
+              color: C.primary,
+              margin: "0 0 10px",
+            }}
+          >
+            Ali &amp; Lyla
+          </h3>
+          <p
+            style={{
+              fontFamily: FONT_SANS,
+              fontSize: "11px",
+              fontWeight: 400,
+              letterSpacing: "0.18em",
+              textTransform: "uppercase",
+              color: C.secondary,
+              margin: 0,
+            }}
+          >
+            Sabtu, 5 Desember 2026
+          </p>
+        </div>
+      </Reveal>
+    </Section>
+  );
+}
+
+function NaukaFooter() {
+  return (
+    <footer
+      style={{
+        background: C.contentBg,
+        padding: "28px 24px 40px",
+        textAlign: "center",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <img
+        src="/nauka-logo-new.png"
+        alt="Nauka"
+        style={{
+          width: "64px",
+          height: "auto",
+          opacity: 0.85,
+          filter: "brightness(0) invert(0.97) sepia(0.12) saturate(0.6)",
+        }}
+      />
+    </footer>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════
+// AUDIO TOGGLE — Floating music button (default OFF, plays bird sound)
+// ════════════════════════════════════════════════════════════════
+function AudioToggle() {
+  const [playing, setPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    const audio = new Audio("/nauka/birds-morning.mp3");
+    audio.loop = true;
+    audio.volume = 0.4;
+    audio.preload = "auto";
+    audioRef.current = audio;
+    return () => {
+      audio.pause();
+      audioRef.current = null;
+    };
+  }, []);
+
+  const toggle = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (playing) {
+      audio.pause();
+      setPlaying(false);
+    } else {
+      audio.play().then(() => setPlaying(true)).catch(() => setPlaying(false));
+    }
+  }, [playing]);
+
+  return (
+    <button
+      onClick={toggle}
+      aria-label={playing ? "Matikan suara" : "Nyalakan suara"}
+      style={{
+        position: "fixed",
+        bottom: "20px",
+        right: "20px",
+        zIndex: 999,
+        width: "44px",
+        height: "44px",
+        borderRadius: "999px",
+        background: "rgba(107, 107, 78, 0.85)",
+        border: `1px solid ${C.buttonBorder}`,
+        color: C.primary,
+        cursor: "pointer",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
+        backdropFilter: "blur(4px)",
+        transition: "background 0.3s ease, transform 0.2s ease",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = "rgba(90, 90, 64, 0.95)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = "rgba(107, 107, 78, 0.85)";
+      }}
+    >
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        style={{ opacity: playing ? 1 : 0.6 }}
+      >
+        {playing ? (
+          <>
+            <path d="M9 18V5l12-2v13" />
+            <circle cx="6" cy="18" r="3" />
+            <circle cx="18" cy="16" r="3" />
+          </>
+        ) : (
+          <>
+            <path d="M9 18V5l12-2v13" />
+            <circle cx="6" cy="18" r="3" />
+            <circle cx="18" cy="16" r="3" />
+            <line x1="3" y1="3" x2="21" y2="21" />
+          </>
+        )}
+      </svg>
+    </button>
+  );
+}

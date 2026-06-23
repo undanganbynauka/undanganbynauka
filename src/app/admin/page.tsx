@@ -6,7 +6,7 @@ interface Order {
   id: number;
   order_id: string;
   template: string;
-  package: "basic" | "premium";
+  package: "basic" | "premium" | "free";
   price: number;
   customer_name: string;
   customer_phone: string;
@@ -20,6 +20,7 @@ interface Order {
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   pending_payment: { label: "Menunggu Pembayaran", color: "#F59E0B" },
+  pending_whatsapp: { label: "Menunggu WA Admin", color: "#F97316" },
   awaiting_confirmation: { label: "Menunggu Verifikasi", color: "#3B82F6" },
   paid: { label: "Sudah Bayar", color: "#10B981" },
   in_production: { label: "Dalam Pengerjaan", color: "#8B5CF6" },

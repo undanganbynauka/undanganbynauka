@@ -198,15 +198,15 @@ export default function DetailTemplatePage() {
                 background: "#0B1120",
               }}
             >
-              <Image
-                src={tpl.preview}
-                alt={`${tpl.name} preview`}
-                fill
-                sizes="(max-width: 580px) 100vw, 580px"
-                className="object-cover"
-                style={{ opacity: 0.9 }}
-                priority
-              />
+              <video
+  src={tpl.preview}
+  autoPlay
+  muted
+  loop
+  playsInline
+  className="object-cover"
+  style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.9 }}
+/>
             </div>
           </div>
 

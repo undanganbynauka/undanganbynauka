@@ -1,63 +1,159 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { NaukaFormDataUndangan, type WeddingData } from "./NaukaFormDataUndangan";
+import { NaukaFreeForm } from "./NaukaFreeForm";
+
+interface CheckoutProps {
+  templateName: string;
+  templateId: string;
+  basicPrice: number;
+  premiumPrice: number;
+  freeAvailable?: boolean;
+}
 
 const WA_BASE = "6289655592925";
+const SITE_BASE_URL = "https://undangan-by-nauka.vercel.app";
 
-type Step = "pemesan" | "undangan" | "review" | "done";
+type Step = "paket" | "pemesan" | "undangan" | "review" | "pembayaran" | "done";
 
 const STEP_TITLES: Record<Step, string> = {
+  paket: "Pilih Paket",
   pemesan: "Data Pemesan",
   undangan: "Data Undangan",
-  review: "Konfirmasi WhatsApp",
+  review: "Ringkasan Pesanan",
+  pembayaran: "Pembayaran",
   done: "Selesai",
 };
 
-interface LunaClaimFormProps {
-  templateName?: string;
+function formatRupiah(priceInRb: number): string {
+  return `Rp${priceInRb.toLocaleString("id-ID")}rb`;
 }
 
-export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps) {
-  const [step, setStep] = useState<Step>("pemesan");
-  const [visible, setVisible] = useState(false);
+function buildWaUrl(
+  orderId: string,
+  templateName: string,
+  packageName: "free" | "basic" | "premium",
+  data: WeddingData
+): string {
+  const packageLabel = packageName === "free" ? "Free (GRATIS)" : packageName === "basic" ? "Basic" : "Premium";
+  const lines = [
+    `Halo Nauka, saya ingin konfirmasi pesanan.`,
+    ``,
+    `*Nomor Pesanan:* ${orderId}`,
+    `*Template:* ${templateName}`,
+    `*Paket:* ${packageLabel}`,
+    ``,
+    `*DATA MEMPELAI*`,
+    `Pria: ${data.groomFullName}`,
+    `Wanita: ${data.brideFullName}`,
+    ``,
+    `*AKAD*`,
+    `Tanggal: ${data.akadDate}`,
+    `Waktu: ${data.akadStartTime}${data.akadEndTime ? ` - ${data.akadEndTime}` : ""}`,
+    `Lokasi: ${data.akadAddress}`,
+    ``,
+  ];
 
-  // Pemesan
+  if (data.hasResepsi) {
+    lines.push(
+      `*RESEPSI*`,
+      `Tanggal: ${data.resepsiDate || "-"}`,
+      `Waktu: ${data.resepsiStartTime || "-"}${data.resepsiEndTime ? ` - ${data.resepsiEndTime}` : ""}`,
+      `Lokasi: ${data.resepsiAddress || "-"}`,
+      ``,
+    );
+  }
+
+  lines.push(`*UNDANGAN*`, `Slug: ${data.slug}`);
+
+  if (packageName === "free") {
+    lines.push(`Pesanan GRATIS — tidak perlu pembayaran QRIS.`);
+  } else {
+    lines.push(`Saya sudah melakukan pembayaran QRIS sesuai nominal.`);
+  }
+
+  if (data.groomRekening || data.brideRekening) {
+    lines.push(``, `*KADO DIGITAL*`);
+    if (data.groomRekening) lines.push(`${data.groomBank} - ${data.groomRekening} a.n ${data.groomAn}`);
+    if (data.brideRekening) lines.push(`${data.brideBank} - ${data.brideRekening} a.n ${data.brideAn}`);
+  }
+
+  if (data.giftRecipientName || data.giftAddress) {
+    lines.push(``, `*KADO FISIK*`);
+    if (data.giftRecipientName) lines.push(`Penerima: ${data.giftRecipientName}`);
+    if (data.giftAddress) lines.push(`Alamat: ${data.giftAddress}`);
+  }
+
+  if (data.adminNote.trim()) {
+    lines.push(``, `*CATATAN:* ${data.adminNote}`);
+  }
+
+  lines.push(``, `Terima kasih.`);
+
+  return `https://wa.me/${WA_BASE}?text=${encodeURIComponent(lines.join("\n"))}`;
+}
+
+function buildLunaShareWaUrl(invitationUrl: string, data: WeddingData): string {
+  let dateLabel = "";
+  if (data.akadDate) {
+    try {
+      const d = new Date(`${data.akadDate}T00:00:00+07:00`);
+      dateLabel = d.toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+        timeZone: "Asia/Jakarta",
+      });
+    } catch {
+      dateLabel = data.akadDate;
+    }
+  }
+
+  const lines = [
+    `Assalamu'alaikum warahmatullahi wabarakatuh`,
+    ``,
+    `Kami mengundang Anda dengan penuh sukacita untuk hadir dalam acara pernikahan kami.`,
+    ``,
+    `${data.groomFullName} & ${data.brideFullName}`,
+    dateLabel,
+    ``,
+    `📎 Buka undangan Anda di:`,
+    invitationUrl,
+    ``,
+    `Merupakan kebahagiaan bagi kami apabila Anda berkenan hadir dan memberikan doa restu.`,
+    ``,
+    `Terima kasih 🙏✨`,
+  ];
+
+  return `https://wa.me/?text=${encodeURIComponent(lines.join("\n"))}`;
+}
+
+export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPrice, freeAvailable = false }: CheckoutProps) {
+  const [selected, setSelected] = useState<"free" | "basic" | "premium">("premium");
+  const [visible, setVisible] = useState(false);
+  const [step, setStep] = useState<Step>("paket");
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
-
-  // Data Undangan
-  const [groomFullName, setGroomFullName] = useState("");
-  const [groomFatherName, setGroomFatherName] = useState("");
-  const [groomMotherName, setGroomMotherName] = useState("");
-  const [brideFullName, setBrideFullName] = useState("");
-  const [brideFatherName, setBrideFatherName] = useState("");
-  const [brideMotherName, setBrideMotherName] = useState("");
-
-  const [akadDate, setAkadDate] = useState("");
-  const [akadStartTime, setAkadStartTime] = useState("");
-  const [akadEndTime, setAkadEndTime] = useState("");
-  const [akadAddress, setAkadAddress] = useState("");
-
-  const [hasResepsi, setHasResepsi] = useState(true);
-  const [resepsiDate, setResepsiDate] = useState("");
-  const [resepsiStartTime, setResepsiStartTime] = useState("");
-  const [resepsiEndTime, setResepsiEndTime] = useState("");
-  const [resepsiAddress, setResepsiAddress] = useState("");
-
-  const [slug, setSlug] = useState("");
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
+  const [weddingData, setWeddingData] = useState<WeddingData | null>(null);
   const [orderId, setOrderId] = useState<string | null>(null);
+  const [orderDbId, setOrderDbId] = useState<number | null>(null);
+  const [invitationUrl, setInvitationUrl] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const ref = useRef<HTMLElement>(null);
+
+  const isLunaFree = templateId === "luna" && selected === "free";
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) setVisible(true);
       },
-      { threshold: 0.08 }
+      { threshold: 0.1 }
     );
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
@@ -69,7 +165,11 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps) {
     }
   }, [step]);
 
-  // ── Validation: pemesan → undangan ──
+  const price = selected === "free" ? 0 : selected === "basic" ? basicPrice : premiumPrice;
+  const packageName = selected === "free" ? "Free" : selected === "basic" ? "Basic" : "Premium";
+  const priceInIdr = price * 1000;
+  const isFree = selected === "free";
+
   function goToUndangan() {
     setSubmitError(null);
     if (!customerName.trim()) {
@@ -83,100 +183,94 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps) {
     setStep("undangan");
   }
 
-  // ── Validation: undangan → review ──
-  function goToReview() {
-    setSubmitError(null);
-    if (!groomFullName.trim() || !brideFullName.trim()) {
-      setSubmitError("Nama lengkap mempelai pria dan wanita wajib diisi.");
-      return;
-    }
-    if (!akadDate.trim() || !akadStartTime.trim() || !akadAddress.trim()) {
-      setSubmitError("Tanggal, waktu, dan lokasi akad wajib diisi.");
-      return;
-    }
-    if (hasResepsi) {
-      if (!resepsiDate.trim() || !resepsiStartTime.trim() || !resepsiAddress.trim()) {
-        setSubmitError("Karena resepsi diaktifkan, semua data resepsi wajib diisi.");
-        return;
-      }
-    }
-    if (!slug.trim()) {
-      setSubmitError("Slug URL undangan wajib diisi (contoh: ali-lyla).");
-      return;
-    }
+  function handleUndanganSubmit(data: WeddingData) {
+    setWeddingData(data);
     setStep("review");
   }
 
-  // ── Build WA URL with all data ──
-  function buildWaUrl(orderIdArg?: string | null): string {
-    const lines = [
-      `Halo Nauka, saya ingin klaim Luna (template gratis) untuk undangan pernikahan saya.`,
-    ];
-    if (orderIdArg) {
-      lines.push(``, `*Nomor Pesanan:* ${orderIdArg}`);
+  async function createOrder() {
+    setSubmitError(null);
+    if (!weddingData) {
+      setSubmitError("Data undangan belum lengkap. Silakan kembali ke step Data Undangan.");
+      return;
     }
-    lines.push(
-      ``,
-      `*DATA PEMESAN*`,
-      `Nama: ${customerName}`,
-      `WhatsApp: ${customerPhone}`,
-    );
-    if (customerEmail) lines.push(`Email: ${customerEmail}`);
-    lines.push(
-      ``,
-      `*DATA MEMPELAI*`,
-      `Pria: ${groomFullName}`,
-      `  Putra dari Bapak ${groomFatherName || "-"} dan Ibu ${groomMotherName || "-"}`,
-      `Wanita: ${brideFullName}`,
-      `  Putri dari Bapak ${brideFatherName || "-"} dan Ibu ${brideMotherName || "-"}`,
-      ``,
-      `*AKAD*`,
-      `Tanggal: ${akadDate}`,
-      `Waktu: ${akadStartTime}${akadEndTime ? ` - ${akadEndTime}` : ""}`,
-      `Lokasi: ${akadAddress}`,
-    );
-    if (hasResepsi) {
-      lines.push(``, `*RESEPSI*`,
-        `Tanggal: ${resepsiDate}`,
-        `Waktu: ${resepsiStartTime}${resepsiEndTime ? ` - ${resepsiEndTime}` : ""}`,
-        `Lokasi: ${resepsiAddress}`,
-      );
+
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          template: templateId,
+          package: selected,
+          price: priceInIdr,
+          customer_name: customerName.trim(),
+          customer_phone: customerPhone.trim(),
+          customer_email: customerEmail.trim() || undefined,
+          wedding_data: weddingData,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setSubmitError(data.error || "Gagal membuat pesanan. Silakan coba lagi.");
+        return;
+      }
+      setOrderId(data.order_id);
+      setOrderDbId(data.id);
+      if (data.invitation_url) {
+        setInvitationUrl(data.invitation_url);
+      }
+      if (isFree) {
+        setStep("done");
+      } else {
+        setStep("pembayaran");
+      }
+    } catch (err) {
+      console.error("[checkout] create order error:", err);
+      setSubmitError("Terjadi kesalahan jaringan. Silakan coba lagi.");
+    } finally {
+      setSubmitting(false);
     }
-    lines.push(``, `*UNDANGAN*`,
-      `Slug URL: ${slug}`,
-      `Mohon info lebih lanjut untuk proses pembuatan. Terima kasih.`,
-    );
-    return `https://wa.me/${WA_BASE}?text=${encodeURIComponent(lines.filter(Boolean).join("\n"))}`;
   }
 
-  const inputStyle: React.CSSProperties = {
-    width: "100%",
-    padding: "12px 14px",
-    borderRadius: "10px",
-    border: "1px solid rgba(255,255,255,0.08)",
-    background: "rgba(255,255,255,0.02)",
-    fontFamily: "var(--font-inter)",
-    fontSize: "13px",
-    color: "rgba(255,255,255,0.85)",
-    outline: "none",
-    transition: "border-color 0.3s ease, background 0.3s ease",
-  };
-
-  const labelStyle: React.CSSProperties = {
-    fontFamily: "var(--font-inter)",
-    fontSize: "11px",
-    color: "rgba(255,255,255,0.45)",
-    display: "block",
-    marginBottom: "6px",
-  };
-
-  function focusGold(e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) {
-    e.currentTarget.style.borderColor = "rgba(201,169,110,0.25)";
-    e.currentTarget.style.background = "rgba(201,169,110,0.03)";
+  async function confirmPayment() {
+    setSubmitError(null);
+    if (!orderId) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch(`/api/orders/${orderId}/confirm-payment`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setSubmitError(data.error || "Gagal mengkonfirmasi pembayaran. Silakan coba lagi.");
+        return;
+      }
+      setStep("done");
+    } catch (err) {
+      console.error("[checkout] confirm payment error:", err);
+      setSubmitError("Terjadi kesalahan jaringan. Silakan coba lagi.");
+    } finally {
+      setSubmitting(false);
+    }
   }
-  function blurGold(e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) {
-    e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
-    e.currentTarget.style.background = "rgba(255,255,255,0.02)";
+
+  async function copyInvitationLink() {
+    if (!invitationUrl) return;
+    try {
+      await navigator.clipboard.writeText(invitationUrl);
+      alert("Link undangan berhasil disalin!");
+    } catch {
+      const textarea = document.createElement("textarea");
+      textarea.value = invitationUrl;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      alert("Link undangan berhasil disalin!");
+    }
   }
 
   return (
@@ -199,7 +293,6 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps) {
       />
 
       <div className="relative z-10 mx-auto max-w-[520px]">
-        {/* Title */}
         <h2
           style={{
             fontFamily: "var(--font-bodoni)",
@@ -217,7 +310,6 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps) {
           {STEP_TITLES[step]}
         </h2>
 
-        {/* Step indicator (3 dots for free flow) */}
         <div
           style={{
             display: "flex",
@@ -228,16 +320,16 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps) {
             transition: "opacity 1.4s ease-out 0.1s",
           }}
         >
-          {(["pemesan", "undangan", "review", "done"] as Step[]).map((s, i) => {
-            const order: Step[] = ["pemesan", "undangan", "review", "done"];
-            const currentIdx = order.indexOf(step);
+          {(["paket", "pemesan", "undangan", "review", "pembayaran", "done"] as Step[]).map((s, i) => {
+            const stepOrder = ["paket", "pemesan", "undangan", "review", "pembayaran", "done"];
+            const currentIdx = stepOrder.indexOf(step);
             const isActive = i === currentIdx;
             const isPast = i < currentIdx;
             return (
               <div
                 key={s}
                 style={{
-                  width: "32px",
+                  width: "24px",
                   height: "2px",
                   borderRadius: "2px",
                   background: isActive
@@ -261,9 +353,8 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps) {
             transition: "opacity 1.2s ease-out 0.15s",
           }}
         />
-
-        {/* ════════ STEP 1: PEMESAN ════════ */}
-        {step === "pemesan" && (
+                {/* STEP 1: PAKET */}
+        {step === "paket" && (
           <div
             style={{
               opacity: visible ? 1 : 0,
@@ -280,7 +371,6 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps) {
                 color: "rgba(255,255,255,0.85)",
                 display: "block",
                 textAlign: "center",
-                marginBottom: "8px",
               }}
             >
               {templateName}
@@ -291,79 +381,111 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps) {
                 fontSize: "11px",
                 color: "rgba(255,255,255,0.40)",
                 textAlign: "center",
-                marginBottom: "28px",
+                marginTop: "8px",
                 lineHeight: 1.6,
               }}
             >
-              Luna gratis — tanpa biaya. Silakan isi data pemesan terlebih dahulu.
+              {freeAvailable
+                ? "Untuk kamu yang ingin mengabarkan kabar bahagia dengan sederhana."
+                : "Pilih paket yang sesuai kebutuhan Anda."}
             </p>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-              <div>
-                <label htmlFor="cust-name" style={labelStyle}>
-                  Nama <span style={{ color: "rgba(201,169,110,0.7)" }}>*</span>
-                </label>
-                <input
-                  id="cust-name"
-                  type="text"
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                  placeholder="Nama lengkap pemesan"
-                  style={inputStyle}
-                  onFocus={focusGold}
-                  onBlur={blurGold}
-                />
-              </div>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: freeAvailable ? "1fr 1fr 1fr" : "1fr 1fr",
+                gap: "12px",
+                marginTop: "28px",
+              }}
+            >
+              {freeAvailable && (
+                <button
+                  onClick={() => setSelected("free")}
+                  style={{
+                    padding: "16px 8px",
+                    borderRadius: "12px",
+                    border: selected === "free" ? "1px solid rgba(201,169,110,0.25)" : "1px solid rgba(255,255,255,0.06)",
+                    background: selected === "free" ? "rgba(201,169,110,0.04)" : "transparent",
+                    cursor: "pointer",
+                    transition: "border-color 0.3s ease, background 0.3s ease",
+                    textAlign: "center",
+                  }}
+                >
+                  <span style={{ fontFamily: "var(--font-inter)", fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase", color: selected === "free" ? "rgba(201,169,110,0.75)" : "rgba(255,255,255,0.35)", display: "block" }}>
+                    Free
+                  </span>
+                  <span style={{ fontFamily: "var(--font-bodoni)", fontSize: "20px", fontWeight: 400, color: selected === "free" ? "rgba(201,169,110,0.8)" : "rgba(255,255,255,0.35)", display: "block", marginTop: "8px" }}>
+                    GRATIS
+                  </span>
+                  <span style={{ fontFamily: "var(--font-inter)", fontSize: "9px", color: "rgba(255,255,255,0.30)", display: "block", marginTop: "6px", letterSpacing: "0.05em" }}>
+                    tanpa QRIS
+                  </span>
+                </button>
+              )}
 
-              <div>
-                <label htmlFor="cust-phone" style={labelStyle}>
-                  No. WhatsApp <span style={{ color: "rgba(201,169,110,0.7)" }}>*</span>
-                </label>
-                <input
-                  id="cust-phone"
-                  type="tel"
-                  value={customerPhone}
-                  onChange={(e) => setCustomerPhone(e.target.value)}
-                  placeholder="08xxxxxxxxxx"
-                  style={inputStyle}
-                  onFocus={focusGold}
-                  onBlur={blurGold}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="cust-email" style={labelStyle}>
-                  Email <span style={{ color: "rgba(255,255,255,0.30)" }}>(opsional)</span>
-                </label>
-                <input
-                  id="cust-email"
-                  type="email"
-                  value={customerEmail}
-                  onChange={(e) => setCustomerEmail(e.target.value)}
-                  placeholder="email@contoh.com"
-                  style={inputStyle}
-                  onFocus={focusGold}
-                  onBlur={blurGold}
-                />
-              </div>
-            </div>
-
-            {submitError && (
-              <p
+              <button
+                onClick={() => setSelected("basic")}
                 style={{
-                  marginTop: "16px",
-                  fontFamily: "var(--font-inter)",
-                  fontSize: "12px",
-                  color: "rgba(255,150,150,0.85)",
+                  padding: "16px 12px",
+                  borderRadius: "12px",
+                  border: selected === "basic" ? "1px solid rgba(255,255,255,0.20)" : "1px solid rgba(255,255,255,0.06)",
+                  background: selected === "basic" ? "rgba(255,255,255,0.04)" : "transparent",
+                  cursor: "pointer",
+                  transition: "border-color 0.3s ease, background 0.3s ease",
                   textAlign: "center",
                 }}
               >
-                {submitError}
-              </p>
-            )}
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", letterSpacing: "0.15em", textTransform: "uppercase", color: selected === "basic" ? "rgba(255,255,255,0.75)" : "rgba(255,255,255,0.35)", display: "block" }}>
+                  Basic
+                </span>
+                <span style={{ fontFamily: "var(--font-bodoni)", fontSize: "22px", fontWeight: 400, color: selected === "basic" ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.35)", display: "block", marginTop: "8px" }}>
+                  {basicPrice}rb
+                </span>
+              </button>
+
+              <button
+                onClick={() => setSelected("premium")}
+                style={{
+                  padding: "16px 12px",
+                  borderRadius: "12px",
+                  border: selected === "premium" ? "1px solid rgba(201,169,110,0.25)" : "1px solid rgba(255,255,255,0.06)",
+                  background: selected === "premium" ? "rgba(201,169,110,0.04)" : "transparent",
+                  cursor: "pointer",
+                  transition: "border-color 0.3s ease, background 0.3s ease",
+                  textAlign: "center",
+                }}
+              >
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", letterSpacing: "0.15em", textTransform: "uppercase", color: selected === "premium" ? "rgba(201,169,110,0.75)" : "rgba(255,255,255,0.35)", display: "block" }}>
+                  Premium
+                </span>
+                <span style={{ fontFamily: "var(--font-bodoni)", fontSize: "22px", fontWeight: 400, color: selected === "premium" ? "rgba(201,169,110,0.8)" : "rgba(255,255,255,0.35)", display: "block", marginTop: "8px" }}>
+                  {premiumPrice}rb
+                </span>
+              </button>
+            </div>
+
+            <div
+              style={{
+                marginTop: "28px",
+                padding: "16px 18px",
+                borderRadius: "10px",
+                border: "1px solid rgba(255,255,255,0.05)",
+                background: "rgba(255,255,255,0.015)",
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "13px", color: "rgba(255,255,255,0.50)" }}>Total</span>
+                <span style={{ fontFamily: "var(--font-bodoni)", fontSize: "20px", fontWeight: 400, color: "rgba(255,255,255,0.85)" }}>
+                  {formatRupiah(price)}
+                </span>
+              </div>
+            </div>
 
             <button
-              onClick={goToUndangan}
+              onClick={() => {
+                setSubmitError(null);
+                setStep("pemesan");
+              }}
               style={{
                 width: "100%",
                 marginTop: "32px",
@@ -379,24 +501,14 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps) {
                 cursor: "pointer",
                 transition: "border-color 0.3s ease, background 0.3s ease, color 0.3s ease",
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "rgba(201,169,110,0.35)";
-                e.currentTarget.style.background = "rgba(201,169,110,0.10)";
-                e.currentTarget.style.color = "rgba(201,169,110,0.95)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "rgba(201,169,110,0.20)";
-                e.currentTarget.style.background = "rgba(201,169,110,0.06)";
-                e.currentTarget.style.color = "rgba(201,169,110,0.85)";
-              }}
             >
-              Lanjut ke Data Undangan
+              Lanjut ke Data Pemesan
             </button>
           </div>
         )}
 
-        {/* ════════ STEP 2: UNDANGAN ════════ */}
-        {step === "undangan" && (
+        {/* STEP 2: PEMESAN */}
+        {step === "pemesan" && (
           <div
             style={{
               opacity: visible ? 1 : 0,
@@ -404,746 +516,401 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps) {
               transition: "opacity 1.3s ease-out 0.2s, transform 1.3s ease-out 0.2s",
             }}
           >
-            <p
-              style={{
-                fontFamily: "var(--font-inter)",
-                fontSize: "11px",
-                color: "rgba(255,255,255,0.40)",
-                textAlign: "center",
-                marginBottom: "28px",
-                lineHeight: 1.6,
-              }}
-            >
-              Isi data mempelai dan jadwal acara. Data ini akan dikirim ke Nauka untuk diproses.
-            </p>
-
-            {/* Mempelai Pria */}
             <div
               style={{
                 padding: "14px 16px",
                 borderRadius: "10px",
-                border: "1px solid rgba(255,255,255,0.06)",
-                marginBottom: "16px",
-              }}
-            >
-              <span
-                style={{
-                  fontFamily: "var(--font-bodoni)",
-                  fontSize: "13px",
-                  color: "rgba(201,169,110,0.75)",
-                  display: "block",
-                  marginBottom: "14px",
-                  letterSpacing: "0.08em",
-                }}
-              >
-                MEMPELAI PRIA
-              </span>
-              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                <div>
-                  <label style={labelStyle}>Nama Lengkap <span style={{ color: "rgba(201,169,110,0.7)" }}>*</span></label>
-                  <input
-                    type="text"
-                    value={groomFullName}
-                    onChange={(e) => setGroomFullName(e.target.value)}
-                    placeholder="Ali Rahman"
-                    style={inputStyle}
-                    onFocus={focusGold}
-                    onBlur={blurGold}
-                  />
-                </div>
-                <div>
-                  <label style={labelStyle}>Nama Bapak</label>
-                  <input
-                    type="text"
-                    value={groomFatherName}
-                    onChange={(e) => setGroomFatherName(e.target.value)}
-                    placeholder="Hendri"
-                    style={inputStyle}
-                    onFocus={focusGold}
-                    onBlur={blurGold}
-                  />
-                </div>
-                <div>
-                  <label style={labelStyle}>Nama Ibu</label>
-                  <input
-                    type="text"
-                    value={groomMotherName}
-                    onChange={(e) => setGroomMotherName(e.target.value)}
-                    placeholder="Ningsih"
-                    style={inputStyle}
-                    onFocus={focusGold}
-                    onBlur={blurGold}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Mempelai Wanita */}
-            <div
-              style={{
-                padding: "14px 16px",
-                borderRadius: "10px",
-                border: "1px solid rgba(255,255,255,0.06)",
-                marginBottom: "16px",
-              }}
-            >
-              <span
-                style={{
-                  fontFamily: "var(--font-bodoni)",
-                  fontSize: "13px",
-                  color: "rgba(201,169,110,0.75)",
-                  display: "block",
-                  marginBottom: "14px",
-                  letterSpacing: "0.08em",
-                }}
-              >
-                MEMPELAI WANITA
-              </span>
-              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                <div>
-                  <label style={labelStyle}>Nama Lengkap <span style={{ color: "rgba(201,169,110,0.7)" }}>*</span></label>
-                  <input
-                    type="text"
-                    value={brideFullName}
-                    onChange={(e) => setBrideFullName(e.target.value)}
-                    placeholder="Lyla Azzahra"
-                    style={inputStyle}
-                    onFocus={focusGold}
-                    onBlur={blurGold}
-                  />
-                </div>
-                <div>
-                  <label style={labelStyle}>Nama Bapak</label>
-                  <input
-                    type="text"
-                    value={brideFatherName}
-                    onChange={(e) => setBrideFatherName(e.target.value)}
-                    placeholder="Yusuf"
-                    style={inputStyle}
-                    onFocus={focusGold}
-                    onBlur={blurGold}
-                  />
-                </div>
-                <div>
-                  <label style={labelStyle}>Nama Ibu</label>
-                  <input
-                    type="text"
-                    value={brideMotherName}
-                    onChange={(e) => setBrideMotherName(e.target.value)}
-                    placeholder="Rahayu"
-                    style={inputStyle}
-                    onFocus={focusGold}
-                    onBlur={blurGold}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Akad */}
-            <div
-              style={{
-                padding: "14px 16px",
-                borderRadius: "10px",
-                border: "1px solid rgba(255,255,255,0.06)",
-                marginBottom: "16px",
-              }}
-            >
-              <span
-                style={{
-                  fontFamily: "var(--font-bodoni)",
-                  fontSize: "13px",
-                  color: "rgba(201,169,110,0.75)",
-                  display: "block",
-                  marginBottom: "14px",
-                  letterSpacing: "0.08em",
-                }}
-              >
-                AKAD
-              </span>
-              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                <div>
-                  <label style={labelStyle}>Tanggal <span style={{ color: "rgba(201,169,110,0.7)" }}>*</span></label>
-                  <input
-                    type="date"
-                    value={akadDate}
-                    onChange={(e) => setAkadDate(e.target.value)}
-                    style={inputStyle}
-                    onFocus={focusGold}
-                    onBlur={blurGold}
-                  />
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-                  <div>
-                    <label style={labelStyle}>Waktu Mulai <span style={{ color: "rgba(201,169,110,0.7)" }}>*</span></label>
-                    <input
-                      type="time"
-                      value={akadStartTime}
-                      onChange={(e) => setAkadStartTime(e.target.value)}
-                      style={inputStyle}
-                      onFocus={focusGold}
-                      onBlur={blurGold}
-                    />
-                  </div>
-                  <div>
-                    <label style={labelStyle}>Waktu Selesai</label>
-                    <input
-                      type="time"
-                      value={akadEndTime}
-                      onChange={(e) => setAkadEndTime(e.target.value)}
-                      style={inputStyle}
-                      onFocus={focusGold}
-                      onBlur={blurGold}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label style={labelStyle}>Lokasi <span style={{ color: "rgba(201,169,110,0.7)" }}>*</span></label>
-                  <textarea
-                    value={akadAddress}
-                    onChange={(e) => setAkadAddress(e.target.value)}
-                    placeholder="Masjid / gedung / alamat lengkap"
-                    rows={2}
-                    style={{ ...inputStyle, resize: "vertical" as const }}
-                    onFocus={focusGold}
-                    onBlur={blurGold}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Resepsi toggle */}
-            <div
-              style={{
-                padding: "14px 16px",
-                borderRadius: "10px",
-                border: "1px solid rgba(255,255,255,0.06)",
-                marginBottom: "16px",
-              }}
-            >
-              <label
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  cursor: "pointer",
-                  fontFamily: "var(--font-inter)",
-                  fontSize: "12px",
-                  color: "rgba(255,255,255,0.65)",
-                }}
-              >
-                <input
-                  type="checkbox"
-                  checked={hasResepsi}
-                  onChange={(e) => setHasResepsi(e.target.checked)}
-                  style={{ accentColor: "rgba(201,169,110,0.7)" }}
-                />
-                Ada acara resepsi
-              </label>
-
-              {hasResepsi && (
-                <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "14px" }}>
-                  <div>
-                    <label style={labelStyle}>Tanggal Resepsi <span style={{ color: "rgba(201,169,110,0.7)" }}>*</span></label>
-                    <input
-                      type="date"
-                      value={resepsiDate}
-                      onChange={(e) => setResepsiDate(e.target.value)}
-                      style={inputStyle}
-                      onFocus={focusGold}
-                      onBlur={blurGold}
-                    />
-                  </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-                    <div>
-                      <label style={labelStyle}>Waktu Mulai <span style={{ color: "rgba(201,169,110,0.7)" }}>*</span></label>
-                      <input
-                        type="time"
-                        value={resepsiStartTime}
-                        onChange={(e) => setResepsiStartTime(e.target.value)}
-                        style={inputStyle}
-                        onFocus={focusGold}
-                        onBlur={blurGold}
-                      />
-                    </div>
-                    <div>
-                      <label style={labelStyle}>Waktu Selesai</label>
-                      <input
-                        type="time"
-                        value={resepsiEndTime}
-                        onChange={(e) => setResepsiEndTime(e.target.value)}
-                        style={inputStyle}
-                        onFocus={focusGold}
-                        onBlur={blurGold}
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label style={labelStyle}>Lokasi Resepsi <span style={{ color: "rgba(201,169,110,0.7)" }}>*</span></label>
-                    <textarea
-                      value={resepsiAddress}
-                      onChange={(e) => setResepsiAddress(e.target.value)}
-                      placeholder="Gedung / alamat lengkap"
-                      rows={2}
-                      style={{ ...inputStyle, resize: "vertical" as const }}
-                      onFocus={focusGold}
-                      onBlur={blurGold}
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Slug */}
-            <div
-              style={{
-                padding: "14px 16px",
-                borderRadius: "10px",
-                border: "1px solid rgba(255,255,255,0.06)",
-                marginBottom: "16px",
-              }}
-            >
-              <label style={labelStyle}>
-                Slug URL Undangan <span style={{ color: "rgba(201,169,110,0.7)" }}>*</span>
-              </label>
-              <input
-                type="text"
-                value={slug}
-                onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/\s+/g, "-"))}
-                placeholder="ali-lyla"
-                style={inputStyle}
-                onFocus={focusGold}
-                onBlur={blurGold}
-              />
-              <p
-                style={{
-                  fontFamily: "var(--font-inter)",
-                  fontSize: "10px",
-                  color: "rgba(255,255,255,0.30)",
-                  marginTop: "6px",
-                }}
-              >
-                URL undangan Anda akan menjadi: undangan-by-nauka.vercel.app/<span style={{ color: "rgba(201,169,110,0.5)" }}>{slug || "slug"}</span>
-              </p>
-            </div>
-
-            {submitError && (
-              <p
-                style={{
-                  marginTop: "8px",
-                  fontFamily: "var(--font-inter)",
-                  fontSize: "12px",
-                  color: "rgba(255,150,150,0.85)",
-                  textAlign: "center",
-                }}
-              >
-                {submitError}
-              </p>
-            )}
-
-            <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
-              <button
-                onClick={() => {
-                  setSubmitError(null);
-                  setStep("pemesan");
-                }}
-                style={{
-                  flex: "0 0 auto",
-                  padding: "16px 20px",
-                  borderRadius: "12px",
-                  border: "1px solid rgba(255,255,255,0.10)",
-                  background: "transparent",
-                  fontFamily: "var(--font-inter)",
-                  fontSize: "12px",
-                  color: "rgba(255,255,255,0.55)",
-                  cursor: "pointer",
-                  transition: "border-color 0.3s ease, color 0.3s ease",
-                }}
-              >
-                ← Kembali
-              </button>
-              <button
-                onClick={goToReview}
-                style={{
-                  flex: 1,
-                  padding: "16px 24px",
-                  borderRadius: "12px",
-                  border: "1px solid rgba(201,169,110,0.20)",
-                  background: "rgba(201,169,110,0.06)",
-                  fontFamily: "var(--font-inter)",
-                  fontSize: "13px",
-                  fontWeight: 400,
-                  letterSpacing: "0.1em",
-                  color: "rgba(201,169,110,0.85)",
-                  cursor: "pointer",
-                  transition: "border-color 0.3s ease, background 0.3s ease, color 0.3s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(201,169,110,0.35)";
-                  e.currentTarget.style.background = "rgba(201,169,110,0.10)";
-                  e.currentTarget.style.color = "rgba(201,169,110,0.95)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(201,169,110,0.20)";
-                  e.currentTarget.style.background = "rgba(201,169,110,0.06)";
-                  e.currentTarget.style.color = "rgba(201,169,110,0.85)";
-                }}
-              >
-                Lanjut ke Konfirmasi
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* ════════ STEP 3: REVIEW + WA ════════ */}
-        {step === "review" && (
-          <div
-            style={{
-              opacity: visible ? 1 : 0,
-              transform: visible ? "translateY(0)" : "translateY(16px)",
-              transition: "opacity 1.3s ease-out 0.2s, transform 1.3s ease-out 0.2s",
-            }}
-          >
-            <p
-              style={{
-                fontFamily: "var(--font-inter)",
-                fontSize: "11px",
-                color: "rgba(255,255,255,0.40)",
-                textAlign: "center",
-                marginBottom: "28px",
-                lineHeight: 1.6,
-              }}
-            >
-              Cek kembali data di bawah. Setelah yakin, klik tombol WhatsApp untuk mengirim ke Nauka.
-            </p>
-
-            <div
-              style={{
-                padding: "18px 20px",
-                borderRadius: "12px",
-                border: "1px solid rgba(255,255,255,0.08)",
-                background: "rgba(255,255,255,0.015)",
-                marginBottom: "16px",
-              }}
-            >
-              <ReviewBlock title="Pemesan">
-                <ReviewRow k="Nama" v={customerName} />
-                <ReviewRow k="WhatsApp" v={customerPhone} />
-                {customerEmail && <ReviewRow k="Email" v={customerEmail} />}
-              </ReviewBlock>
-
-              <ReviewBlock title="Mempelai Pria">
-                <ReviewRow k="Nama Lengkap" v={groomFullName} />
-                <ReviewRow k="Putra dari" v={`Bapak ${groomFatherName || "-"} & Ibu ${groomMotherName || "-"}`} />
-              </ReviewBlock>
-
-              <ReviewBlock title="Mempelai Wanita">
-                <ReviewRow k="Nama Lengkap" v={brideFullName} />
-                <ReviewRow k="Putri dari" v={`Bapak ${brideFatherName || "-"} & Ibu ${brideMotherName || "-"}`} />
-              </ReviewBlock>
-
-              <ReviewBlock title="Akad">
-                <ReviewRow k="Tanggal" v={akadDate} />
-                <ReviewRow k="Waktu" v={`${akadStartTime}${akadEndTime ? ` - ${akadEndTime}` : ""}`} />
-                <ReviewRow k="Lokasi" v={akadAddress} />
-              </ReviewBlock>
-
-              {hasResepsi && (
-                <ReviewBlock title="Resepsi">
-                  <ReviewRow k="Tanggal" v={resepsiDate} />
-                  <ReviewRow k="Waktu" v={`${resepsiStartTime}${resepsiEndTime ? ` - ${resepsiEndTime}` : ""}`} />
-                  <ReviewRow k="Lokasi" v={resepsiAddress} />
-                </ReviewBlock>
-              )}
-
-              <ReviewBlock title="Undangan" last>
-                <ReviewRow k="Slug URL" v={slug} />
-                <ReviewRow
-                  k="URL Final"
-                  v={`undangan-by-nauka.vercel.app/${slug}`}
-                />
-              </ReviewBlock>
-            </div>
-
-            <div style={{ display: "flex", gap: "10px" }}>
-              <button
-                onClick={() => {
-                  setSubmitError(null);
-                  setStep("undangan");
-                }}
-                style={{
-                  flex: "0 0 auto",
-                  padding: "16px 20px",
-                  borderRadius: "12px",
-                  border: "1px solid rgba(255,255,255,0.10)",
-                  background: "transparent",
-                  fontFamily: "var(--font-inter)",
-                  fontSize: "12px",
-                  color: "rgba(255,255,255,0.55)",
-                  cursor: "pointer",
-                }}
-              >
-                ← Edit
-              </button>
-
-              <button
-                onClick={async () => {
-                  setSubmitError(null);
-                  setSubmitting(true);
-                  try {
-                    // ── POST to /api/orders ──
-                    // Luna = free tier, price = 0, status awal 'pending_whatsapp'
-                    const weddingPayload = {
-                      groomFullName, groomFatherName, groomMotherName,
-                      brideFullName, brideFatherName, brideMotherName,
-                      akadDate, akadStartTime, akadEndTime, akadAddress,
-                      hasResepsi,
-                      resepsiDate, resepsiStartTime, resepsiEndTime, resepsiAddress,
-                      slug,
-                    };
-                    const res = await fetch("/api/orders", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({
-                        template: "luna",
-                        package: "free",
-                        price: 0,
-                        customer_name: customerName.trim(),
-                        customer_phone: customerPhone.trim(),
-                        customer_email: customerEmail.trim() || undefined,
-                        wedding_data: weddingPayload,
-                      }),
-                    });
-                    const data = await res.json();
-                    if (!res.ok) {
-                      setSubmitError(data.error || "Gagal membuat pesanan. Silakan coba lagi.");
-                      setSubmitting(false);
-                      return;
-                    }
-                    setOrderId(data.order_id);
-
-                    // ── Open WhatsApp in new tab ──
-                    const waUrl = buildWaUrl(data.order_id);
-                    window.open(waUrl, "_blank", "noopener,noreferrer");
-
-                    // ── Move to done state ──
-                    setStep("done");
-                  } catch (err) {
-                    console.error("[luna claim] create order error:", err);
-                    setSubmitError("Terjadi kesalahan jaringan. Silakan coba lagi.");
-                  } finally {
-                    setSubmitting(false);
-                  }
-                }}
-                disabled={submitting}
-                style={{
-                  flex: 1,
-                  display: "block",
-                  padding: "16px 24px",
-                  borderRadius: "12px",
-                  background: submitting
-                    ? "rgba(247,242,234,0.55)"
-                    : "linear-gradient(180deg, rgba(247,242,234,0.96) 0%, rgba(232,226,214,0.92) 100%)",
-                  color: "#3A4D3F",
-                  fontFamily: "var(--font-inter)",
-                  fontSize: "13px",
-                  fontWeight: 600,
-                  letterSpacing: "0.1em",
-                  textAlign: "center",
-                  textDecoration: "none",
-                  boxShadow: "0 4px 18px rgba(247,242,234,0.10)",
-                  transition: "transform 0.2s ease, opacity 0.2s ease",
-                  cursor: submitting ? "not-allowed" : "pointer",
-                  border: "none",
-                  opacity: submitting ? 0.7 : 1,
-                }}
-              >
-                {submitting ? "Memproses..." : "Kirim ke WhatsApp →"}
-              </button>
-            </div>
-            {submitError && (
-              <p
-                style={{
-                  marginTop: "14px",
-                  fontFamily: "var(--font-inter)",
-                  fontSize: "12px",
-                  color: "rgba(255,150,150,0.85)",
-                  textAlign: "center",
-                }}
-              >
-                {submitError}
-              </p>
-            )}
-          </div>
-        )}
-
-        {/* ════════ STEP 4: DONE ════════ */}
-        {step === "done" && (
-          <div
-            style={{
-              opacity: visible ? 1 : 0,
-              transform: visible ? "translateY(0)" : "translateY(16px)",
-              transition: "opacity 1.3s ease-out 0.2s, transform 1.3s ease-out 0.2s",
-              textAlign: "center",
-              padding: "32px 20px",
-            }}
-          >
-            {/* Checkmark */}
-            <div
-              style={{
-                width: "64px",
-                height: "64px",
-                borderRadius: "50%",
-                background: "rgba(201,169,110,0.10)",
-                border: "1px solid rgba(201,169,110,0.30)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                margin: "0 auto 24px",
-                fontSize: "28px",
-                color: "rgba(201,169,110,0.85)",
-              }}
-            >
-              ✓
-            </div>
-
-            <h3
-              style={{
-                fontFamily: "var(--font-bodoni)",
-                fontSize: "22px",
-                fontWeight: 400,
-                letterSpacing: "0.04em",
-                color: "rgba(255,255,255,0.92)",
-                marginBottom: "14px",
-              }}
-            >
-              Pesanan Luna Anda Sudah Dikirim
-            </h3>
-
-            <p
-              style={{
-                fontFamily: "var(--font-inter)",
-                fontSize: "13px",
-                lineHeight: 1.7,
-                color: "rgba(255,255,255,0.55)",
-                maxWidth: "420px",
-                margin: "0 auto 24px",
-              }}
-            >
-              Terima kasih sudah mempercayakan undangan Anda kepada Nauka. Tim kami akan menghubungi Anda melalui WhatsApp di <strong style={{ color: "rgba(201,169,110,0.85)", fontWeight: 500 }}>{customerPhone}</strong> dalam <strong style={{ color: "rgba(255,255,255,0.75)", fontWeight: 500 }}>1×24 jam</strong> untuk konfirmasi dan proses pembuatan undangan.
-            </p>
-
-            {/* Ringkasan singkat */}
-            <div
-              style={{
-                padding: "16px 20px",
-                borderRadius: "12px",
                 border: "1px solid rgba(255,255,255,0.06)",
                 background: "rgba(255,255,255,0.015)",
                 marginBottom: "24px",
-                textAlign: "left",
-                maxWidth: "420px",
-                margin: "0 auto 24px",
               }}
             >
-              {orderId && (
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-                  <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>No. Pesanan</span>
-                  <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(201,169,110,0.85)", fontWeight: 500 }}>{orderId}</span>
-                </div>
-              )}
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
                 <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>Template</span>
-                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.80)" }}>Luna (Gratis)</span>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.72)" }}>{templateName}</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>Pemesan</span>
-                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.80)" }}>{customerName}</span>
-              </div>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>Mempelai</span>
-                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.80)" }}>{groomFullName} & {brideFullName}</span>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>Paket</span>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: selected === "premium" || selected === "free" ? "rgba(201,169,110,0.7)" : "rgba(255,255,255,0.72)" }}>{packageName}</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>URL Undangan</span>
-                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(201,169,110,0.75)" }}>.../{slug}</span>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>Total</span>
+                <span style={{ fontFamily: "var(--font-bodoni)", fontSize: "13px", color: "rgba(255,255,255,0.85)" }}>{isFree ? "GRATIS" : formatRupiah(price)}</span>
               </div>
             </div>
 
-            <p
-              style={{
-                fontFamily: "var(--font-inter)",
-                fontSize: "11px",
-                color: "rgba(255,255,255,0.35)",
-                maxWidth: "380px",
-                margin: "0 auto 28px",
-                lineHeight: 1.6,
-              }}
-            >
-              Pastikan WhatsApp Anda aktif dan dapat dihubungi. Jika belum dihubungi dalam 24 jam, jangan ragu untuk chat langsung ke kami.
+            <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+              <div>
+                <label htmlFor="cust-name" style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)", display: "block", marginBottom: "6px" }}>
+                  Nama <span style={{ color: "rgba(201,169,110,0.7)" }}>*</span>
+                </label>
+                <input
+                  id="cust-name"
+                  type="text"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  placeholder="Nama lengkap pemesan"
+                  style={{
+                    width: "100%",
+                    padding: "12px 14px",
+                    borderRadius: "10px",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    background: "rgba(255,255,255,0.02)",
+                    fontFamily: "var(--font-inter)",
+                    fontSize: "13px",
+                    color: "rgba(255,255,255,0.85)",
+                    outline: "none",
+                  }}
+                />
+              </div>
+
+              <div>
+                <label htmlFor="cust-phone" style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)", display: "block", marginBottom: "6px" }}>
+                  No. WhatsApp <span style={{ color: "rgba(201,169,110,0.7)" }}>*</span>
+                </label>
+                <input
+                  id="cust-phone"
+                  type="tel"
+                  value={customerPhone}
+                  onChange={(e) => setCustomerPhone(e.target.value)}
+                  placeholder="08xxxxxxxxxx"
+                  style={{
+                    width: "100%",
+                    padding: "12px 14px",
+                    borderRadius: "10px",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    background: "rgba(255,255,255,0.02)",
+                    fontFamily: "var(--font-inter)",
+                    fontSize: "13px",
+                    color: "rgba(255,255,255,0.85)",
+                    outline: "none",
+                  }}
+                />
+              </div>
+
+              <div>
+                <label htmlFor="cust-email" style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)", display: "block", marginBottom: "6px" }}>
+                  Email <span style={{ color: "rgba(255,255,255,0.30)" }}>(opsional)</span>
+                </label>
+                <input
+                  id="cust-email"
+                  type="email"
+                  value={customerEmail}
+                  onChange={(e) => setCustomerEmail(e.target.value)}
+                  placeholder="email@contoh.com"
+                  style={{
+                    width: "100%",
+                    padding: "12px 14px",
+                    borderRadius: "10px",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    background: "rgba(255,255,255,0.02)",
+                    fontFamily: "var(--font-inter)",
+                    fontSize: "13px",
+                    color: "rgba(255,255,255,0.85)",
+                    outline: "none",
+                  }}
+                />
+              </div>
+            </div>
+
+            {submitError && (
+              <p style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(220, 100, 100, 0.85)", textAlign: "center", marginTop: "16px", padding: "10px 14px", borderRadius: "8px", background: "rgba(220, 100, 100, 0.06)", border: "1px solid rgba(220, 100, 100, 0.15)" }}>
+                {submitError}
+              </p>
+            )}
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "10px", marginTop: "32px" }}>
+              <button onClick={() => setStep("paket")} style={{ padding: "16px 18px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.08)", background: "transparent", fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(255,255,255,0.55)", cursor: "pointer" }}>
+                Kembali
+              </button>
+              <button onClick={goToUndangan} style={{ padding: "16px 24px", borderRadius: "12px", border: "1px solid rgba(201,169,110,0.20)", background: "rgba(201,169,110,0.06)", fontFamily: "var(--font-inter)", fontSize: "13px", letterSpacing: "0.1em", color: "rgba(201,169,110,0.85)", cursor: "pointer" }}>
+                Lanjut ke Data Undangan
+              </button>
+            </div>
+          </div>
+        )}
+                {/* STEP 3: UNDANGAN */}
+        {step === "undangan" && (
+          <div>
+            <button onClick={() => setStep("pemesan")} style={{ padding: "10px 16px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.08)", background: "transparent", fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.55)", cursor: "pointer", marginBottom: "20px" }}>
+              ← Kembali ke Data Pemesan
+            </button>
+
+            {templateId === "luna" ? (
+              <NaukaFreeForm template={templateId} onSubmit={handleUndanganSubmit} submitLabel="Lanjut ke Ringkasan" submitting={false} />
+            ) : (
+              <NaukaFormDataUndangan template={templateId as "sacred" | "celestial"} onSubmit={handleUndanganSubmit} submitLabel="Lanjut ke Ringkasan" submitting={false} />
+            )}
+          </div>
+        )}
+
+        {/* STEP 4: REVIEW */}
+        {step === "review" && weddingData && (
+          <div
+            style={{
+              opacity: visible ? 1 : 0,
+              transform: visible ? "translateY(0)" : "translateY(16px)",
+              transition: "opacity 1.3s ease-out 0.2s, transform 1.3s ease-out 0.2s",
+            }}
+          >
+            <p style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(255,255,255,0.45)", textAlign: "center", marginBottom: "24px", lineHeight: 1.6 }}>
+              Mohon periksa kembali semua data di bawah. Setelah klik <strong style={{ color: "rgba(201,169,110,0.85)" }}>{isFree ? "Kirim Pesanan" : "Lanjut ke Pembayaran"}</strong>, pesanan akan dibuat dengan nomor <code style={{ color: "rgba(201,169,110,0.85)" }}>NAUKA-{new Date().getFullYear()}-...</code> dan tidak dapat diubah.
             </p>
 
-            {/* Buttons */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px", maxWidth: "420px", margin: "0 auto" }}>
-              <a
-                href={buildWaUrl(orderId)}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: "block",
-                  padding: "14px 24px",
-                  borderRadius: "12px",
-                  border: "1px solid rgba(201,169,110,0.30)",
-                  background: "rgba(201,169,110,0.06)",
-                  color: "rgba(201,169,110,0.9)",
-                  fontFamily: "var(--font-inter)",
-                  fontSize: "12px",
-                  fontWeight: 500,
-                  letterSpacing: "0.1em",
-                  textAlign: "center",
-                  textDecoration: "none",
-                  transition: "border-color 0.3s ease, background 0.3s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(201,169,110,0.45)";
-                  e.currentTarget.style.background = "rgba(201,169,110,0.10)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(201,169,110,0.30)";
-                  e.currentTarget.style.background = "rgba(201,169,110,0.06)";
-                }}
-              >
-                Buka Ulang Pesan WhatsApp
-              </a>
+            <ReviewSection title="Pesanan">
+              <ReviewRow label="Template" value={templateName} />
+              <ReviewRow label="Paket" value={packageName} highlight={selected === "premium" || selected === "free"} />
+              <ReviewRow label="Total" value={isFree ? "GRATIS" : formatRupiah(price)} bold />
+            </ReviewSection>
 
-              <a
-                href="/"
+            <ReviewSection title="Data Pemesan">
+              <ReviewRow label="Nama" value={customerName} />
+              <ReviewRow label="No. WhatsApp" value={customerPhone} />
+              {customerEmail && <ReviewRow label="Email" value={customerEmail} />}
+            </ReviewSection>
+
+            <ReviewSection title="Data Mempelai">
+              <ReviewRow label="Mempelai Pria" value={weddingData.groomFullName} />
+              {weddingData.groomNickname && <ReviewRow label="Panggilan Pria" value={weddingData.groomNickname} />}
+              <ReviewRow label="Mempelai Wanita" value={weddingData.brideFullName} />
+              {weddingData.brideNickname && <ReviewRow label="Panggilan Wanita" value={weddingData.brideNickname} />}
+            </ReviewSection>
+
+            <ReviewSection title="Akad">
+              <ReviewRow label="Tanggal" value={weddingData.akadDate} />
+              <ReviewRow label="Waktu" value={`${weddingData.akadStartTime}${weddingData.akadEndTime ? ` - ${weddingData.akadEndTime}` : ""}`} />
+              <ReviewRow label="Lokasi" value={weddingData.akadAddress} />
+              {weddingData.akadCity && <ReviewRow label="Kota" value={weddingData.akadCity} />}
+            </ReviewSection>
+
+            {weddingData.hasResepsi && (
+              <ReviewSection title="Resepsi">
+                <ReviewRow label="Tanggal" value={weddingData.resepsiDate || "-"} />
+                <ReviewRow label="Waktu" value={`${weddingData.resepsiStartTime || "-"}${weddingData.resepsiEndTime ? ` - ${weddingData.resepsiEndTime}` : ""}`} />
+                <ReviewRow label="Lokasi" value={weddingData.resepsiAddress || "-"} />
+                {weddingData.resepsiCity && <ReviewRow label="Kota" value={weddingData.resepsiCity} />}
+              </ReviewSection>
+            )}
+
+            <ReviewSection title="Konfigurasi Undangan">
+              <ReviewRow label="Slug" value={`/${weddingData.slug}`} />
+              <ReviewRow label="BGM" value={weddingData.bgmType === "hening" ? "Hening (tanpa musik)" : weddingData.bgmType} />
+              {weddingData.quote && <ReviewRow label="Quote" value={weddingData.quote} />}
+            </ReviewSection>
+
+            {submitError && (
+              <p style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(220, 100, 100, 0.85)", textAlign: "center", marginTop: "16px", padding: "10px 14px", borderRadius: "8px", background: "rgba(220, 100, 100, 0.06)", border: "1px solid rgba(220, 100, 100, 0.15)" }}>
+                {submitError}
+              </p>
+            )}
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "10px", marginTop: "32px" }}>
+              <button onClick={() => setStep("undangan")} disabled={submitting} style={{ padding: "16px 18px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.08)", background: "transparent", fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(255,255,255,0.55)", cursor: submitting ? "not-allowed" : "pointer", opacity: submitting ? 0.5 : 1 }}>
+                Kembali
+              </button>
+              <button onClick={createOrder} disabled={submitting} style={{ padding: "16px 24px", borderRadius: "12px", border: "1px solid rgba(201,169,110,0.20)", background: submitting ? "rgba(201,169,110,0.03)" : "rgba(201,169,110,0.06)", fontFamily: "var(--font-inter)", fontSize: "13px", letterSpacing: "0.1em", color: submitting ? "rgba(201,169,110,0.4)" : "rgba(201,169,110,0.85)", cursor: submitting ? "not-allowed" : "pointer" }}>
+                {submitting ? "Sedang merangkai undangan kamu..." : isFree ? "Kirim Pesanan (Gratis)" : "Lanjut ke Pembayaran"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 5: PEMBAYARAN */}
+        {step === "pembayaran" && orderId && (
+          <div style={{ opacity: 1, transform: "translateY(0)", transition: "opacity 0.6s ease-out, transform 0.6s ease-out" }}>
+            <div style={{ textAlign: "center", marginBottom: "24px" }}>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "8px 16px", borderRadius: "999px", border: "1px solid rgba(201,169,110,0.20)", background: "rgba(201,169,110,0.05)" }}>
+                <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "rgba(201,169,110,0.7)", boxShadow: "0 0 8px rgba(201,169,110,0.5)" }} />
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(201,169,110,0.75)" }}>
+                  Menunggu Pembayaran
+                </span>
+              </div>
+            </div>
+
+            <div style={{ textAlign: "center", marginBottom: "24px" }}>
+              <p style={{ fontFamily: "var(--font-inter)", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: "8px" }}>
+                Nomor Pesanan
+              </p>
+              <p style={{ fontFamily: "var(--font-bodoni)", fontSize: "24px", fontWeight: 400, letterSpacing: "0.08em", color: "rgba(201,169,110,0.9)" }}>
+                {orderId}
+              </p>
+            </div>
+
+            <div style={{ padding: "16px 18px", borderRadius: "10px", border: "1px solid rgba(201,169,110,0.15)", background: "rgba(201,169,110,0.02)", marginBottom: "24px", textAlign: "center" }}>
+              <p style={{ fontFamily: "var(--font-inter)", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: "6px" }}>
+                Total Pembayaran
+              </p>
+              <p style={{ fontFamily: "var(--font-bodoni)", fontSize: "26px", fontWeight: 400, color: "rgba(201,169,110,0.9)" }}>
+                {formatRupiah(price)}
+              </p>
+            </div>
+
+            <div style={{ padding: "28px 24px", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.025)", boxShadow: "0 4px 32px rgba(0,0,0,0.2), 0 0 80px rgba(201,169,110,0.02)", textAlign: "center" }}>
+              <div style={{ width: "200px", height: "200px", margin: "0 auto", borderRadius: "12px", overflow: "hidden", position: "relative", background: "#ffffff", padding: "12px" }}>
+                <Image src="/qris.png" alt="QRIS Payment" fill sizes="200px" className="object-contain" style={{ borderRadius: "8px" }} priority />
+              </div>
+              <span style={{ fontFamily: "var(--font-inter)", fontSize: "13px", fontWeight: 500, letterSpacing: "0.06em", color: "rgba(255,255,255,0.60)", display: "block", marginTop: "18px" }}>
+                QRIS
+              </span>
+              <p style={{ fontFamily: "var(--font-inter)", fontSize: "11px", fontWeight: 400, lineHeight: 1.5, color: "rgba(255,255,255,0.28)", marginTop: "8px" }}>
+                Dapat dibayar melalui semua aplikasi pembayaran &amp; mobile banking
+              </p>
+            </div>
+
+            <div style={{ marginTop: "24px", padding: "16px 18px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.05)", background: "rgba(255,255,255,0.015)" }}>
+              <p style={{ fontFamily: "var(--font-inter)", fontSize: "12px", fontWeight: 400, lineHeight: 1.65, color: "rgba(255,255,255,0.38)" }}>
+                Setelah pembayaran berhasil di aplikasi Anda, klik tombol di bawah. Admin akan verifikasi pembayaran dan memulai pengerjaan undangan Anda.
+              </p>
+            </div>
+
+            {submitError && (
+              <p style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(220, 100, 100, 0.85)", textAlign: "center", marginTop: "16px", padding: "10px 14px", borderRadius: "8px", background: "rgba(220, 100, 100, 0.06)", border: "1px solid rgba(220, 100, 100, 0.15)" }}>
+                {submitError}
+              </p>
+            )}
+
+            <button onClick={confirmPayment} disabled={submitting} style={{ width: "100%", marginTop: "32px", padding: "16px 24px", borderRadius: "12px", border: "1px solid rgba(201,169,110,0.20)", background: submitting ? "rgba(201,169,110,0.03)" : "rgba(201,169,110,0.06)", fontFamily: "var(--font-inter)", fontSize: "13px", letterSpacing: "0.1em", color: submitting ? "rgba(201,169,110,0.4)" : "rgba(201,169,110,0.85)", cursor: submitting ? "not-allowed" : "pointer" }}>
+              {submitting ? "Memproses..." : "Saya sudah bayar"}
+            </button>
+
+            <p style={{ fontFamily: "var(--font-inter)", fontSize: "10px", color: "rgba(255,255,255,0.30)", textAlign: "center", marginTop: "12px", lineHeight: 1.6 }}>
+              Simpan nomor pesanan <strong style={{ color: "rgba(201,169,110,0.7)" }}>{orderId}</strong> untuk referensi.
+            </p>
+          </div>
+        )}
+                {/* STEP 6: DONE */}
+        {step === "done" && orderId && weddingData && (
+          <div style={{ opacity: 1, transform: "translateY(0)", transition: "opacity 0.6s ease-out, transform 0.6s ease-out", textAlign: "center" }}>
+            <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "64px", height: "64px", borderRadius: "50%", border: "1px solid rgba(201,169,110,0.25)", background: "rgba(201,169,110,0.05)", marginBottom: "24px" }}>
+              <span style={{ fontFamily: "var(--font-bodoni)", fontSize: "28px", color: "rgba(201,169,110,0.85)" }}>✓</span>
+            </div>
+
+            <h3 style={{ fontFamily: "var(--font-bodoni)", fontSize: "22px", fontWeight: 400, letterSpacing: "0.04em", color: "rgba(255,255,255,0.85)", marginBottom: "12px" }}>
+              {isLunaFree ? "Undangan Kamu Sudah Siap" : "Terima Kasih"}
+            </h3>
+
+            <p style={{ fontFamily: "var(--font-inter)", fontSize: "13px", color: "rgba(255,255,255,0.55)", lineHeight: 1.7, marginBottom: "24px", maxWidth: "380px", margin: "0 auto 24px" }}>
+              {isLunaFree ? (
+                <>
+                  Pesanan <strong style={{ color: "rgba(201,169,110,0.85)" }}>{orderId}</strong> telah kami terima.
+                  <br /><br />
+                  Undangan kamu sudah otomatis aktif. Kamu bisa langsung membagikannya ke orang-orang tersayang.
+                </>
+              ) : (
+                <>
+                  Pesanan <strong style={{ color: "rgba(201,169,110,0.85)" }}>{orderId}</strong> telah kami terima bersama seluruh data undangan.
+                  <br /><br />
+                  Konfirmasi pembayaran Anda telah tercatat dengan status <em>menunggu verifikasi admin</em>. Pengerjaan undangan akan dimulai setelah admin memverifikasi pembayaran.
+                </>
+              )}
+            </p>
+
+            {isLunaFree && invitationUrl && (
+              <div style={{ padding: "20px", borderRadius: "12px", border: "1px solid rgba(201,169,110,0.20)", background: "rgba(201,169,110,0.04)", marginBottom: "20px" }}>
+                <p style={{ fontFamily: "var(--font-inter)", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(201,169,110,0.6)", marginBottom: "10px" }}>
+                  Link Undangan Kamu
+                </p>
+                <p style={{ fontFamily: "var(--font-bodoni)", fontSize: "14px", color: "rgba(201,169,110,0.9)", wordBreak: "break-all", margin: 0 }}>
+                  {invitationUrl}
+                </p>
+              </div>
+            )}
+
+            <div style={{ padding: "20px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)", textAlign: "left", marginBottom: "24px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>Nomor Pesanan</span>
+                <span style={{ fontFamily: "var(--font-bodoni)", fontSize: "13px", color: "rgba(201,169,110,0.85)", letterSpacing: "0.04em" }}>{orderId}</span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>Template</span>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.72)" }}>{templateName}</span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>Paket</span>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(201,169,110,0.7)" }}>{packageName}</span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>Mempelai</span>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.72)" }}>{weddingData.groomFullName} &amp; {weddingData.brideFullName}</span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>Status</span>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(201,169,110,0.7)" }}>
+                  {isLunaFree ? "Published (Aktif)" : "Menunggu verifikasi admin"}
+                </span>
+              </div>
+            </div>
+
+            {isLunaFree && invitationUrl && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "20px" }}>
+                <a href={invitationUrl} target="_blank" rel="noopener noreferrer" style={{ display: "block", padding: "16px 24px", borderRadius: "12px", border: "1px solid rgba(201,169,110,0.35)", background: "rgba(201,169,110,0.10)", fontFamily: "var(--font-inter)", fontSize: "13px", letterSpacing: "0.1em", color: "rgba(201,169,110,0.95)", textDecoration: "none", fontWeight: 500 }}>
+                  Lihat Undangan
+                </a>
+                <a href={buildLunaShareWaUrl(invitationUrl, weddingData)} target="_blank" rel="noopener noreferrer" style={{ display: "block", padding: "14px 24px", borderRadius: "12px", border: "1px solid rgba(201,169,110,0.20)", background: "transparent", fontFamily: "var(--font-inter)", fontSize: "12px", letterSpacing: "0.1em", color: "rgba(201,169,110,0.85)", textDecoration: "none" }}>
+                  Bagikan ke WhatsApp
+                </a>
+                <button onClick={copyInvitationLink} style={{ padding: "14px 24px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.10)", background: "transparent", fontFamily: "var(--font-inter)", fontSize: "12px", letterSpacing: "0.1em", color: "rgba(255,255,255,0.6)", cursor: "pointer" }}>
+                  Salin Link
+                </button>
+              </div>
+            )}
+
+            {!isLunaFree && (
+              <>
+                <p style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)", textAlign: "center", marginBottom: "16px", lineHeight: 1.6 }}>
+                  Selanjutnya, kirim konfirmasi ke admin via WhatsApp dengan data pesanan sudah ter-prefill:
+                </p>
+                <a href={buildWaUrl(orderId, templateName, selected, weddingData)} target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", padding: "14px 28px", borderRadius: "10px", border: "1px solid rgba(201,169,110,0.20)", background: "rgba(201,169,110,0.06)", fontFamily: "var(--font-inter)", fontSize: "12px", letterSpacing: "0.1em", color: "rgba(201,169,110,0.8)", textDecoration: "none" }}>
+                  Konfirmasi via WhatsApp
+                </a>
+              </>
+            )}
+
+            {isLunaFree && (
+              <p style={{ fontFamily: "var(--font-bodoni)", fontSize: "14px", fontStyle: "italic", color: "rgba(201,169,110,0.7)", marginTop: "28px", lineHeight: 1.6, maxWidth: "340px", marginLeft: "auto", marginRight: "auto" }}>
+                Semoga undangan ini menjadi bagian dari momen indah kalian.
+              </p>
+            )}
+
+            <p style={{ fontFamily: "var(--font-inter)", fontSize: "10px", color: "rgba(255,255,255,0.30)", marginTop: "24px", lineHeight: 1.6 }}>
+              Simpan nomor pesanan Anda untuk referensi.
+              <br />
+              {isLunaFree ? (
+                <>Butuh bantuan? Hubungi kami di <strong style={{ color: "rgba(255,255,255,0.45)" }}>+{WA_BASE}</strong>.</>
+              ) : (
+                <>Jika WhatsApp tidak terbuka, hubungi kami manual di <strong style={{ color: "rgba(255,255,255,0.45)" }}>+{WA_BASE}</strong>.</>
+              )}
+            </p>
+          </div>
+        )}
+                {/* Fallback: state tidak valid */}
+        {step === "done" && !orderId && (
+          <div style={{ textAlign: "center", padding: "40px" }}>
+            <p style={{ fontFamily: "var(--font-inter)", fontSize: "13px", color: "rgba(255,255,255,0.55)" }}>
+              Terjadi kesalahan. Silakan refresh halaman.
+            </p>
+          </div>
+        )}
+
+        {step === "review" && !weddingData && (
+          <div style={{ textAlign: "center", padding: "40px" }}>
+            <p style={{ fontFamily: "var(--font-inter)", fontSize: "13px", color: "rgba(255,255,255,0.55)" }}>
+              Data undangan belum lengkap.{" "}
+              <button
+                onClick={() => setStep("undangan")}
                 style={{
-                  display: "block",
-                  padding: "14px 24px",
-                  borderRadius: "12px",
-                  border: "1px solid rgba(255,255,255,0.12)",
                   background: "transparent",
-                  color: "rgba(255,255,255,0.55)",
-                  fontFamily: "var(--font-inter)",
-                  fontSize: "12px",
-                  fontWeight: 400,
-                  letterSpacing: "0.1em",
-                  textAlign: "center",
-                  textDecoration: "none",
-                  transition: "border-color 0.3s ease, color 0.3s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.25)";
-                  e.currentTarget.style.color = "rgba(255,255,255,0.80)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)";
-                  e.currentTarget.style.color = "rgba(255,255,255,0.55)";
+                  border: "none",
+                  color: "rgba(201,169,110,0.85)",
+                  cursor: "pointer",
+                  fontFamily: "inherit",
+                  fontSize: "inherit",
+                  textDecoration: "underline",
                 }}
               >
-                Kembali ke Beranda
-              </a>
-            </div>
+                Kembali ke Data Undangan
+              </button>
+            </p>
           </div>
         )}
       </div>
@@ -1151,64 +918,67 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps) {
   );
 }
 
-// ── Small sub-components ──
-function ReviewBlock({
-  title,
-  children,
-  last,
-}: {
-  title: string;
-  children: React.ReactNode;
-  last?: boolean;
-}) {
+function ReviewSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div
       style={{
-        marginBottom: last ? 0 : "16px",
-        paddingBottom: last ? 0 : "16px",
-        borderBottom: last ? "none" : "1px solid rgba(255,255,255,0.05)",
+        padding: "18px 20px",
+        borderRadius: "12px",
+        border: "1px solid rgba(255,255,255,0.06)",
+        background: "rgba(255,255,255,0.015)",
+        marginBottom: "14px",
       }}
     >
-      <span
+      <p
         style={{
           fontFamily: "var(--font-inter)",
           fontSize: "10px",
-          letterSpacing: "0.18em",
+          letterSpacing: "0.2em",
           textTransform: "uppercase",
-          color: "rgba(201,169,110,0.65)",
-          display: "block",
-          marginBottom: "10px",
+          color: "rgba(201,169,110,0.6)",
+          marginBottom: "12px",
         }}
       >
         {title}
-      </span>
+      </p>
       {children}
     </div>
   );
 }
 
-function ReviewRow({ k, v }: { k: string; v: string }) {
+function ReviewRow({
+  label,
+  value,
+  highlight,
+  bold,
+}: {
+  label: string;
+  value: string;
+  highlight?: boolean;
+  bold?: boolean;
+}) {
   return (
-    <div style={{ display: "flex", marginBottom: "6px", gap: "12px" }}>
-      <span
-        style={{
-          fontFamily: "var(--font-inter)",
-          fontSize: "11px",
-          color: "rgba(255,255,255,0.40)",
-          flex: "0 0 90px",
-        }}
-      >
-        {k}
-      </span>
+    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px", gap: "16px" }}>
       <span
         style={{
           fontFamily: "var(--font-inter)",
           fontSize: "12px",
-          color: "rgba(255,255,255,0.80)",
-          flex: 1,
+          color: "rgba(255,255,255,0.50)",
+          flexShrink: 0,
         }}
       >
-        {v}
+        {label}
+      </span>
+      <span
+        style={{
+          fontFamily: bold ? "var(--font-bodoni)" : "var(--font-inter)",
+          fontSize: bold ? "16px" : "12px",
+          color: highlight ? "rgba(201,169,110,0.85)" : "rgba(255,255,255,0.85)",
+          textAlign: "right",
+          wordBreak: "break-word",
+        }}
+      >
+        {value}
       </span>
     </div>
   );

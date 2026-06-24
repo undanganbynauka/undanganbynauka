@@ -1,100 +1,40 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import Image from "next/image";
-import { NaukaFormDataUndangan, type WeddingData } from "./NaukaFormDataUndangan";
-import { NaukaFreeForm } from "./NaukaFreeForm";
+import { NaukaFreeForm, type WeddingData } from "./NaukaFreeForm";
 
-interface CheckoutProps {
-  templateName: string;
-  templateId: string;
-  basicPrice: number;
-  premiumPrice: number;
-  freeAvailable?: boolean;
+// ════════════════════════════════════════════════════════════════
+// LUNA CLAIM FORM — Khusus Luna Free (TANPA opsi Basic/Premium)
+//
+// Flow simpel:
+//   1. Data Pemesan
+//   2. Data Undangan (pakai NaukaFreeForm)
+//   3. Ringkasan
+//   4. Selesai (dengan link undangan)
+//
+// Tidak ada:
+//   - Step pilih paket (karena cuma Free)
+//   - Step pembayaran (karena gratis)
+//   - Opsi Basic/Premium di UI manapun
+// ════════════════════════════════════════════════════════════════
+
+interface LunaClaimFormProps {
+  templateName?: string;
 }
 
 const WA_BASE = "6289655592925";
 const SITE_BASE_URL = "https://undangan-by-nauka.vercel.app";
 
-type Step = "paket" | "pemesan" | "undangan" | "review" | "pembayaran" | "done";
+type Step = "pemesan" | "undangan" | "review" | "done";
 
 const STEP_TITLES: Record<Step, string> = {
-  paket: "Pilih Paket",
   pemesan: "Data Pemesan",
   undangan: "Data Undangan",
   review: "Ringkasan Pesanan",
-  pembayaran: "Pembayaran",
   done: "Selesai",
 };
 
-function formatRupiah(priceInRb: number): string {
-  return `Rp${priceInRb.toLocaleString("id-ID")}rb`;
-}
-
-function buildWaUrl(
-  orderId: string,
-  templateName: string,
-  packageName: "free" | "basic" | "premium",
-  data: WeddingData
-): string {
-  const packageLabel = packageName === "free" ? "Free (GRATIS)" : packageName === "basic" ? "Basic" : "Premium";
-  const lines = [
-    `Halo Nauka, saya ingin konfirmasi pesanan.`,
-    ``,
-    `*Nomor Pesanan:* ${orderId}`,
-    `*Template:* ${templateName}`,
-    `*Paket:* ${packageLabel}`,
-    ``,
-    `*DATA MEMPELAI*`,
-    `Pria: ${data.groomFullName}`,
-    `Wanita: ${data.brideFullName}`,
-    ``,
-    `*AKAD*`,
-    `Tanggal: ${data.akadDate}`,
-    `Waktu: ${data.akadStartTime}${data.akadEndTime ? ` - ${data.akadEndTime}` : ""}`,
-    `Lokasi: ${data.akadAddress}`,
-    ``,
-  ];
-
-  if (data.hasResepsi) {
-    lines.push(
-      `*RESEPSI*`,
-      `Tanggal: ${data.resepsiDate || "-"}`,
-      `Waktu: ${data.resepsiStartTime || "-"}${data.resepsiEndTime ? ` - ${data.resepsiEndTime}` : ""}`,
-      `Lokasi: ${data.resepsiAddress || "-"}`,
-      ``,
-    );
-  }
-
-  lines.push(`*UNDANGAN*`, `Slug: ${data.slug}`);
-
-  if (packageName === "free") {
-    lines.push(`Pesanan GRATIS — tidak perlu pembayaran QRIS.`);
-  } else {
-    lines.push(`Saya sudah melakukan pembayaran QRIS sesuai nominal.`);
-  }
-
-  if (data.groomRekening || data.brideRekening) {
-    lines.push(``, `*KADO DIGITAL*`);
-    if (data.groomRekening) lines.push(`${data.groomBank} - ${data.groomRekening} a.n ${data.groomAn}`);
-    if (data.brideRekening) lines.push(`${data.brideBank} - ${data.brideRekening} a.n ${data.brideAn}`);
-  }
-
-  if (data.giftRecipientName || data.giftAddress) {
-    lines.push(``, `*KADO FISIK*`);
-    if (data.giftRecipientName) lines.push(`Penerima: ${data.giftRecipientName}`);
-    if (data.giftAddress) lines.push(`Alamat: ${data.giftAddress}`);
-  }
-
-  if (data.adminNote.trim()) {
-    lines.push(``, `*CATATAN:* ${data.adminNote}`);
-  }
-
-  lines.push(``, `Terima kasih.`);
-
-  return `https://wa.me/${WA_BASE}?text=${encodeURIComponent(lines.join("\n"))}`;
-}
-
+// ── Helper: build WhatsApp URL untuk SHARE UNDANGAN Luna free ──
 function buildLunaShareWaUrl(invitationUrl: string, data: WeddingData): string {
   let dateLabel = "";
   if (data.akadDate) {
@@ -130,23 +70,27 @@ function buildLunaShareWaUrl(invitationUrl: string, data: WeddingData): string {
   return `https://wa.me/?text=${encodeURIComponent(lines.join("\n"))}`;
 }
 
-export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPrice, freeAvailable = false }: CheckoutProps) {
-  const [selected, setSelected] = useState<"free" | "basic" | "premium">("premium");
+export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}) {
   const [visible, setVisible] = useState(false);
-  const [step, setStep] = useState<Step>("paket");
+  const [step, setStep] = useState<Step>("pemesan");
+
+  // Customer info
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
+
+  // Wedding data
   const [weddingData, setWeddingData] = useState<WeddingData | null>(null);
+
+  // Order
   const [orderId, setOrderId] = useState<string | null>(null);
-  const [orderDbId, setOrderDbId] = useState<number | null>(null);
   const [invitationUrl, setInvitationUrl] = useState<string | null>(null);
+
+  // Submission state
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const ref = useRef<HTMLElement>(null);
-
-  const isLunaFree = templateId === "luna" && selected === "free";
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -165,11 +109,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
     }
   }, [step]);
 
-  const price = selected === "free" ? 0 : selected === "basic" ? basicPrice : premiumPrice;
-  const packageName = selected === "free" ? "Free" : selected === "basic" ? "Basic" : "Premium";
-  const priceInIdr = price * 1000;
-  const isFree = selected === "free";
-
+  // Validasi Step Pemesan → lanjut ke Undangan
   function goToUndangan() {
     setSubmitError(null);
     if (!customerName.trim()) {
@@ -183,11 +123,13 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
     setStep("undangan");
   }
 
+  // Handler submit dari NaukaFreeForm
   function handleUndanganSubmit(data: WeddingData) {
     setWeddingData(data);
     setStep("review");
   }
 
+  // POST ke /api/orders untuk create order
   async function createOrder() {
     setSubmitError(null);
     if (!weddingData) {
@@ -201,9 +143,9 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          template: templateId,
-          package: selected,
-          price: priceInIdr,
+          template: "luna",
+          package: "free",
+          price: 0,
           customer_name: customerName.trim(),
           customer_phone: customerPhone.trim(),
           customer_email: customerEmail.trim() || undefined,
@@ -216,47 +158,20 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
         return;
       }
       setOrderId(data.order_id);
-      setOrderDbId(data.id);
       if (data.invitation_url) {
         setInvitationUrl(data.invitation_url);
       }
-      if (isFree) {
-        setStep("done");
-      } else {
-        setStep("pembayaran");
-      }
-    } catch (err) {
-      console.error("[checkout] create order error:", err);
-      setSubmitError("Terjadi kesalahan jaringan. Silakan coba lagi.");
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
-  async function confirmPayment() {
-    setSubmitError(null);
-    if (!orderId) return;
-    setSubmitting(true);
-    try {
-      const res = await fetch(`/api/orders/${orderId}/confirm-payment`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setSubmitError(data.error || "Gagal mengkonfirmasi pembayaran. Silakan coba lagi.");
-        return;
-      }
+      // Luna free: langsung ke done (auto-publish)
       setStep("done");
     } catch (err) {
-      console.error("[checkout] confirm payment error:", err);
+      console.error("[luna-claim] create order error:", err);
       setSubmitError("Terjadi kesalahan jaringan. Silakan coba lagi.");
     } finally {
       setSubmitting(false);
     }
   }
 
+  // Copy link ke clipboard
   async function copyInvitationLink() {
     if (!invitationUrl) return;
     try {
@@ -273,6 +188,9 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
     }
   }
 
+  // ════════════════════════════════════════════════════════════════
+  // Render
+  // ════════════════════════════════════════════════════════════════
   return (
     <section
       ref={ref}
@@ -282,6 +200,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
         padding: "80px 24px",
       }}
     >
+      {/* Ambient glow */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
@@ -293,6 +212,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
       />
 
       <div className="relative z-10 mx-auto max-w-[520px]">
+        {/* ─── TITLE ─── */}
         <h2
           style={{
             fontFamily: "var(--font-bodoni)",
@@ -310,6 +230,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
           {STEP_TITLES[step]}
         </h2>
 
+        {/* ─── STEP INDICATOR (4 langkah) ─── */}
         <div
           style={{
             display: "flex",
@@ -320,8 +241,8 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
             transition: "opacity 1.4s ease-out 0.1s",
           }}
         >
-          {(["paket", "pemesan", "undangan", "review", "pembayaran", "done"] as Step[]).map((s, i) => {
-            const stepOrder = ["paket", "pemesan", "undangan", "review", "pembayaran", "done"];
+          {(["pemesan", "undangan", "review", "done"] as Step[]).map((s, i) => {
+            const stepOrder = ["pemesan", "undangan", "review", "done"];
             const currentIdx = stepOrder.indexOf(step);
             const isActive = i === currentIdx;
             const isPast = i < currentIdx;
@@ -329,7 +250,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               <div
                 key={s}
                 style={{
-                  width: "24px",
+                  width: "36px",
                   height: "2px",
                   borderRadius: "2px",
                   background: isActive
@@ -344,6 +265,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
           })}
         </div>
 
+        {/* Divider */}
         <div
           style={{
             height: "1px",
@@ -353,161 +275,10 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
             transition: "opacity 1.2s ease-out 0.15s",
           }}
         />
-                {/* STEP 1: PAKET */}
-        {step === "paket" && (
-          <div
-            style={{
-              opacity: visible ? 1 : 0,
-              transform: visible ? "translateY(0)" : "translateY(16px)",
-              transition: "opacity 1.3s ease-out 0.2s, transform 1.3s ease-out 0.2s",
-            }}
-          >
-            <span
-              style={{
-                fontFamily: "var(--font-bodoni)",
-                fontSize: "22px",
-                fontWeight: 400,
-                letterSpacing: "0.04em",
-                color: "rgba(255,255,255,0.85)",
-                display: "block",
-                textAlign: "center",
-              }}
-            >
-              {templateName}
-            </span>
-            <p
-              style={{
-                fontFamily: "var(--font-inter)",
-                fontSize: "11px",
-                color: "rgba(255,255,255,0.40)",
-                textAlign: "center",
-                marginTop: "8px",
-                lineHeight: 1.6,
-              }}
-            >
-              {freeAvailable
-                ? "Untuk kamu yang ingin mengabarkan kabar bahagia dengan sederhana."
-                : "Pilih paket yang sesuai kebutuhan Anda."}
-            </p>
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: freeAvailable ? "1fr 1fr 1fr" : "1fr 1fr",
-                gap: "12px",
-                marginTop: "28px",
-              }}
-            >
-              {freeAvailable && (
-                <button
-                  onClick={() => setSelected("free")}
-                  style={{
-                    padding: "16px 8px",
-                    borderRadius: "12px",
-                    border: selected === "free" ? "1px solid rgba(201,169,110,0.25)" : "1px solid rgba(255,255,255,0.06)",
-                    background: selected === "free" ? "rgba(201,169,110,0.04)" : "transparent",
-                    cursor: "pointer",
-                    transition: "border-color 0.3s ease, background 0.3s ease",
-                    textAlign: "center",
-                  }}
-                >
-                  <span style={{ fontFamily: "var(--font-inter)", fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase", color: selected === "free" ? "rgba(201,169,110,0.75)" : "rgba(255,255,255,0.35)", display: "block" }}>
-                    Free
-                  </span>
-                  <span style={{ fontFamily: "var(--font-bodoni)", fontSize: "20px", fontWeight: 400, color: selected === "free" ? "rgba(201,169,110,0.8)" : "rgba(255,255,255,0.35)", display: "block", marginTop: "8px" }}>
-                    GRATIS
-                  </span>
-                  <span style={{ fontFamily: "var(--font-inter)", fontSize: "9px", color: "rgba(255,255,255,0.30)", display: "block", marginTop: "6px", letterSpacing: "0.05em" }}>
-                    tanpa QRIS
-                  </span>
-                </button>
-              )}
-
-              <button
-                onClick={() => setSelected("basic")}
-                style={{
-                  padding: "16px 12px",
-                  borderRadius: "12px",
-                  border: selected === "basic" ? "1px solid rgba(255,255,255,0.20)" : "1px solid rgba(255,255,255,0.06)",
-                  background: selected === "basic" ? "rgba(255,255,255,0.04)" : "transparent",
-                  cursor: "pointer",
-                  transition: "border-color 0.3s ease, background 0.3s ease",
-                  textAlign: "center",
-                }}
-              >
-                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", letterSpacing: "0.15em", textTransform: "uppercase", color: selected === "basic" ? "rgba(255,255,255,0.75)" : "rgba(255,255,255,0.35)", display: "block" }}>
-                  Basic
-                </span>
-                <span style={{ fontFamily: "var(--font-bodoni)", fontSize: "22px", fontWeight: 400, color: selected === "basic" ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.35)", display: "block", marginTop: "8px" }}>
-                  {basicPrice}rb
-                </span>
-              </button>
-
-              <button
-                onClick={() => setSelected("premium")}
-                style={{
-                  padding: "16px 12px",
-                  borderRadius: "12px",
-                  border: selected === "premium" ? "1px solid rgba(201,169,110,0.25)" : "1px solid rgba(255,255,255,0.06)",
-                  background: selected === "premium" ? "rgba(201,169,110,0.04)" : "transparent",
-                  cursor: "pointer",
-                  transition: "border-color 0.3s ease, background 0.3s ease",
-                  textAlign: "center",
-                }}
-              >
-                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", letterSpacing: "0.15em", textTransform: "uppercase", color: selected === "premium" ? "rgba(201,169,110,0.75)" : "rgba(255,255,255,0.35)", display: "block" }}>
-                  Premium
-                </span>
-                <span style={{ fontFamily: "var(--font-bodoni)", fontSize: "22px", fontWeight: 400, color: selected === "premium" ? "rgba(201,169,110,0.8)" : "rgba(255,255,255,0.35)", display: "block", marginTop: "8px" }}>
-                  {premiumPrice}rb
-                </span>
-              </button>
-            </div>
-
-            <div
-              style={{
-                marginTop: "28px",
-                padding: "16px 18px",
-                borderRadius: "10px",
-                border: "1px solid rgba(255,255,255,0.05)",
-                background: "rgba(255,255,255,0.015)",
-              }}
-            >
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <span style={{ fontFamily: "var(--font-inter)", fontSize: "13px", color: "rgba(255,255,255,0.50)" }}>Total</span>
-                <span style={{ fontFamily: "var(--font-bodoni)", fontSize: "20px", fontWeight: 400, color: "rgba(255,255,255,0.85)" }}>
-                  {formatRupiah(price)}
-                </span>
-              </div>
-            </div>
-
-            <button
-              onClick={() => {
-                setSubmitError(null);
-                setStep("pemesan");
-              }}
-              style={{
-                width: "100%",
-                marginTop: "32px",
-                padding: "16px 24px",
-                borderRadius: "12px",
-                border: "1px solid rgba(201,169,110,0.20)",
-                background: "rgba(201,169,110,0.06)",
-                fontFamily: "var(--font-inter)",
-                fontSize: "13px",
-                fontWeight: 400,
-                letterSpacing: "0.1em",
-                color: "rgba(201,169,110,0.85)",
-                cursor: "pointer",
-                transition: "border-color 0.3s ease, background 0.3s ease, color 0.3s ease",
-              }}
-            >
-              Lanjut ke Data Pemesan
-            </button>
-          </div>
-        )}
-
-        {/* STEP 2: PEMESAN */}
+        {/* ════════════════════════════════════════════════════════════ */}
+        {/* STEP 1: PEMESAN                                            */}
+        {/* ════════════════════════════════════════════════════════════ */}
         {step === "pemesan" && (
           <div
             style={{
@@ -516,12 +287,28 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               transition: "opacity 1.3s ease-out 0.2s, transform 1.3s ease-out 0.2s",
             }}
           >
+            {/* Header ramah */}
+            <div style={{ textAlign: "center", marginBottom: "28px" }}>
+              <p
+                style={{
+                  fontFamily: "var(--font-inter)",
+                  fontSize: "11px",
+                  color: "rgba(255,255,255,0.45)",
+                  marginTop: "8px",
+                  lineHeight: 1.6,
+                }}
+              >
+                Cukup isi beberapa hal kecil di bawah. Tenang, data ini hanya untuk membuat undangan kamu.
+              </p>
+            </div>
+
+            {/* Recap ringkas: Luna + Free */}
             <div
               style={{
                 padding: "14px 16px",
                 borderRadius: "10px",
-                border: "1px solid rgba(255,255,255,0.06)",
-                background: "rgba(255,255,255,0.015)",
+                border: "1px solid rgba(201,169,110,0.20)",
+                background: "rgba(201,169,110,0.04)",
                 marginBottom: "24px",
               }}
             >
@@ -531,21 +318,31 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
                 <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>Paket</span>
-                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: selected === "premium" || selected === "free" ? "rgba(201,169,110,0.7)" : "rgba(255,255,255,0.72)" }}>{packageName}</span>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(201,169,110,0.7)" }}>Free (Gratis)</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>Total</span>
-                <span style={{ fontFamily: "var(--font-bodoni)", fontSize: "13px", color: "rgba(255,255,255,0.85)" }}>{isFree ? "GRATIS" : formatRupiah(price)}</span>
+                <span style={{ fontFamily: "var(--font-bodoni)", fontSize: "13px", color: "rgba(201,169,110,0.85)" }}>GRATIS</span>
               </div>
             </div>
 
+            {/* Form */}
             <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
               <div>
-                <label htmlFor="cust-name" style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)", display: "block", marginBottom: "6px" }}>
+                <label
+                  htmlFor="luna-name"
+                  style={{
+                    fontFamily: "var(--font-inter)",
+                    fontSize: "11px",
+                    color: "rgba(255,255,255,0.45)",
+                    display: "block",
+                    marginBottom: "6px",
+                  }}
+                >
                   Nama <span style={{ color: "rgba(201,169,110,0.7)" }}>*</span>
                 </label>
                 <input
-                  id="cust-name"
+                  id="luna-name"
                   type="text"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
@@ -565,11 +362,20 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               </div>
 
               <div>
-                <label htmlFor="cust-phone" style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)", display: "block", marginBottom: "6px" }}>
+                <label
+                  htmlFor="luna-phone"
+                  style={{
+                    fontFamily: "var(--font-inter)",
+                    fontSize: "11px",
+                    color: "rgba(255,255,255,0.45)",
+                    display: "block",
+                    marginBottom: "6px",
+                  }}
+                >
                   No. WhatsApp <span style={{ color: "rgba(201,169,110,0.7)" }}>*</span>
                 </label>
                 <input
-                  id="cust-phone"
+                  id="luna-phone"
                   type="tel"
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value)}
@@ -589,11 +395,20 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               </div>
 
               <div>
-                <label htmlFor="cust-email" style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)", display: "block", marginBottom: "6px" }}>
+                <label
+                  htmlFor="luna-email"
+                  style={{
+                    fontFamily: "var(--font-inter)",
+                    fontSize: "11px",
+                    color: "rgba(255,255,255,0.45)",
+                    display: "block",
+                    marginBottom: "6px",
+                  }}
+                >
                   Email <span style={{ color: "rgba(255,255,255,0.30)" }}>(opsional)</span>
                 </label>
                 <input
-                  id="cust-email"
+                  id="luna-email"
                   type="email"
                   value={customerEmail}
                   onChange={(e) => setCustomerEmail(e.target.value)}
@@ -614,37 +429,80 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
             </div>
 
             {submitError && (
-              <p style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(220, 100, 100, 0.85)", textAlign: "center", marginTop: "16px", padding: "10px 14px", borderRadius: "8px", background: "rgba(220, 100, 100, 0.06)", border: "1px solid rgba(220, 100, 100, 0.15)" }}>
+              <p
+                style={{
+                  fontFamily: "var(--font-inter)",
+                  fontSize: "12px",
+                  color: "rgba(220, 100, 100, 0.85)",
+                  textAlign: "center",
+                  marginTop: "16px",
+                  padding: "10px 14px",
+                  borderRadius: "8px",
+                  background: "rgba(220, 100, 100, 0.06)",
+                  border: "1px solid rgba(220, 100, 100, 0.15)",
+                }}
+              >
                 {submitError}
               </p>
             )}
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "10px", marginTop: "32px" }}>
-              <button onClick={() => setStep("paket")} style={{ padding: "16px 18px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.08)", background: "transparent", fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(255,255,255,0.55)", cursor: "pointer" }}>
-                Kembali
-              </button>
-              <button onClick={goToUndangan} style={{ padding: "16px 24px", borderRadius: "12px", border: "1px solid rgba(201,169,110,0.20)", background: "rgba(201,169,110,0.06)", fontFamily: "var(--font-inter)", fontSize: "13px", letterSpacing: "0.1em", color: "rgba(201,169,110,0.85)", cursor: "pointer" }}>
-                Lanjut ke Data Undangan
-              </button>
-            </div>
+            {/* CTA */}
+            <button
+              onClick={goToUndangan}
+              style={{
+                width: "100%",
+                marginTop: "32px",
+                padding: "16px 24px",
+                borderRadius: "12px",
+                border: "1px solid rgba(201,169,110,0.20)",
+                background: "rgba(201,169,110,0.06)",
+                fontFamily: "var(--font-inter)",
+                fontSize: "13px",
+                letterSpacing: "0.1em",
+                color: "rgba(201,169,110,0.85)",
+                cursor: "pointer",
+                transition: "all 0.3s ease",
+              }}
+            >
+              Lanjut ke Data Undangan
+            </button>
           </div>
         )}
-                {/* STEP 3: UNDANGAN */}
+
+        {/* ════════════════════════════════════════════════════════════ */}
+        {/* STEP 2: UNDANGAN (pakai NaukaFreeForm)                     */}
+        {/* ════════════════════════════════════════════════════════════ */}
         {step === "undangan" && (
           <div>
-            <button onClick={() => setStep("pemesan")} style={{ padding: "10px 16px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.08)", background: "transparent", fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.55)", cursor: "pointer", marginBottom: "20px" }}>
+            <button
+              onClick={() => setStep("pemesan")}
+              style={{
+                padding: "10px 16px",
+                borderRadius: "8px",
+                border: "1px solid rgba(255,255,255,0.08)",
+                background: "transparent",
+                fontFamily: "var(--font-inter)",
+                fontSize: "11px",
+                color: "rgba(255,255,255,0.55)",
+                cursor: "pointer",
+                marginBottom: "20px",
+              }}
+            >
               ← Kembali ke Data Pemesan
             </button>
 
-            {templateId === "luna" ? (
-              <NaukaFreeForm template={templateId} onSubmit={handleUndanganSubmit} submitLabel="Lanjut ke Ringkasan" submitting={false} />
-            ) : (
-              <NaukaFormDataUndangan template={templateId as "sacred" | "celestial"} onSubmit={handleUndanganSubmit} submitLabel="Lanjut ke Ringkasan" submitting={false} />
-            )}
+            <NaukaFreeForm
+              template="luna"
+              onSubmit={handleUndanganSubmit}
+              submitLabel="Lanjut ke Ringkasan"
+              submitting={false}
+            />
           </div>
         )}
 
-        {/* STEP 4: REVIEW */}
+        {/* ════════════════════════════════════════════════════════════ */}
+        {/* STEP 3: REVIEW                                              */}
+        {/* ════════════════════════════════════════════════════════════ */}
         {step === "review" && weddingData && (
           <div
             style={{
@@ -653,14 +511,23 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               transition: "opacity 1.3s ease-out 0.2s, transform 1.3s ease-out 0.2s",
             }}
           >
-            <p style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(255,255,255,0.45)", textAlign: "center", marginBottom: "24px", lineHeight: 1.6 }}>
-              Mohon periksa kembali semua data di bawah. Setelah klik <strong style={{ color: "rgba(201,169,110,0.85)" }}>{isFree ? "Kirim Pesanan" : "Lanjut ke Pembayaran"}</strong>, pesanan akan dibuat dengan nomor <code style={{ color: "rgba(201,169,110,0.85)" }}>NAUKA-{new Date().getFullYear()}-...</code> dan tidak dapat diubah.
+            <p
+              style={{
+                fontFamily: "var(--font-inter)",
+                fontSize: "12px",
+                color: "rgba(255,255,255,0.45)",
+                textAlign: "center",
+                marginBottom: "24px",
+                lineHeight: 1.6,
+              }}
+            >
+              Mohon periksa kembali semua data di bawah. Setelah klik <strong style={{ color: "rgba(201,169,110,0.85)" }}>Kirim Pesanan</strong>, undangan kamu akan langsung aktif.
             </p>
 
             <ReviewSection title="Pesanan">
               <ReviewRow label="Template" value={templateName} />
-              <ReviewRow label="Paket" value={packageName} highlight={selected === "premium" || selected === "free"} />
-              <ReviewRow label="Total" value={isFree ? "GRATIS" : formatRupiah(price)} bold />
+              <ReviewRow label="Paket" value="Free (Gratis)" highlight />
+              <ReviewRow label="Total" value="GRATIS" bold />
             </ReviewSection>
 
             <ReviewSection title="Data Pemesan">
@@ -699,113 +566,96 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
             </ReviewSection>
 
             {submitError && (
-              <p style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(220, 100, 100, 0.85)", textAlign: "center", marginTop: "16px", padding: "10px 14px", borderRadius: "8px", background: "rgba(220, 100, 100, 0.06)", border: "1px solid rgba(220, 100, 100, 0.15)" }}>
+              <p
+                style={{
+                  fontFamily: "var(--font-inter)",
+                  fontSize: "12px",
+                  color: "rgba(220, 100, 100, 0.85)",
+                  textAlign: "center",
+                  marginTop: "16px",
+                  padding: "10px 14px",
+                  borderRadius: "8px",
+                  background: "rgba(220, 100, 100, 0.06)",
+                  border: "1px solid rgba(220, 100, 100, 0.15)",
+                }}
+              >
                 {submitError}
               </p>
             )}
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "10px", marginTop: "32px" }}>
-              <button onClick={() => setStep("undangan")} disabled={submitting} style={{ padding: "16px 18px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.08)", background: "transparent", fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(255,255,255,0.55)", cursor: submitting ? "not-allowed" : "pointer", opacity: submitting ? 0.5 : 1 }}>
+              <button
+                onClick={() => setStep("undangan")}
+                disabled={submitting}
+                style={{
+                  padding: "16px 18px",
+                  borderRadius: "12px",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  background: "transparent",
+                  fontFamily: "var(--font-inter)",
+                  fontSize: "12px",
+                  color: "rgba(255,255,255,0.55)",
+                  cursor: submitting ? "not-allowed" : "pointer",
+                  opacity: submitting ? 0.5 : 1,
+                }}
+              >
                 Kembali
               </button>
-              <button onClick={createOrder} disabled={submitting} style={{ padding: "16px 24px", borderRadius: "12px", border: "1px solid rgba(201,169,110,0.20)", background: submitting ? "rgba(201,169,110,0.03)" : "rgba(201,169,110,0.06)", fontFamily: "var(--font-inter)", fontSize: "13px", letterSpacing: "0.1em", color: submitting ? "rgba(201,169,110,0.4)" : "rgba(201,169,110,0.85)", cursor: submitting ? "not-allowed" : "pointer" }}>
-                {submitting ? "Sedang merangkai undangan kamu..." : isFree ? "Kirim Pesanan (Gratis)" : "Lanjut ke Pembayaran"}
+              <button
+                onClick={createOrder}
+                disabled={submitting}
+                style={{
+                  padding: "16px 24px",
+                  borderRadius: "12px",
+                  border: "1px solid rgba(201,169,110,0.20)",
+                  background: submitting ? "rgba(201,169,110,0.03)" : "rgba(201,169,110,0.06)",
+                  fontFamily: "var(--font-inter)",
+                  fontSize: "13px",
+                  letterSpacing: "0.1em",
+                  color: submitting ? "rgba(201,169,110,0.4)" : "rgba(201,169,110,0.85)",
+                  cursor: submitting ? "not-allowed" : "pointer",
+                }}
+              >
+                {submitting ? "Sedang merangkai undangan kamu..." : "Kirim Pesanan (Gratis)"}
               </button>
             </div>
           </div>
         )}
 
-        {/* STEP 5: PEMBAYARAN */}
-        {step === "pembayaran" && orderId && (
-          <div style={{ opacity: 1, transform: "translateY(0)", transition: "opacity 0.6s ease-out, transform 0.6s ease-out" }}>
-            <div style={{ textAlign: "center", marginBottom: "24px" }}>
-              <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "8px 16px", borderRadius: "999px", border: "1px solid rgba(201,169,110,0.20)", background: "rgba(201,169,110,0.05)" }}>
-                <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "rgba(201,169,110,0.7)", boxShadow: "0 0 8px rgba(201,169,110,0.5)" }} />
-                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(201,169,110,0.75)" }}>
-                  Menunggu Pembayaran
-                </span>
-              </div>
-            </div>
-
-            <div style={{ textAlign: "center", marginBottom: "24px" }}>
-              <p style={{ fontFamily: "var(--font-inter)", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: "8px" }}>
-                Nomor Pesanan
-              </p>
-              <p style={{ fontFamily: "var(--font-bodoni)", fontSize: "24px", fontWeight: 400, letterSpacing: "0.08em", color: "rgba(201,169,110,0.9)" }}>
-                {orderId}
-              </p>
-            </div>
-
-            <div style={{ padding: "16px 18px", borderRadius: "10px", border: "1px solid rgba(201,169,110,0.15)", background: "rgba(201,169,110,0.02)", marginBottom: "24px", textAlign: "center" }}>
-              <p style={{ fontFamily: "var(--font-inter)", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: "6px" }}>
-                Total Pembayaran
-              </p>
-              <p style={{ fontFamily: "var(--font-bodoni)", fontSize: "26px", fontWeight: 400, color: "rgba(201,169,110,0.9)" }}>
-                {formatRupiah(price)}
-              </p>
-            </div>
-
-            <div style={{ padding: "28px 24px", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.025)", boxShadow: "0 4px 32px rgba(0,0,0,0.2), 0 0 80px rgba(201,169,110,0.02)", textAlign: "center" }}>
-              <div style={{ width: "200px", height: "200px", margin: "0 auto", borderRadius: "12px", overflow: "hidden", position: "relative", background: "#ffffff", padding: "12px" }}>
-                <Image src="/qris.png" alt="QRIS Payment" fill sizes="200px" className="object-contain" style={{ borderRadius: "8px" }} priority />
-              </div>
-              <span style={{ fontFamily: "var(--font-inter)", fontSize: "13px", fontWeight: 500, letterSpacing: "0.06em", color: "rgba(255,255,255,0.60)", display: "block", marginTop: "18px" }}>
-                QRIS
-              </span>
-              <p style={{ fontFamily: "var(--font-inter)", fontSize: "11px", fontWeight: 400, lineHeight: 1.5, color: "rgba(255,255,255,0.28)", marginTop: "8px" }}>
-                Dapat dibayar melalui semua aplikasi pembayaran &amp; mobile banking
-              </p>
-            </div>
-
-            <div style={{ marginTop: "24px", padding: "16px 18px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.05)", background: "rgba(255,255,255,0.015)" }}>
-              <p style={{ fontFamily: "var(--font-inter)", fontSize: "12px", fontWeight: 400, lineHeight: 1.65, color: "rgba(255,255,255,0.38)" }}>
-                Setelah pembayaran berhasil di aplikasi Anda, klik tombol di bawah. Admin akan verifikasi pembayaran dan memulai pengerjaan undangan Anda.
-              </p>
-            </div>
-
-            {submitError && (
-              <p style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(220, 100, 100, 0.85)", textAlign: "center", marginTop: "16px", padding: "10px 14px", borderRadius: "8px", background: "rgba(220, 100, 100, 0.06)", border: "1px solid rgba(220, 100, 100, 0.15)" }}>
-                {submitError}
-              </p>
-            )}
-
-            <button onClick={confirmPayment} disabled={submitting} style={{ width: "100%", marginTop: "32px", padding: "16px 24px", borderRadius: "12px", border: "1px solid rgba(201,169,110,0.20)", background: submitting ? "rgba(201,169,110,0.03)" : "rgba(201,169,110,0.06)", fontFamily: "var(--font-inter)", fontSize: "13px", letterSpacing: "0.1em", color: submitting ? "rgba(201,169,110,0.4)" : "rgba(201,169,110,0.85)", cursor: submitting ? "not-allowed" : "pointer" }}>
-              {submitting ? "Memproses..." : "Saya sudah bayar"}
-            </button>
-
-            <p style={{ fontFamily: "var(--font-inter)", fontSize: "10px", color: "rgba(255,255,255,0.30)", textAlign: "center", marginTop: "12px", lineHeight: 1.6 }}>
-              Simpan nomor pesanan <strong style={{ color: "rgba(201,169,110,0.7)" }}>{orderId}</strong> untuk referensi.
-            </p>
-          </div>
-        )}
-                {/* STEP 6: DONE */}
+        {/* ════════════════════════════════════════════════════════════ */}
+        {/* STEP 4: DONE — Undangan sudah siap                          */}
+        {/* ════════════════════════════════════════════════════════════ */}
         {step === "done" && orderId && weddingData && (
           <div style={{ opacity: 1, transform: "translateY(0)", transition: "opacity 0.6s ease-out, transform 0.6s ease-out", textAlign: "center" }}>
-            <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "64px", height: "64px", borderRadius: "50%", border: "1px solid rgba(201,169,110,0.25)", background: "rgba(201,169,110,0.05)", marginBottom: "24px" }}>
+            {/* Success icon */}
+            <div
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "64px",
+                height: "64px",
+                borderRadius: "50%",
+                border: "1px solid rgba(201,169,110,0.25)",
+                background: "rgba(201,169,110,0.05)",
+                marginBottom: "24px",
+              }}
+            >
               <span style={{ fontFamily: "var(--font-bodoni)", fontSize: "28px", color: "rgba(201,169,110,0.85)" }}>✓</span>
             </div>
 
             <h3 style={{ fontFamily: "var(--font-bodoni)", fontSize: "22px", fontWeight: 400, letterSpacing: "0.04em", color: "rgba(255,255,255,0.85)", marginBottom: "12px" }}>
-              {isLunaFree ? "Undangan Kamu Sudah Siap" : "Terima Kasih"}
+              Undangan Kamu Sudah Siap
             </h3>
 
             <p style={{ fontFamily: "var(--font-inter)", fontSize: "13px", color: "rgba(255,255,255,0.55)", lineHeight: 1.7, marginBottom: "24px", maxWidth: "380px", margin: "0 auto 24px" }}>
-              {isLunaFree ? (
-                <>
-                  Pesanan <strong style={{ color: "rgba(201,169,110,0.85)" }}>{orderId}</strong> telah kami terima.
-                  <br /><br />
-                  Undangan kamu sudah otomatis aktif. Kamu bisa langsung membagikannya ke orang-orang tersayang.
-                </>
-              ) : (
-                <>
-                  Pesanan <strong style={{ color: "rgba(201,169,110,0.85)" }}>{orderId}</strong> telah kami terima bersama seluruh data undangan.
-                  <br /><br />
-                  Konfirmasi pembayaran Anda telah tercatat dengan status <em>menunggu verifikasi admin</em>. Pengerjaan undangan akan dimulai setelah admin memverifikasi pembayaran.
-                </>
-              )}
+              Pesanan <strong style={{ color: "rgba(201,169,110,0.85)" }}>{orderId}</strong> telah kami terima.
+              <br /><br />
+              Undangan kamu sudah otomatis aktif. Kamu bisa langsung membagikannya ke orang-orang tersayang.
             </p>
 
-            {isLunaFree && invitationUrl && (
+            {/* Link undangan */}
+            {invitationUrl && (
               <div style={{ padding: "20px", borderRadius: "12px", border: "1px solid rgba(201,169,110,0.20)", background: "rgba(201,169,110,0.04)", marginBottom: "20px" }}>
                 <p style={{ fontFamily: "var(--font-inter)", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(201,169,110,0.6)", marginBottom: "10px" }}>
                   Link Undangan Kamu
@@ -816,6 +666,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               </div>
             )}
 
+            {/* Recap card */}
             <div style={{ padding: "20px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)", textAlign: "left", marginBottom: "24px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
                 <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>Nomor Pesanan</span>
@@ -827,7 +678,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
                 <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>Paket</span>
-                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(201,169,110,0.7)" }}>{packageName}</span>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(201,169,110,0.7)" }}>Free (Gratis)</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
                 <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>Mempelai</span>
@@ -835,13 +686,12 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               </div>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>Status</span>
-                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(201,169,110,0.7)" }}>
-                  {isLunaFree ? "Published (Aktif)" : "Menunggu verifikasi admin"}
-                </span>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(201,169,110,0.7)" }}>Published (Aktif)</span>
               </div>
             </div>
 
-            {isLunaFree && invitationUrl && (
+            {/* Tombol aksi */}
+            {invitationUrl && (
               <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "20px" }}>
                 <a href={invitationUrl} target="_blank" rel="noopener noreferrer" style={{ display: "block", padding: "16px 24px", borderRadius: "12px", border: "1px solid rgba(201,169,110,0.35)", background: "rgba(201,169,110,0.10)", fontFamily: "var(--font-inter)", fontSize: "13px", letterSpacing: "0.1em", color: "rgba(201,169,110,0.95)", textDecoration: "none", fontWeight: 500 }}>
                   Lihat Undangan
@@ -855,35 +705,20 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               </div>
             )}
 
-            {!isLunaFree && (
-              <>
-                <p style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)", textAlign: "center", marginBottom: "16px", lineHeight: 1.6 }}>
-                  Selanjutnya, kirim konfirmasi ke admin via WhatsApp dengan data pesanan sudah ter-prefill:
-                </p>
-                <a href={buildWaUrl(orderId, templateName, selected, weddingData)} target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", padding: "14px 28px", borderRadius: "10px", border: "1px solid rgba(201,169,110,0.20)", background: "rgba(201,169,110,0.06)", fontFamily: "var(--font-inter)", fontSize: "12px", letterSpacing: "0.1em", color: "rgba(201,169,110,0.8)", textDecoration: "none" }}>
-                  Konfirmasi via WhatsApp
-                </a>
-              </>
-            )}
-
-            {isLunaFree && (
-              <p style={{ fontFamily: "var(--font-bodoni)", fontSize: "14px", fontStyle: "italic", color: "rgba(201,169,110,0.7)", marginTop: "28px", lineHeight: 1.6, maxWidth: "340px", marginLeft: "auto", marginRight: "auto" }}>
-                Semoga undangan ini menjadi bagian dari momen indah kalian.
-              </p>
-            )}
+            {/* Human touch closing */}
+            <p style={{ fontFamily: "var(--font-bodoni)", fontSize: "14px", fontStyle: "italic", color: "rgba(201,169,110,0.7)", marginTop: "28px", lineHeight: 1.6, maxWidth: "340px", marginLeft: "auto", marginRight: "auto" }}>
+              Semoga undangan ini menjadi bagian dari momen indah kalian.
+            </p>
 
             <p style={{ fontFamily: "var(--font-inter)", fontSize: "10px", color: "rgba(255,255,255,0.30)", marginTop: "24px", lineHeight: 1.6 }}>
               Simpan nomor pesanan Anda untuk referensi.
               <br />
-              {isLunaFree ? (
-                <>Butuh bantuan? Hubungi kami di <strong style={{ color: "rgba(255,255,255,0.45)" }}>+{WA_BASE}</strong>.</>
-              ) : (
-                <>Jika WhatsApp tidak terbuka, hubungi kami manual di <strong style={{ color: "rgba(255,255,255,0.45)" }}>+{WA_BASE}</strong>.</>
-              )}
+              Butuh bantuan? Hubungi kami di <strong style={{ color: "rgba(255,255,255,0.45)" }}>+{WA_BASE}</strong>.
             </p>
           </div>
         )}
-                {/* Fallback: state tidak valid */}
+
+        {/* Fallback */}
         {step === "done" && !orderId && (
           <div style={{ textAlign: "center", padding: "40px" }}>
             <p style={{ fontFamily: "var(--font-inter)", fontSize: "13px", color: "rgba(255,255,255,0.55)" }}>
@@ -896,18 +731,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
           <div style={{ textAlign: "center", padding: "40px" }}>
             <p style={{ fontFamily: "var(--font-inter)", fontSize: "13px", color: "rgba(255,255,255,0.55)" }}>
               Data undangan belum lengkap.{" "}
-              <button
-                onClick={() => setStep("undangan")}
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  color: "rgba(201,169,110,0.85)",
-                  cursor: "pointer",
-                  fontFamily: "inherit",
-                  fontSize: "inherit",
-                  textDecoration: "underline",
-                }}
-              >
+              <button onClick={() => setStep("undangan")} style={{ background: "transparent", border: "none", color: "rgba(201,169,110,0.85)", cursor: "pointer", fontFamily: "inherit", fontSize: "inherit", textDecoration: "underline" }}>
                 Kembali ke Data Undangan
               </button>
             </p>
@@ -918,27 +742,14 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
   );
 }
 
+// ════════════════════════════════════════════════════════════════
+// Helper components for Review step
+// ════════════════════════════════════════════════════════════════
+
 function ReviewSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div
-      style={{
-        padding: "18px 20px",
-        borderRadius: "12px",
-        border: "1px solid rgba(255,255,255,0.06)",
-        background: "rgba(255,255,255,0.015)",
-        marginBottom: "14px",
-      }}
-    >
-      <p
-        style={{
-          fontFamily: "var(--font-inter)",
-          fontSize: "10px",
-          letterSpacing: "0.2em",
-          textTransform: "uppercase",
-          color: "rgba(201,169,110,0.6)",
-          marginBottom: "12px",
-        }}
-      >
+    <div style={{ padding: "18px 20px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.015)", marginBottom: "14px" }}>
+      <p style={{ fontFamily: "var(--font-inter)", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(201,169,110,0.6)", marginBottom: "12px" }}>
         {title}
       </p>
       {children}
@@ -959,25 +770,10 @@ function ReviewRow({
 }) {
   return (
     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px", gap: "16px" }}>
-      <span
-        style={{
-          fontFamily: "var(--font-inter)",
-          fontSize: "12px",
-          color: "rgba(255,255,255,0.50)",
-          flexShrink: 0,
-        }}
-      >
+      <span style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(255,255,255,0.50)", flexShrink: 0 }}>
         {label}
       </span>
-      <span
-        style={{
-          fontFamily: bold ? "var(--font-bodoni)" : "var(--font-inter)",
-          fontSize: bold ? "16px" : "12px",
-          color: highlight ? "rgba(201,169,110,0.85)" : "rgba(255,255,255,0.85)",
-          textAlign: "right",
-          wordBreak: "break-word",
-        }}
-      >
+      <span style={{ fontFamily: bold ? "var(--font-bodoni)" : "var(--font-inter)", fontSize: bold ? "16px" : "12px", color: highlight ? "rgba(201,169,110,0.85)" : "rgba(255,255,255,0.85)", textAlign: "right", wordBreak: "break-word" }}>
         {value}
       </span>
     </div>

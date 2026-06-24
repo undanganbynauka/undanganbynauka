@@ -354,7 +354,7 @@ export default function LunaDetailPage() {
 
       {/* KLAIM FORM — Isi data + kirim ke WhatsApp */}
       <div id="luna-claim">
-        <LunaClaimForm />
+        <LunaClaimForm templateName="Luna" templateId="luna" basicPrice={75} premiumPrice={99} freeAvailable={true} />
       </div>
 
       <NaukaFooter />

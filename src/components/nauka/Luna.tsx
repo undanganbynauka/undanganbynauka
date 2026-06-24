@@ -1,23 +1,69 @@
 "use client";
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
+import type { WeddingData } from "./NaukaFormDataUndangan";
 
-// ════════════════════════════════════════════════════════════════
-// LUNA — Universal Free Wedding Invitation Template (FINAL LOCK)
-// Elegant · Romantic · Minimalist · Universal · Premium · Mobile First
-// ════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// LUNA â€” Universal Free Wedding Invitation Template
+// Elegant Â· Romantic Â· Minimalist Â· Universal Â· Premium Â· Mobile First
+//
+// Support 2 mode:
+//   1. PREVIEW mode (tanpa data) â€” pakai hardcoded Ali & Lyla
+//   2. LIVE mode (dengan data dari Supabase) â€” render dari props
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+// â”€â”€ Data default untuk preview mode (halaman /luna) â”€â”€
+const DEFAULT_DATA: WeddingData = {
+  groomFullName: "Ali Rahman",
+  groomNickname: "Ali",
+  groomFatherName: "Hendri",
+  groomMotherName: "Ningsih",
+  groomBirthOrder: "",
+  brideFullName: "Lyla Azzahra",
+  brideNickname: "Lyla",
+  brideFatherName: "Yusuf",
+  brideMotherName: "Rahayu",
+  brideBirthOrder: "",
+  akadDate: "2026-12-05",
+  akadStartTime: "09:00",
+  akadEndTime: "",
+  akadAddress: "Tanah Abang 1, Jakarta Pusat",
+  akadMapsLink: "",
+  akadCity: "Jakarta Pusat",
+  hasResepsi: true,
+  resepsiDate: "2026-12-05",
+  resepsiStartTime: "10:00",
+  resepsiEndTime: "",
+  resepsiAddress: "Tanah Abang 1, Jakarta Pusat",
+  resepsiMapsLink: "",
+  resepsiCity: "Jakarta Pusat",
+  slug: "ali-lyla",
+  quote:
+    "Dan di antara jutaan kemungkinan, takdir mempertemukan dua hati untuk berjalan menuju masa depan yang sama.",
+  openingMessage: "",
+  bgmType: "hening",
+  bgmVocalOnlyNote: "",
+  journey: [],
+  timelineEvents: [],
+  adminNote: "",
+  additionalRequest: "",
+  groomBank: "",
+  groomRekening: "",
+  groomAn: "",
+  brideBank: "",
+  brideRekening: "",
+  brideAn: "",
+  giftRecipientName: "",
+  giftAddress: "",
+};
 
 const C = {
   primary: "#F7F2EA",
   secondary: "#E8DCCF",
   accent: "#DCCFBE",
-  // Solid sage — matches the perceived bg color of the hero illustration
-  // (sampled from the upper-third of couple-illustration-sage.png)
   contentBg: "#8B876A",
-  // Button fill = bg color slightly darker
   buttonBg: "#6B6B4E",
   buttonBgHover: "#5A5A40",
-  // Button border = text font color
   buttonBorder: "#F7F2EA",
   textShadow: "0 1px 3px rgba(0, 0, 0, 0.15)",
   textShadowSoft: "0 1px 2px rgba(0, 0, 0, 0.10)",
@@ -29,13 +75,55 @@ const C = {
 const FONT_SERIF = "var(--font-playfair)";
 const FONT_SANS = "var(--font-jakarta)";
 
+// â”€â”€ Helper: format tanggal ISO "2026-12-05" â†’ "Sabtu, 5 Desember 2026" â”€â”€
+function formatLongDate(isoDate: string): string {
+  if (!isoDate) return "-";
+  try {
+    // Tambah waktu supaya parsing konsisten di semua timezone
+    const d = new Date(`${isoDate}T00:00:00+07:00`);
+    if (isNaN(d.getTime())) return isoDate;
+    return d.toLocaleDateString("id-ID", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      timeZone: "Asia/Jakarta",
+    });
+  } catch {
+    return isoDate;
+  }
+}
+
+// â”€â”€ Helper: format waktu "09:00" â†’ "09.00 WIB" â”€â”€
+function formatTime(time: string, endTime?: string): string {
+  if (!time) return "-";
+  const formatted = time.replace(":", ".");
+  if (endTime) {
+    const endFormatted = endTime.replace(":", ".");
+    return `${formatted} â€“ ${endFormatted} WIB`;
+  }
+  return `${formatted} WIB`;
+}
+
+// â”€â”€ Helper: build ISO target untuk countdown â”€â”€
+function buildCountdownTarget(date: string, time: string): string {
+  if (!date || !time) return "";
+  return `${date}T${time}:00+07:00`;
+}
+
 function useCountdown(targetIso: string) {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);
+  if (!targetIso) {
+    return { days: 0, hours: 0, minutes: 0, seconds: 0, isPast: true };
+  }
   const target = new Date(targetIso).getTime();
+  if (isNaN(target)) {
+    return { days: 0, hours: 0, minutes: 0, seconds: 0, isPast: true };
+  }
   const diff = Math.max(0, target - now);
   const days = Math.floor(diff / 86400000);
   const hours = Math.floor((diff % 86400000) / 3600000);
@@ -90,7 +178,19 @@ function Reveal({
   );
 }
 
-export function Luna() {
+interface LunaProps {
+  /** Data undangan dari Supabase. Kalau kosong, pakai default Ali & Lyla (preview mode). */
+  data?: WeddingData;
+}
+
+export function Luna({ data }: LunaProps = {}) {
+  const d: WeddingData = { ...DEFAULT_DATA, ...(data || {}) };
+
+  // Nama yang tampil di hero: pakai nickname kalau ada, fallback ke first name dari fullName
+  const groomDisplay = d.groomNickname.trim() || d.groomFullName.split(/\s+/)[0] || "Pria";
+  const brideDisplay = d.brideNickname.trim() || d.brideFullName.split(/\s+/)[0] || "Wanita";
+
+  const countdownTarget = buildCountdownTarget(d.akadDate, d.akadStartTime);
   const [opened, setOpened] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -125,21 +225,58 @@ export function Luna() {
         WebkitFontSmoothing: "antialiased",
       }}
     >
-      <Hero opened={opened} onOpen={handleOpen} />
+      <Hero
+        opened={opened}
+        onOpen={handleOpen}
+        groomName={groomDisplay}
+        brideName={brideDisplay}
+        akadDate={d.akadDate}
+      />
       <div ref={contentRef}>
-        <QuoteAndCountdown />
+        <QuoteAndCountdown quote={d.quote} countdownTarget={countdownTarget} />
         <Pembuka />
-        <ProfilMempelai />
-        <Acara />
-        <Penutup />
+        <ProfilMempelai
+          groomFullName={d.groomFullName}
+          groomFatherName={d.groomFatherName}
+          groomMotherName={d.groomMotherName}
+          brideFullName={d.brideFullName}
+          brideFatherName={d.brideFatherName}
+          brideMotherName={d.brideMotherName}
+        />
+        <Acara
+          akadDate={d.akadDate}
+          akadTime={formatTime(d.akadStartTime, d.akadEndTime)}
+          akadAddress={d.akadAddress}
+          akadMapsLink={d.akadMapsLink}
+          hasResepsi={d.hasResepsi}
+          resepsiDate={d.resepsiDate}
+          resepsiTime={formatTime(d.resepsiStartTime, d.resepsiEndTime)}
+          resepsiAddress={d.resepsiAddress}
+          resepsiMapsLink={d.resepsiMapsLink}
+        />
+        <Penutup groomName={groomDisplay} brideName={brideDisplay} akadDate={d.akadDate} />
         <NaukaFooter />
       </div>
-      <AudioToggle />
+      <AudioToggle bgmType={d.bgmType} />
     </main>
   );
 }
 
-function Hero({ opened, onOpen }: { opened: boolean; onOpen: () => void }) {
+function Hero({
+  opened,
+  onOpen,
+  groomName,
+  brideName,
+  akadDate,
+}: {
+  opened: boolean;
+  onOpen: () => void;
+  groomName: string;
+  brideName: string;
+  akadDate: string;
+}) {
+  const dateLabel = akadDate ? formatLongDate(akadDate) : "Sabtu, 5 Desember 2026";
+
   return (
     <section
       style={{
@@ -169,7 +306,6 @@ function Hero({ opened, onOpen }: { opened: boolean; onOpen: () => void }) {
           backgroundColor: "#3A4D3F",
         }}
       />
-      {/* Top block — Names only (with fade-up animation on mount) */}
       <div
         style={{
           position: "relative",
@@ -212,7 +348,7 @@ function Hero({ opened, onOpen }: { opened: boolean; onOpen: () => void }) {
             animation: "lunaFadeUp 0.9s ease-out 0.3s both",
           }}
         >
-          Ali
+          {groomName}
         </h1>
         <span
           style={{
@@ -240,10 +376,9 @@ function Hero({ opened, onOpen }: { opened: boolean; onOpen: () => void }) {
             animation: "lunaFadeUp 0.9s ease-out 0.7s both",
           }}
         >
-          Lyla
+          {brideName}
         </h1>
       </div>
-      {/* Bottom block — Date + Kepada Yth + Open Invitation button (animated, delayed) */}
       <div
         style={{
           position: "relative",
@@ -260,7 +395,6 @@ function Hero({ opened, onOpen }: { opened: boolean; onOpen: () => void }) {
           animation: "lunaFadeUp 0.9s ease-out 1.0s both",
         }}
       >
-        {/* Date — small, below the hands */}
         <p
           style={{
             fontFamily: FONT_SANS,
@@ -273,9 +407,8 @@ function Hero({ opened, onOpen }: { opened: boolean; onOpen: () => void }) {
             textShadow: C.textShadowSoft,
           }}
         >
-          Sabtu, 5 Desember 2026
+          {dateLabel}
         </p>
-        {/* Kepada Yth — directly above Open Invitation */}
         <div
           style={{
             padding: "6px 16px",
@@ -312,7 +445,6 @@ function Hero({ opened, onOpen }: { opened: boolean; onOpen: () => void }) {
             Bapak/Ibu/Saudara/i
           </p>
         </div>
-        {/* Open Invitation button — border = text color, fill = bg darker */}
         <button
           onClick={onOpen}
           aria-label="Open Invitation"
@@ -343,7 +475,6 @@ function Hero({ opened, onOpen }: { opened: boolean; onOpen: () => void }) {
           Open Invitation
         </button>
       </div>
-      {/* Keyframes for fade-up animation */}
       <style>{`
         @keyframes lunaFadeUp {
           from {
@@ -387,8 +518,14 @@ function Section({
   );
 }
 
-function QuoteAndCountdown() {
-  const { days, hours, minutes, seconds } = useCountdown("2026-12-05T09:00:00+07:00");
+function QuoteAndCountdown({
+  quote,
+  countdownTarget,
+}: {
+  quote: string;
+  countdownTarget: string;
+}) {
+  const { days, hours, minutes, seconds } = useCountdown(countdownTarget);
   const units: Array<{ label: string; value: number }> = [
     { label: "Hari", value: days },
     { label: "Jam", value: hours },
@@ -397,9 +534,7 @@ function QuoteAndCountdown() {
   ];
 
   return (
-    <Section
-      style={{ paddingTop: "84px", paddingBottom: "84px" }}
-    >
+    <Section style={{ paddingTop: "84px", paddingBottom: "84px" }}>
       <Reveal>
         <p
           style={{
@@ -413,8 +548,7 @@ function QuoteAndCountdown() {
             margin: "0 auto 48px",
           }}
         >
-          &ldquo;Dan di antara jutaan kemungkinan, takdir mempertemukan dua hati untuk
-          berjalan menuju masa depan yang sama.&rdquo;
+          &ldquo;{quote || "Dan di antara jutaan kemungkinan, takdir mempertemukan dua hati untuk berjalan menuju masa depan yang sama."}&rdquo;
         </p>
       </Reveal>
       <Reveal delay={120}>
@@ -544,7 +678,29 @@ function Pembuka() {
   );
 }
 
-function ProfilMempelai() {
+function ProfilMempelai({
+  groomFullName,
+  groomFatherName,
+  groomMotherName,
+  brideFullName,
+  brideFatherName,
+  brideMotherName,
+}: {
+  groomFullName: string;
+  groomFatherName: string;
+  groomMotherName: string;
+  brideFullName: string;
+  brideFatherName: string;
+  brideMotherName: string;
+}) {
+  // Ambil first name untuk inisial
+  const groomInitial = (groomFullName.split(/\s+/)[0] || "A").charAt(0).toUpperCase();
+  const brideInitial = (brideFullName.split(/\s+/)[0] || "L").charAt(0).toUpperCase();
+
+  // Display name: prefer fullName, fallback ke default
+  const groomDisplay = groomFullName || "Ali Rahman";
+  const brideDisplay = brideFullName || "Lyla Azzahra";
+
   return (
     <Section style={{ paddingTop: "40px", paddingBottom: "84px" }}>
       <Reveal>
@@ -588,7 +744,7 @@ function ProfilMempelai() {
                 opacity: 0.9,
               }}
             >
-              A
+              {groomInitial}
             </p>
             <h3
               style={{
@@ -600,23 +756,27 @@ function ProfilMempelai() {
                 letterSpacing: "0.02em",
               }}
             >
-              Ali Rahman
+              {groomDisplay}
             </h3>
-            <p
-              style={{
-                fontFamily: FONT_SANS,
-                fontSize: "11px",
-                fontWeight: 400,
-                color: C.secondary,
-                margin: 0,
-                letterSpacing: "0.05em",
-                lineHeight: 1.6,
-              }}
-            >
-              Putra dari
-              <br />
-              Bapak Hendri dan Ibu Ningsih
-            </p>
+            {(groomFatherName || groomMotherName) && (
+              <p
+                style={{
+                  fontFamily: FONT_SANS,
+                  fontSize: "11px",
+                  fontWeight: 400,
+                  color: C.secondary,
+                  margin: 0,
+                  letterSpacing: "0.05em",
+                  lineHeight: 1.6,
+                }}
+              >
+                Putra dari
+                <br />
+                {groomFatherName && `Bapak ${groomFatherName}`}
+                {groomFatherName && groomMotherName && " dan "}
+                {groomMotherName && `Ibu ${groomMotherName}`}
+              </p>
+            )}
           </div>
           {/* Divider */}
           <div
@@ -641,7 +801,7 @@ function ProfilMempelai() {
                 opacity: 0.9,
               }}
             >
-              L
+              {brideInitial}
             </p>
             <h3
               style={{
@@ -653,23 +813,27 @@ function ProfilMempelai() {
                 letterSpacing: "0.02em",
               }}
             >
-              Lyla Azzahra
+              {brideDisplay}
             </h3>
-            <p
-              style={{
-                fontFamily: FONT_SANS,
-                fontSize: "11px",
-                fontWeight: 400,
-                color: C.secondary,
-                margin: 0,
-                letterSpacing: "0.05em",
-                lineHeight: 1.6,
-              }}
-            >
-              Putri dari
-              <br />
-              Bapak Yusuf dan Ibu Rahayu
-            </p>
+            {(brideFatherName || brideMotherName) && (
+              <p
+                style={{
+                  fontFamily: FONT_SANS,
+                  fontSize: "11px",
+                  fontWeight: 400,
+                  color: C.secondary,
+                  margin: 0,
+                  letterSpacing: "0.05em",
+                  lineHeight: 1.6,
+                }}
+              >
+                Putri dari
+                <br />
+                {brideFatherName && `Bapak ${brideFatherName}`}
+                {brideFatherName && brideMotherName && " dan "}
+                {brideMotherName && `Ibu ${brideMotherName}`}
+              </p>
+            )}
           </div>
         </div>
       </Reveal>
@@ -677,22 +841,53 @@ function ProfilMempelai() {
   );
 }
 
-function Acara() {
-  const mapUrl = "https://www.google.com/maps/search/?api=1&query=Tanah+Abang+1+Jakarta+Pusat";
-  const events: Array<{ title: string; date: string; time: string; place: string }> = [
+function Acara({
+  akadDate,
+  akadTime,
+  akadAddress,
+  akadMapsLink,
+  hasResepsi,
+  resepsiDate,
+  resepsiTime,
+  resepsiAddress,
+  resepsiMapsLink,
+}: {
+  akadDate: string;
+  akadTime: string;
+  akadAddress: string;
+  akadMapsLink: string;
+  hasResepsi: boolean;
+  resepsiDate: string;
+  resepsiTime: string;
+  resepsiAddress: string;
+  resepsiMapsLink: string;
+}) {
+  const akadMapUrl =
+    akadMapsLink ||
+    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(akadAddress || "")}`;
+
+  const events: Array<{ title: string; date: string; time: string; place: string; mapUrl: string }> = [
     {
       title: "Akad Nikah",
-      date: "Sabtu, 5 Desember 2026",
-      time: "09.00 WIB – Selesai",
-      place: "Tanah Abang 1, Jakarta Pusat",
-    },
-    {
-      title: "Resepsi",
-      date: "Sabtu, 5 Desember 2026",
-      time: "10.00 WIB – Selesai",
-      place: "Tanah Abang 1, Jakarta Pusat",
+      date: formatLongDate(akadDate),
+      time: akadTime,
+      place: akadAddress,
+      mapUrl: akadMapUrl,
     },
   ];
+
+  if (hasResepsi) {
+    const resepsiMapUrl =
+      resepsiMapsLink ||
+      `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(resepsiAddress || "")}`;
+    events.push({
+      title: "Resepsi",
+      date: formatLongDate(resepsiDate),
+      time: resepsiTime,
+      place: resepsiAddress,
+      mapUrl: resepsiMapUrl,
+    });
+  }
 
   return (
     <Section style={{ paddingTop: "84px", paddingBottom: "84px" }}>
@@ -767,20 +962,22 @@ function Acara() {
               >
                 {ev.time}
               </p>
-              <p
-                style={{
-                  fontFamily: FONT_SANS,
-                  fontSize: "11px",
-                  fontWeight: 400,
-                  color: C.accent,
-                  margin: "0 0 20px",
-                  letterSpacing: "0.05em",
-                }}
-              >
-                {ev.place}
-              </p>
+              {ev.place && (
+                <p
+                  style={{
+                    fontFamily: FONT_SANS,
+                    fontSize: "11px",
+                    fontWeight: 400,
+                    color: C.accent,
+                    margin: "0 0 20px",
+                    letterSpacing: "0.05em",
+                  }}
+                >
+                  {ev.place}
+                </p>
+              )}
               <a
-                href={mapUrl}
+                href={ev.mapUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -846,11 +1043,20 @@ function TwoRingsDivider() {
   );
 }
 
-function Penutup() {
+function Penutup({
+  groomName,
+  brideName,
+  akadDate,
+}: {
+  groomName: string;
+  brideName: string;
+  akadDate: string;
+}) {
+  const dateLabel = akadDate ? formatLongDate(akadDate) : "Sabtu, 5 Desember 2026";
+  const coupleLabel = `${groomName} & ${brideName}`;
+
   return (
-    <Section
-      style={{ paddingTop: "84px", paddingBottom: "72px" }}
-    >
+    <Section style={{ paddingTop: "84px", paddingBottom: "72px" }}>
       <Reveal>
         <div style={{ textAlign: "center", maxWidth: "320px", margin: "0 auto" }}>
           <p
@@ -902,7 +1108,7 @@ function Penutup() {
               margin: "0 0 10px",
             }}
           >
-            Ali &amp; Lyla
+            {coupleLabel}
           </h3>
           <p
             style={{
@@ -915,7 +1121,7 @@ function Penutup() {
               margin: 0,
             }}
           >
-            Sabtu, 5 Desember 2026
+            {dateLabel}
           </p>
         </div>
       </Reveal>
@@ -949,24 +1155,30 @@ function NaukaFooter() {
   );
 }
 
-// ════════════════════════════════════════════════════════════════
-// AUDIO TOGGLE — Floating music button (default OFF, plays bird sound)
-// ════════════════════════════════════════════════════════════════
-function AudioToggle() {
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// AUDIO TOGGLE â€” Floating music button
+// For Free: default OFF (hening)
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+function AudioToggle({ bgmType }: { bgmType: string }) {
   const [playing, setPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    const audio = new Audio("/nauka/birds-morning.mp3");
-    audio.loop = true;
-    audio.volume = 0.4;
-    audio.preload = "auto";
-    audioRef.current = audio;
-    return () => {
-      audio.pause();
-      audioRef.current = null;
-    };
-  }, []);
+    // Free hanya support sound_alam (birds-morning.mp3) atau hening
+    if (bgmType === "sound_alam") {
+      const audio = new Audio("/nauka/birds-morning.mp3");
+      audio.loop = true;
+      audio.volume = 0.4;
+      audio.preload = "auto";
+      audioRef.current = audio;
+      return () => {
+        audio.pause();
+        audioRef.current = null;
+      };
+    }
+    // hening â†’ gak render button
+    return;
+  }, [bgmType]);
 
   const toggle = useCallback(() => {
     const audio = audioRef.current;
@@ -975,9 +1187,15 @@ function AudioToggle() {
       audio.pause();
       setPlaying(false);
     } else {
-      audio.play().then(() => setPlaying(true)).catch(() => setPlaying(false));
+      audio
+        .play()
+        .then(() => setPlaying(true))
+        .catch(() => setPlaying(false));
     }
   }, [playing]);
+
+  // Kalau hening, gak render tombol audio
+  if (bgmType !== "sound_alam") return null;
 
   return (
     <button

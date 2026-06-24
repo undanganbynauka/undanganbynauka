@@ -100,7 +100,7 @@ function formatTime(time: string, endTime?: string): string {
   const formatted = time.replace(":", ".");
   if (endTime) {
     const endFormatted = endTime.replace(":", ".");
-    return `${formatted} â€“ ${endFormatted} WIB`;
+    return `${formatted} - ${endFormatted} WIB`;
   }
   return `${formatted} WIB`;
 }

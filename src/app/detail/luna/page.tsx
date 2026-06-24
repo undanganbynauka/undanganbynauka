@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { NaukaFooter } from "@/components/nauka/NaukaFooter";
-import { LunaClaimForm } from "@/components/nauka/LunaClaimForm";
+import { NaukaCheckout as LunaClaimForm } from "@/components/nauka/LunaClaimForm";
 
 export default function LunaDetailPage() {
   const [loaded, setLoaded] = useState(false);

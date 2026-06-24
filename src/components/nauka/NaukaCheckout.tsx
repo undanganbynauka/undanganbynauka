@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { NaukaFormDataUndangan, type WeddingData } from "./NaukaFormDataUndangan";
+import { NaukaFreeForm } from "./NaukaFreeForm";
 
 interface CheckoutProps {
   templateName: string;
@@ -14,6 +15,7 @@ interface CheckoutProps {
 }
 
 const WA_BASE = "6289655592925";
+const SITE_BASE_URL = "https://undangan-by-nauka.vercel.app";
 
 type Step = "paket" | "pemesan" | "undangan" | "review" | "pembayaran" | "done";
 
@@ -26,12 +28,13 @@ const STEP_TITLES: Record<Step, string> = {
   done: "Selesai",
 };
 
-// ── Helper: format Rupiah dari harga (basicPrice/premiumPrice dalam ribuan) ──
+// â”€â”€ Helper: format Rupiah dari harga (basicPrice/premiumPrice dalam ribuan) â”€â”€
 function formatRupiah(priceInRb: number): string {
   return `Rp${priceInRb.toLocaleString("id-ID")}rb`;
 }
 
-// ── Helper: build WhatsApp URL dengan data lengkap ──
+// â”€â”€ Helper: build WhatsApp URL untuk konfirmasi pesanan BERBAYAR â”€â”€
+// (Untuk Luna free, pakai buildLunaFreeWaUrl â€” pesan berbeda)
 function buildWaUrl(
   orderId: string,
   templateName: string,
@@ -73,7 +76,7 @@ function buildWaUrl(
   );
 
   if (packageName === "free") {
-    lines.push(`Pesanan GRATIS — tidak perlu pembayaran QRIS.`);
+    lines.push(`Pesanan GRATIS â€” tidak perlu pembayaran QRIS.`);
   } else {
     lines.push(`Saya sudah melakukan pembayaran QRIS sesuai nominal.`);
   }
@@ -99,30 +102,77 @@ function buildWaUrl(
   return `https://wa.me/${WA_BASE}?text=${encodeURIComponent(lines.join("\n"))}`;
 }
 
+// â”€â”€ Helper: build WhatsApp URL untuk SHARE UNDANGAN Luna free â”€â”€
+// Pesan berupa "kabar bahagia + link undangan" (bukan konfirmasi pesanan)
+function buildLunaShareWaUrl(
+  invitationUrl: string,
+  data: WeddingData
+): string {
+  const groomDisplay = data.groomNickname.trim() || data.groomFullName.split(/\s+/)[0] || "Mempelai Pria";
+  const brideDisplay = data.brideNickname.trim() || data.brideFullName.split(/\s+/)[0] || "Mempelai Wanita";
+
+  // Format tanggal: dari "2026-12-05" ke "5 Desember 2026"
+  let dateLabel = "";
+  if (data.akadDate) {
+    try {
+      const d = new Date(`${data.akadDate}T00:00:00+07:00`);
+      dateLabel = d.toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+        timeZone: "Asia/Jakarta",
+      });
+    } catch {
+      dateLabel = data.akadDate;
+    }
+  }
+
+  const lines = [
+    `Assalamu'alaikum warahmatullahi wabarakatuh`,
+    ``,
+    `Kami mengundang Anda dengan penuh sukacita untuk hadir dalam acara pernikahan kami.`,
+    ``,
+    `${data.groomFullName} & ${data.brideFullName}`,
+    dateLabel,
+    ``,
+    `ðŸ“Ž Buka undangan Anda di:`,
+    invitationUrl,
+    ``,
+    `Merupakan kebahagiaan bagi kami apabila Anda berkenan hadir dan memberikan doa restu.`,
+    ``,
+    `Terima kasih ðŸ™âœ¨`,
+  ];
+
+  return `https://wa.me/?text=${encodeURIComponent(lines.join("\n"))}`;
+}
+
 export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPrice, freeAvailable = false }: CheckoutProps) {
   const [selected, setSelected] = useState<"free" | "basic" | "premium">("premium");
   const [visible, setVisible] = useState(false);
 
-  // ── Step state ──
+  // â”€â”€ Step state â”€â”€
   const [step, setStep] = useState<Step>("paket");
 
-  // ── Customer info (Step 2) ──
+  // â”€â”€ Customer info (Step 2) â”€â”€
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
 
-  // ── Wedding data (Step 3) ──
+  // â”€â”€ Wedding data (Step 3) â”€â”€
   const [weddingData, setWeddingData] = useState<WeddingData | null>(null);
 
-  // ── Order (created at Review → Pembayaran transition) ──
+  // â”€â”€ Order (created at Review â†’ Pembayaran transition) â”€â”€
   const [orderId, setOrderId] = useState<string | null>(null);
   const [orderDbId, setOrderDbId] = useState<number | null>(null);
+  const [invitationUrl, setInvitationUrl] = useState<string | null>(null);
 
-  // ── Submission state ──
+  // â”€â”€ Submission state â”€â”€
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const ref = useRef<HTMLElement>(null);
+
+  const isLunaFree = templateId === "luna" && selected === "free";
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -135,7 +185,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
     return () => observer.disconnect();
   }, []);
 
-  // Scroll to top saat step berubah (UX: user selalu lihat header step baru)
+  // Scroll to top saat step berubah
   useEffect(() => {
     if (ref.current) {
       ref.current.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -147,11 +197,11 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
   const priceInIdr = price * 1000;
   const isFree = selected === "free";
 
-  // ════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   // Handlers
-  // ════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-  // ── Step 2 → Step 3: validate customer info ──
+  // â”€â”€ Step 2 â†’ Step 3: validate customer info â”€â”€
   function goToUndangan() {
     setSubmitError(null);
     if (!customerName.trim()) {
@@ -165,13 +215,13 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
     setStep("undangan");
   }
 
-  // ── Step 3 → Step 4: FormDataUndangan submit ──
+  // â”€â”€ Step 3 â†’ Step 4: FormDataUndangan / FreeForm submit â”€â”€
   function handleUndanganSubmit(data: WeddingData) {
     setWeddingData(data);
     setStep("review");
   }
 
-  // ── Step 4 → Step 5: POST /api/orders ──
+  // â”€â”€ Step 4 â†’ Step 5: POST /api/orders â”€â”€
   async function createOrder() {
     setSubmitError(null);
 
@@ -202,8 +252,12 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
       }
       setOrderId(data.order_id);
       setOrderDbId(data.id);
+      // Untuk Luna free, simpan invitation_url dari response API
+      if (data.invitation_url) {
+        setInvitationUrl(data.invitation_url);
+      }
       // Free package: skip pembayaran, langsung ke done.
-      // API sudah set status='awaiting_confirmation' untuk free.
+      // API sudah set status='published' untuk Luna free (auto-publish).
       if (isFree) {
         setStep("done");
       } else {
@@ -217,7 +271,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
     }
   }
 
-  // ── Step 5 → Step 6: POST /api/orders/[id]/confirm-payment ──
+  // â”€â”€ Step 5 â†’ Step 6: POST /api/orders/[id]/confirm-payment â”€â”€
   async function confirmPayment() {
     setSubmitError(null);
     if (!orderId) return;
@@ -243,9 +297,27 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
     }
   }
 
-  // ════════════════════════════════════════════════════════════════
+  // â”€â”€ Copy invitation link to clipboard â”€â”€
+  async function copyInvitationLink() {
+    if (!invitationUrl) return;
+    try {
+      await navigator.clipboard.writeText(invitationUrl);
+      alert("Link undangan berhasil disalin!");
+    } catch {
+      // Fallback untuk browser lama
+      const textarea = document.createElement("textarea");
+      textarea.value = invitationUrl;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      alert("Link undangan berhasil disalin!");
+    }
+  }
+
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   // Render
-  // ════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   return (
     <section
       ref={ref}
@@ -267,7 +339,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
       />
 
       <div className="relative z-10 mx-auto max-w-[520px]">
-        {/* ─── TITLE (dynamic per step) ─── */}
+        {/* â”€â”€â”€ TITLE (dynamic per step) â”€â”€â”€ */}
         <h2
           style={{
             fontFamily: "var(--font-bodoni)",
@@ -285,7 +357,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
           {STEP_TITLES[step]}
         </h2>
 
-        {/* ─── STEP INDICATOR (1/6, 2/6, ...) ─── */}
+        {/* â”€â”€â”€ STEP INDICATOR â”€â”€â”€ */}
         <div
           style={{
             display: "flex",
@@ -331,9 +403,9 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
           }}
         />
 
-        {/* ════════════════════════════════════════════════════════════ */}
-        {/* STEP 1: PAKET — pilih Free/Basic/Premium                        */}
-        {/* ════════════════════════════════════════════════════════════ */}
+        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+        {/* STEP 1: PAKET â€” pilih Free/Basic/Premium                        */}
+        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
         {step === "paket" && (
           <div
             style={{
@@ -365,10 +437,12 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                 lineHeight: 1.6,
               }}
             >
-              Pilih paket yang sesuai kebutuhan Anda. Perubahan paket masih bisa dilakukan nanti di step Ringkasan.
+              {freeAvailable
+                ? "Untuk kamu yang ingin mengabarkan kabar bahagia dengan sederhana."
+                : "Pilih paket yang sesuai kebutuhan Anda."}
             </p>
 
-            {/* Package toggle — 2 kolom default, 3 kolom kalau freeAvailable */}
+            {/* Package toggle */}
             <div
               style={{
                 display: "grid",
@@ -399,7 +473,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                       textTransform: "uppercase",
                       color: selected === "free" ? "rgba(201,169,110,0.75)" : "rgba(255,255,255,0.35)",
                       display: "block",
-                      transition: "color 0.3s ease",
                     }}
                   >
                     Free
@@ -412,7 +485,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                       color: selected === "free" ? "rgba(201,169,110,0.8)" : "rgba(255,255,255,0.35)",
                       display: "block",
                       marginTop: "8px",
-                      transition: "color 0.3s ease",
                     }}
                   >
                     GRATIS
@@ -453,7 +525,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                     textTransform: "uppercase",
                     color: selected === "basic" ? "rgba(255,255,255,0.75)" : "rgba(255,255,255,0.35)",
                     display: "block",
-                    transition: "color 0.3s ease",
                   }}
                 >
                   Basic
@@ -466,7 +537,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                     color: selected === "basic" ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.35)",
                     display: "block",
                     marginTop: "8px",
-                    transition: "color 0.3s ease",
                   }}
                 >
                   {basicPrice}rb
@@ -484,7 +554,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                   cursor: "pointer",
                   transition: "border-color 0.3s ease, background 0.3s ease",
                   textAlign: "center",
-                  position: "relative",
                 }}
               >
                 <span
@@ -495,7 +564,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                     textTransform: "uppercase",
                     color: selected === "premium" ? "rgba(201,169,110,0.75)" : "rgba(255,255,255,0.35)",
                     display: "block",
-                    transition: "color 0.3s ease",
                   }}
                 >
                   Premium
@@ -508,7 +576,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                     color: selected === "premium" ? "rgba(201,169,110,0.8)" : "rgba(255,255,255,0.35)",
                     display: "block",
                     marginTop: "8px",
-                    transition: "color 0.3s ease",
                   }}
                 >
                   {premiumPrice}rb
@@ -578,9 +645,9 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
           </div>
         )}
 
-        {/* ════════════════════════════════════════════════════════════ */}
-        {/* STEP 2: PEMESAN — nama, WA, email                              */}
-        {/* ════════════════════════════════════════════════════════════ */}
+        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+        {/* STEP 2: PEMESAN â€” nama, WA, email                              */}
+        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
         {step === "pemesan" && (
           <div
             style={{
@@ -646,14 +713,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                     outline: "none",
                     transition: "border-color 0.3s ease, background 0.3s ease",
                   }}
-                  onFocus={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(201,169,110,0.25)";
-                    e.currentTarget.style.background = "rgba(201,169,110,0.03)";
-                  }}
-                  onBlur={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
-                    e.currentTarget.style.background = "rgba(255,255,255,0.02)";
-                  }}
                 />
               </div>
 
@@ -686,15 +745,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                     fontSize: "13px",
                     color: "rgba(255,255,255,0.85)",
                     outline: "none",
-                    transition: "border-color 0.3s ease, background 0.3s ease",
-                  }}
-                  onFocus={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(201,169,110,0.25)";
-                    e.currentTarget.style.background = "rgba(201,169,110,0.03)";
-                  }}
-                  onBlur={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
-                    e.currentTarget.style.background = "rgba(255,255,255,0.02)";
                   }}
                 />
               </div>
@@ -728,15 +778,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                     fontSize: "13px",
                     color: "rgba(255,255,255,0.85)",
                     outline: "none",
-                    transition: "border-color 0.3s ease, background 0.3s ease",
-                  }}
-                  onFocus={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(201,169,110,0.25)";
-                    e.currentTarget.style.background = "rgba(201,169,110,0.03)";
-                  }}
-                  onBlur={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
-                    e.currentTarget.style.background = "rgba(255,255,255,0.02)";
                   }}
                 />
               </div>
@@ -775,14 +816,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                   cursor: "pointer",
                   transition: "all 0.3s ease",
                 }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
-                  e.currentTarget.style.color = "rgba(255,255,255,0.75)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
-                  e.currentTarget.style.color = "rgba(255,255,255,0.55)";
-                }}
               >
                 Kembali
               </button>
@@ -800,16 +833,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                   cursor: "pointer",
                   transition: "all 0.3s ease",
                 }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(201,169,110,0.35)";
-                  e.currentTarget.style.background = "rgba(201,169,110,0.10)";
-                  e.currentTarget.style.color = "rgba(201,169,110,0.95)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(201,169,110,0.20)";
-                  e.currentTarget.style.background = "rgba(201,169,110,0.06)";
-                  e.currentTarget.style.color = "rgba(201,169,110,0.85)";
-                }}
               >
                 Lanjut ke Data Undangan
               </button>
@@ -817,12 +840,13 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
           </div>
         )}
 
-        {/* ════════════════════════════════════════════════════════════ */}
-        {/* STEP 3: UNDANGAN — form panjang (render FormDataUndangan)       */}
-        {/* ════════════════════════════════════════════════════════════ */}
+        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+        {/* STEP 3: UNDANGAN â€” conditional rendering                        */}
+        {/*   - Luna free â†’ NaukaFreeForm (simpel)                          */}
+        {/*   - Sacred/Celestial â†’ NaukaFormDataUndangan (lengkap)          */}
+        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
         {step === "undangan" && (
           <div>
-            {/* Kembali button di atas */}
             <button
               onClick={() => setStep("pemesan")}
               style={{
@@ -837,30 +861,31 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                 marginBottom: "20px",
                 transition: "all 0.3s ease",
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
-                e.currentTarget.style.color = "rgba(255,255,255,0.75)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
-                e.currentTarget.style.color = "rgba(255,255,255,0.55)";
-              }}
             >
-              ← Kembali ke Data Pemesan
+              â† Kembali ke Data Pemesan
             </button>
 
-            <NaukaFormDataUndangan
-              template={templateId as "sacred" | "celestial"}
-              onSubmit={handleUndanganSubmit}
-              submitLabel="Lanjut ke Ringkasan"
-              submitting={false}
-            />
+            {templateId === "luna" ? (
+              <NaukaFreeForm
+                template={templateId}
+                onSubmit={handleUndanganSubmit}
+                submitLabel="Lanjut ke Ringkasan"
+                submitting={false}
+              />
+            ) : (
+              <NaukaFormDataUndangan
+                template={templateId as "sacred" | "celestial"}
+                onSubmit={handleUndanganSubmit}
+                submitLabel="Lanjut ke Ringkasan"
+                submitting={false}
+              />
+            )}
           </div>
         )}
 
-        {/* ════════════════════════════════════════════════════════════ */}
-        {/* STEP 4: REVIEW — ringkasan semua data sebelum create order      */}
-        {/* ════════════════════════════════════════════════════════════ */}
+        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+        {/* STEP 4: REVIEW â€” ringkasan semua data sebelum create order      */}
+        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
         {step === "review" && weddingData && (
           <div
             style={{
@@ -882,21 +907,18 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               Mohon periksa kembali semua data di bawah. Setelah klik <strong style={{ color: "rgba(201,169,110,0.85)" }}>{isFree ? "Kirim Pesanan" : "Lanjut ke Pembayaran"}</strong>, pesanan akan dibuat dengan nomor <code style={{ color: "rgba(201,169,110,0.85)" }}>NAUKA-{new Date().getFullYear()}-...</code> dan tidak dapat diubah.
             </p>
 
-            {/* Card: Pesanan */}
             <ReviewSection title="Pesanan">
               <ReviewRow label="Template" value={templateName} />
               <ReviewRow label="Paket" value={packageName} highlight={selected === "premium" || selected === "free"} />
               <ReviewRow label="Total" value={isFree ? "GRATIS" : formatRupiah(price)} bold />
             </ReviewSection>
 
-            {/* Card: Pemesan */}
             <ReviewSection title="Data Pemesan">
               <ReviewRow label="Nama" value={customerName} />
               <ReviewRow label="No. WhatsApp" value={customerPhone} />
               {customerEmail && <ReviewRow label="Email" value={customerEmail} />}
             </ReviewSection>
 
-            {/* Card: Mempelai */}
             <ReviewSection title="Data Mempelai">
               <ReviewRow label="Mempelai Pria" value={weddingData.groomFullName} />
               {weddingData.groomNickname && <ReviewRow label="Panggilan Pria" value={weddingData.groomNickname} />}
@@ -904,7 +926,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               {weddingData.brideNickname && <ReviewRow label="Panggilan Wanita" value={weddingData.brideNickname} />}
             </ReviewSection>
 
-            {/* Card: Akad */}
             <ReviewSection title="Akad">
               <ReviewRow label="Tanggal" value={weddingData.akadDate} />
               <ReviewRow label="Waktu" value={`${weddingData.akadStartTime}${weddingData.akadEndTime ? ` - ${weddingData.akadEndTime}` : ""}`} />
@@ -912,7 +933,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               {weddingData.akadCity && <ReviewRow label="Kota" value={weddingData.akadCity} />}
             </ReviewSection>
 
-            {/* Card: Resepsi (hanya kalau ada) */}
             {weddingData.hasResepsi && (
               <ReviewSection title="Resepsi">
                 <ReviewRow label="Tanggal" value={weddingData.resepsiDate || "-"} />
@@ -922,9 +942,8 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               </ReviewSection>
             )}
 
-            {/* Card: Konfigurasi Undangan */}
             <ReviewSection title="Konfigurasi Undangan">
-              <ReviewRow label="Slug" value={`/detail/${weddingData.slug}`} />
+              <ReviewRow label="Slug" value={`/${weddingData.slug}`} />
               <ReviewRow label="BGM" value={weddingData.bgmType === "hening" ? "Hening (tanpa musik)" : weddingData.bgmType} />
               {weddingData.quote && <ReviewRow label="Quote" value={weddingData.quote} />}
             </ReviewSection>
@@ -947,7 +966,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               </p>
             )}
 
-            {/* Buttons */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "10px", marginTop: "32px" }}>
               <button
                 onClick={() => setStep("undangan")}
@@ -963,15 +981,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                   cursor: submitting ? "not-allowed" : "pointer",
                   opacity: submitting ? 0.5 : 1,
                   transition: "all 0.3s ease",
-                }}
-                onMouseEnter={(e) => {
-                  if (submitting) return;
-                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
-                  e.currentTarget.style.color = "rgba(255,255,255,0.75)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
-                  e.currentTarget.style.color = "rgba(255,255,255,0.55)";
                 }}
               >
                 Kembali
@@ -991,28 +1000,17 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                   cursor: submitting ? "not-allowed" : "pointer",
                   transition: "all 0.3s ease",
                 }}
-                onMouseEnter={(e) => {
-                  if (submitting) return;
-                  e.currentTarget.style.borderColor = "rgba(201,169,110,0.35)";
-                  e.currentTarget.style.background = "rgba(201,169,110,0.10)";
-                  e.currentTarget.style.color = "rgba(201,169,110,0.95)";
-                }}
-                onMouseLeave={(e) => {
-                  if (submitting) return;
-                  e.currentTarget.style.borderColor = "rgba(201,169,110,0.20)";
-                  e.currentTarget.style.background = "rgba(201,169,110,0.06)";
-                  e.currentTarget.style.color = "rgba(201,169,110,0.85)";
-                }}
               >
-                {submitting ? "Membuat pesanan..." : isFree ? "Kirim Pesanan (Gratis)" : "Lanjut ke Pembayaran"}
+                {submitting ? "Sedang merangkai undangan kamu..." : isFree ? "Kirim Pesanan (Gratis)" : "Lanjut ke Pembayaran"}
               </button>
             </div>
           </div>
         )}
 
-        {/* ════════════════════════════════════════════════════════════ */}
-        {/* STEP 5: PEMBAYARAN — QRIS + order_id + tombol "saya sudah bayar" */}
-        {/* ════════════════════════════════════════════════════════════ */}
+        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+        {/* STEP 5: PEMBAYARAN â€” QRIS + tombol "saya sudah bayar"           */}
+        {/* (HANYA untuk Basic/Premium â€” Luna free skip step ini)           */}
+        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
         {step === "pembayaran" && orderId && (
           <div
             style={{
@@ -1021,7 +1019,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               transition: "opacity 0.6s ease-out, transform 0.6s ease-out",
             }}
           >
-            {/* Status badge */}
             <div style={{ textAlign: "center", marginBottom: "24px" }}>
               <div
                 style={{
@@ -1057,7 +1054,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               </div>
             </div>
 
-            {/* Order ID — prominent */}
             <div style={{ textAlign: "center", marginBottom: "24px" }}>
               <p
                 style={{
@@ -1084,7 +1080,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               </p>
             </div>
 
-            {/* Total */}
             <div
               style={{
                 padding: "16px 18px",
@@ -1119,7 +1114,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               </p>
             </div>
 
-            {/* QR Code card */}
             <div
               style={{
                 padding: "28px 24px",
@@ -1181,7 +1175,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               </p>
             </div>
 
-            {/* Info proses */}
             <div
               style={{
                 marginTop: "24px",
@@ -1222,7 +1215,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               </p>
             )}
 
-            {/* CTA: Saya sudah bayar */}
             <button
               onClick={confirmPayment}
               disabled={submitting}
@@ -1240,18 +1232,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                 cursor: submitting ? "not-allowed" : "pointer",
                 transition: "all 0.3s ease",
               }}
-              onMouseEnter={(e) => {
-                if (submitting) return;
-                e.currentTarget.style.borderColor = "rgba(201,169,110,0.35)";
-                e.currentTarget.style.background = "rgba(201,169,110,0.10)";
-                e.currentTarget.style.color = "rgba(201,169,110,0.95)";
-              }}
-              onMouseLeave={(e) => {
-                if (submitting) return;
-                e.currentTarget.style.borderColor = "rgba(201,169,110,0.20)";
-                e.currentTarget.style.background = "rgba(201,169,110,0.06)";
-                e.currentTarget.style.color = "rgba(201,169,110,0.85)";
-              }}
             >
               {submitting ? "Memproses..." : "Saya sudah bayar"}
             </button>
@@ -1262,9 +1242,11 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
           </div>
         )}
 
-        {/* ════════════════════════════════════════════════════════════ */}
-        {/* STEP 6: DONE — Terima kasih + WA konfirmasi                     */}
-        {/* ════════════════════════════════════════════════════════════ */}
+        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+        {/* STEP 6: DONE â€” Terima kasih + aksi                             */}
+        {/*   - Luna free: tampilkan link undangan + tombol share          */}
+        {/*   - Berbayar: tampilkan konfirmasi + WA ke admin               */}
+        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
         {step === "done" && orderId && weddingData && (
           <div
             style={{
@@ -1295,7 +1277,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                   color: "rgba(201,169,110,0.85)",
                 }}
               >
-                ✓
+                âœ“
               </span>
             </div>
 
@@ -1309,7 +1291,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                 marginBottom: "12px",
               }}
             >
-              Terima Kasih
+              {isLunaFree ? "Undangan Kamu Sudah Siap" : "Terima Kasih"}
             </h3>
 
             <p
@@ -1323,15 +1305,59 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                 margin: "0 auto 24px",
               }}
             >
-              Pesanan Anda <strong style={{ color: "rgba(201,169,110,0.85)" }}>{orderId}</strong> telah kami terima bersama seluruh data undangan.
-              <br />
-              <br />
-              {isFree ? (
-                <>Pesanan <strong style={{ color: "rgba(201,169,110,0.85)" }}>Free (Gratis)</strong> Anda akan segera diproses oleh admin tanpa perlu pembayaran. Tidak ada QRIS yang perlu dipindai.</>
+              {isLunaFree ? (
+                <>
+                  Pesanan <strong style={{ color: "rgba(201,169,110,0.85)" }}>{orderId}</strong> telah kami terima.
+                  <br />
+                  <br />
+                  Undangan kamu sudah otomatis aktif. Kamu bisa langsung membagikannya ke orang-orang tersayang.
+                </>
               ) : (
-                <>Konfirmasi pembayaran Anda telah tercatat dengan status <em>menunggu verifikasi admin</em>. Pengerjaan undangan akan dimulai setelah admin memverifikasi pembayaran.</>
+                <>
+                  Pesanan <strong style={{ color: "rgba(201,169,110,0.85)" }}>{orderId}</strong> telah kami terima bersama seluruh data undangan.
+                  <br />
+                  <br />
+                  Konfirmasi pembayaran Anda telah tercatat dengan status <em>menunggu verifikasi admin</em>. Pengerjaan undangan akan dimulai setelah admin memverifikasi pembayaran.
+                </>
               )}
             </p>
+
+            {/* â”€â”€ KHUSUS LUNA FREE: tampilkan link undangan prominently â”€â”€ */}
+            {isLunaFree && invitationUrl && (
+              <div
+                style={{
+                  padding: "20px",
+                  borderRadius: "12px",
+                  border: "1px solid rgba(201,169,110,0.20)",
+                  background: "rgba(201,169,110,0.04)",
+                  marginBottom: "20px",
+                }}
+              >
+                <p
+                  style={{
+                    fontFamily: "var(--font-inter)",
+                    fontSize: "10px",
+                    letterSpacing: "0.2em",
+                    textTransform: "uppercase",
+                    color: "rgba(201,169,110,0.6)",
+                    marginBottom: "10px",
+                  }}
+                >
+                  Link Undangan Kamu
+                </p>
+                <p
+                  style={{
+                    fontFamily: "var(--font-bodoni)",
+                    fontSize: "14px",
+                    color: "rgba(201,169,110,0.9)",
+                    wordBreak: "break-all",
+                    margin: 0,
+                  }}
+                >
+                  {invitationUrl}
+                </p>
+              </div>
+            )}
 
             {/* Recap card */}
             <div
@@ -1362,52 +1388,145 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               </div>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>Status</span>
-                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(201,169,110,0.7)" }}>{isFree ? "Menunggu review admin" : "Menunggu verifikasi admin"}</span>
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(201,169,110,0.7)" }}>
+                  {isLunaFree ? "Published (Aktif)" : "Menunggu verifikasi admin"}
+                </span>
               </div>
             </div>
 
-            {/* WA konfirmasi — explicit, tidak auto-open */}
-            <p
-              style={{
-                fontFamily: "var(--font-inter)",
-                fontSize: "11px",
-                color: "rgba(255,255,255,0.45)",
-                textAlign: "center",
-                marginBottom: "16px",
-                lineHeight: 1.6,
-              }}
-            >
-              Selanjutnya, kirim konfirmasi ke admin via WhatsApp dengan data pesanan sudah ter-prefill:
-            </p>
+            {/* â”€â”€ KHUSUS LUNA FREE: tombol aksi untuk share undangan â”€â”€ */}
+            {isLunaFree && invitationUrl && (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "10px",
+                  marginBottom: "20px",
+                }}
+              >
+                {/* Tombol utama: Lihat Undangan */}
+                <a
+                  href={invitationUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: "block",
+                    padding: "16px 24px",
+                    borderRadius: "12px",
+                    border: "1px solid rgba(201,169,110,0.35)",
+                    background: "rgba(201,169,110,0.10)",
+                    fontFamily: "var(--font-inter)",
+                    fontSize: "13px",
+                    letterSpacing: "0.1em",
+                    color: "rgba(201,169,110,0.95)",
+                    textDecoration: "none",
+                    fontWeight: 500,
+                    transition: "all 0.3s ease",
+                  }}
+                >
+                  Lihat Undangan
+                </a>
 
-            <a
-              href={buildWaUrl(orderId, templateName, selected, weddingData)}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: "inline-block",
-                padding: "14px 28px",
-                borderRadius: "10px",
-                border: "1px solid rgba(201,169,110,0.20)",
-                background: "rgba(201,169,110,0.06)",
-                fontFamily: "var(--font-inter)",
-                fontSize: "12px",
-                letterSpacing: "0.1em",
-                color: "rgba(201,169,110,0.8)",
-                textDecoration: "none",
-                transition: "all 0.3s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "rgba(201,169,110,0.35)";
-                e.currentTarget.style.background = "rgba(201,169,110,0.10)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "rgba(201,169,110,0.20)";
-                e.currentTarget.style.background = "rgba(201,169,110,0.06)";
-              }}
-            >
-              Konfirmasi via WhatsApp
-            </a>
+                {/* Tombol secondary: Bagikan via WhatsApp */}
+                <a
+                  href={buildLunaShareWaUrl(invitationUrl, weddingData)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: "block",
+                    padding: "14px 24px",
+                    borderRadius: "12px",
+                    border: "1px solid rgba(201,169,110,0.20)",
+                    background: "transparent",
+                    fontFamily: "var(--font-inter)",
+                    fontSize: "12px",
+                    letterSpacing: "0.1em",
+                    color: "rgba(201,169,110,0.85)",
+                    textDecoration: "none",
+                    transition: "all 0.3s ease",
+                  }}
+                >
+                  Bagikan ke WhatsApp
+                </a>
+
+                {/* Tombol tertiary: Salin Link */}
+                <button
+                  onClick={copyInvitationLink}
+                  style={{
+                    padding: "14px 24px",
+                    borderRadius: "12px",
+                    border: "1px solid rgba(255,255,255,0.10)",
+                    background: "transparent",
+                    fontFamily: "var(--font-inter)",
+                    fontSize: "12px",
+                    letterSpacing: "0.1em",
+                    color: "rgba(255,255,255,0.6)",
+                    cursor: "pointer",
+                    transition: "all 0.3s ease",
+                  }}
+                >
+                  Salin Link
+                </button>
+              </div>
+            )}
+
+            {/* â”€â”€ UNTUK BERBAYAR: tombol WA konfirmasi ke admin â”€â”€ */}
+            {!isLunaFree && (
+              <>
+                <p
+                  style={{
+                    fontFamily: "var(--font-inter)",
+                    fontSize: "11px",
+                    color: "rgba(255,255,255,0.45)",
+                    textAlign: "center",
+                    marginBottom: "16px",
+                    lineHeight: 1.6,
+                  }}
+                >
+                  Selanjutnya, kirim konfirmasi ke admin via WhatsApp dengan data pesanan sudah ter-prefill:
+                </p>
+
+                <a
+                  href={buildWaUrl(orderId, templateName, selected, weddingData)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: "inline-block",
+                    padding: "14px 28px",
+                    borderRadius: "10px",
+                    border: "1px solid rgba(201,169,110,0.20)",
+                    background: "rgba(201,169,110,0.06)",
+                    fontFamily: "var(--font-inter)",
+                    fontSize: "12px",
+                    letterSpacing: "0.1em",
+                    color: "rgba(201,169,110,0.8)",
+                    textDecoration: "none",
+                    transition: "all 0.3s ease",
+                  }}
+                >
+                  Konfirmasi via WhatsApp
+                </a>
+              </>
+            )}
+
+            {/* â”€â”€ Human touch closing â”€â”€ */}
+            {isLunaFree && (
+              <p
+                style={{
+                  fontFamily: "var(--font-bodoni)",
+                  fontSize: "14px",
+                  fontStyle: "italic",
+                  color: "rgba(201,169,110,0.7)",
+                  marginTop: "28px",
+                  lineHeight: 1.6,
+                  maxWidth: "340px",
+                  marginLeft: "auto",
+                  marginRight: "auto",
+                }}
+              >
+                Semoga undangan ini menjadi bagian dari momen indah kalian.
+              </p>
+            )}
 
             <p
               style={{
@@ -1420,12 +1539,16 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
             >
               Simpan nomor pesanan Anda untuk referensi.
               <br />
-              Jika WhatsApp tidak terbuka, hubungi kami manual di <strong style={{ color: "rgba(255,255,255,0.45)" }}>+{WA_BASE}</strong>.
+              {isLunaFree ? (
+                <>Butuh bantuan? Hubungi kami di <strong style={{ color: "rgba(255,255,255,0.45)" }}>+{WA_BASE}</strong>.</>
+              ) : (
+                <>Jika WhatsApp tidak terbuka, hubungi kami manual di <strong style={{ color: "rgba(255,255,255,0.45)" }}>+{WA_BASE}</strong>.</>
+              )}
             </p>
           </div>
         )}
 
-        {/* Fallback: state tidak valid (seharusnya tidak tercapai) */}
+        {/* Fallback: state tidak valid */}
         {step === "done" && !orderId && (
           <div style={{ textAlign: "center", padding: "40px" }}>
             <p style={{ fontFamily: "var(--font-inter)", fontSize: "13px", color: "rgba(255,255,255,0.55)" }}>
@@ -1460,9 +1583,9 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
   );
 }
 
-// ════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // Helper components for Review step
-// ════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 function ReviewSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (

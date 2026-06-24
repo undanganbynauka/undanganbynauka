@@ -19,28 +19,29 @@ interface Template {
 
 const syariTemplates: Template[] = [
   {
-    id: "sacred",
-    name: "Sacred",
-    collection: "Syar'i",
-    href: "/detail/sacred",
-    preview: "/etalase/sacred-preview.png",
-    liveHref: "/sacred?preview=true",
-  },
+  id: "sacred",
+  name: "Sacred",
+  collection: "Syar'i",
+  href: "/detail/sacred",
+  preview: "/etalase/sacred-preview.png",
+  liveHref: "/sacred?preview=true",
+  video: "/etalase/sacred-preview.mp4",
+},
 ];
 
 const universalTemplates: Template[] = [
   {
-    id: "luna",
-    name: "Luna",
-    collection: "Universal",
-    href: "/detail/luna",
-    preview: "/nauka/couple-illustration-sage.png",
-    liveHref: "/luna",
-    tier: "free",
-    price: "Gratis",
-    tagline:
-      "Setiap cinta layak dirayakan. Luna hadir untuk memastikan undangan Anda tetap indah, walau sederhana di hati.",
-  },
+  id: "luna",
+  name: "Luna",
+  collection: "Universal",
+  href: "/detail/luna",
+  preview: "/nauka/couple-illustration-sage.png",
+  liveHref: "/luna",
+  tier: "free",
+  price: "Gratis",
+  tagline: "Setiap cinta layak dirayakan...",
+  video: "/etalase/luna-preview.mp4",
+},
   {
     id: "celestial",
     name: "Celestial",

@@ -26,7 +26,7 @@ const templates: Record<string, TemplateDetail> = {
     collection: "Syar'i",
     collectionLabel: "Syar'i Collection",
     previewHref: "/sacred?preview=true",
-    preview: "/etalase/sacred-preview.png",
+    preview: "/etalase/sacred-preview.mp4",
     description:
       "Sacred dirancang untuk pasangan yang mengutamakan kesederhanaan syar'i dalam setiap detail undangannya. Tanpa foto, tanpa musik instrumental — hanya keindahan yang terjaga dan kata-kata yang bermakna.",
     highlights: [
@@ -43,7 +43,7 @@ const templates: Record<string, TemplateDetail> = {
     collection: "Universal",
     collectionLabel: "Universal Collection",
     previewHref: "/celestial?preview=true",
-    preview: "/etalase/celestial-preview.png",
+    preview: "/etalase/celestial-preview.mp4",
     description:
       "Celestial menghadirkan keanggunan universal dalam desain undangan digital. Dengan animasi sinematik dan tipografi yang halus, setiap detail dirancang untuk memberikan kesan mendalam bagi tamu Anda.",
     highlights: [
@@ -60,7 +60,7 @@ const templates: Record<string, TemplateDetail> = {
     collection: "Universal",
     collectionLabel: "Universal Collection — Free",
     previewHref: "/luna?preview=true",
-    preview: "/etalase/luna-preview.png",
+    preview: "/etalase/luna-preview.mp4",
     description:
       "Luna adalah template gratis dari Nauka — minimalis, hangat, dan tetap elegan. Dirancang dengan palet sage muted dan tipografi klasik, Luna memberi kesan tenang tanpa berlebihan. Cocok untuk pasangan yang baru memulai, tetap ingin memberi tamu undangan digital yang bermakna.",
     highlights: [

@@ -199,13 +199,18 @@ export default function DetailTemplatePage() {
               }}
             >
               <video
-  src={tpl.preview}
+  src={tpl.preview.replace(/\.(png|jpg|jpeg)$/, ".mp4")}
   autoPlay
   muted
   loop
   playsInline
-  className="object-cover"
-  style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.9 }}
+  poster={tpl.preview}
+  style={{
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    opacity: 0.9,
+  }}
 />
             </div>
           </div>

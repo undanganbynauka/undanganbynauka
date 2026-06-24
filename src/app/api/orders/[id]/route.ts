@@ -4,7 +4,7 @@ import { getSupabaseServer, isAdminAuthorized } from "@/lib/supabase-server";
 
 // Field yang DIKEMBALIKAN ke publik via GET single.
 // Aman untuk ditampilkan di Bukti Pembayaran & tracking status.
-// ⚠️ JANGAN tambahkan: customer_phone, customer_email, wedding_data
+// âš ï¸ JANGAN tambahkan: customer_phone, customer_email, wedding_data
 const PUBLIC_ORDER_FIELDS = [
   "id",
   "order_id",
@@ -115,9 +115,9 @@ export async function GET(
  * PATCH /api/orders/[id]
  * Update order status / admin_notes. ADMIN ONLY.
  *
- * 🔒 Proteksi:
+ * ðŸ”’ Proteksi:
  *   - Wajib header x-admin-secret yang valid
- *   - Pakai service role client (bypass RLS — sama dengan POST /api/orders)
+ *   - Pakai service role client (bypass RLS â€” sama dengan POST /api/orders)
  *
  * Body (all optional):
  *   - status: OrderStatus
@@ -127,7 +127,7 @@ export async function GET(
  *   - id: order_id (NAUKA-{YYYY}-{NNN}) atau numeric id
  *
  * Response:
- *   200 { data: AdminOrder }  — return full admin fields
+ *   200 { data: AdminOrder }  â€” return full admin fields
  *   400 { error: "Status tidak valid / Tidak ada field yang di-update" }
  *   401 { error: "Unauthorized. Admin secret required." }
  *   404 { error: "Pesanan tidak ditemukan atau gagal di-update." }
@@ -138,7 +138,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // ── Layer 1: Admin secret check ──
+    // â”€â”€ Layer 1: Admin secret check â”€â”€
     if (!isAdminAuthorized(req)) {
       return NextResponse.json(
         { error: "Unauthorized. Admin secret required." },
@@ -146,7 +146,7 @@ export async function PATCH(
       );
     }
 
-    // ── Layer 2: Service role client (bypass RLS) ──
+    // â”€â”€ Layer 2: Service role client (bypass RLS) â”€â”€
     const supabaseAdmin = getSupabaseServer();
     if (!supabaseAdmin) {
       return NextResponse.json(

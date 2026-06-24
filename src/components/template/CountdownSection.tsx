@@ -168,7 +168,7 @@ export function CountdownSection() {
             opacity: textVisible ? 1 : 0, transform: textVisible ? "translateY(0)" : "translateY(8px)",
             transition: `opacity 0.7s ${ease} 1.2s, transform 0.7s ${ease} 1.2s`,
           }}>
-            Ahad, 5 Juli 2026
+            Sabtu, 5 Desember 2026
           </p>
         </div>
       </div>

@@ -140,15 +140,20 @@ export default function LunaDetailPage() {
                 background: "#0B1120",
               }}
             >
-              <Image
-                src="/etalase/luna-preview.jpg"
-                alt="Luna preview"
-                fill
-                sizes="(max-width: 580px) 100vw, 580px"
-                className="object-cover"
-                style={{ opacity: 0.9 }}
-                priority
-              />
+              <video
+  src="/etalase/luna-preview.mp4"
+  autoPlay
+  muted
+  loop
+  playsInline
+  poster="/etalase/luna-preview.png"
+  style={{
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    opacity: 0.9,
+  }}
+/>
             </div>
           </div>
 

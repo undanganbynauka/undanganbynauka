@@ -10,7 +10,6 @@ interface CheckoutProps {
   templateId: string;
   basicPrice: number;
   premiumPrice: number;
-  /** Tampilkan opsi paket Free (gratis, tanpa QRIS). Default: false. */
   freeAvailable?: boolean;
 }
 
@@ -28,13 +27,10 @@ const STEP_TITLES: Record<Step, string> = {
   done: "Selesai",
 };
 
-// â”€â”€ Helper: format Rupiah dari harga (basicPrice/premiumPrice dalam ribuan) â”€â”€
 function formatRupiah(priceInRb: number): string {
   return `Rp${priceInRb.toLocaleString("id-ID")}rb`;
 }
 
-// â”€â”€ Helper: build WhatsApp URL untuk konfirmasi pesanan BERBAYAR â”€â”€
-// (Untuk Luna free, pakai buildLunaFreeWaUrl â€” pesan berbeda)
 function buildWaUrl(
   orderId: string,
   templateName: string,
@@ -70,13 +66,10 @@ function buildWaUrl(
     );
   }
 
-  lines.push(
-    `*UNDANGAN*`,
-    `Slug: ${data.slug}`,
-  );
+  lines.push(`*UNDANGAN*`, `Slug: ${data.slug}`);
 
   if (packageName === "free") {
-    lines.push(`Pesanan GRATIS â€” tidak perlu pembayaran QRIS.`);
+    lines.push(`Pesanan GRATIS — tidak perlu pembayaran QRIS.`);
   } else {
     lines.push(`Saya sudah melakukan pembayaran QRIS sesuai nominal.`);
   }
@@ -102,16 +95,7 @@ function buildWaUrl(
   return `https://wa.me/${WA_BASE}?text=${encodeURIComponent(lines.join("\n"))}`;
 }
 
-// â”€â”€ Helper: build WhatsApp URL untuk SHARE UNDANGAN Luna free â”€â”€
-// Pesan berupa "kabar bahagia + link undangan" (bukan konfirmasi pesanan)
-function buildLunaShareWaUrl(
-  invitationUrl: string,
-  data: WeddingData
-): string {
-  const groomDisplay = data.groomNickname.trim() || data.groomFullName.split(/\s+/)[0] || "Mempelai Pria";
-  const brideDisplay = data.brideNickname.trim() || data.brideFullName.split(/\s+/)[0] || "Mempelai Wanita";
-
-  // Format tanggal: dari "2026-12-05" ke "5 Desember 2026"
+function buildLunaShareWaUrl(invitationUrl: string, data: WeddingData): string {
   let dateLabel = "";
   if (data.akadDate) {
     try {
@@ -135,12 +119,12 @@ function buildLunaShareWaUrl(
     `${data.groomFullName} & ${data.brideFullName}`,
     dateLabel,
     ``,
-    `ðŸ“Ž Buka undangan Anda di:`,
+    `📎 Buka undangan Anda di:`,
     invitationUrl,
     ``,
     `Merupakan kebahagiaan bagi kami apabila Anda berkenan hadir dan memberikan doa restu.`,
     ``,
-    `Terima kasih ðŸ™âœ¨`,
+    `Terima kasih 🙏✨`,
   ];
 
   return `https://wa.me/?text=${encodeURIComponent(lines.join("\n"))}`;
@@ -149,24 +133,14 @@ function buildLunaShareWaUrl(
 export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPrice, freeAvailable = false }: CheckoutProps) {
   const [selected, setSelected] = useState<"free" | "basic" | "premium">("premium");
   const [visible, setVisible] = useState(false);
-
-  // â”€â”€ Step state â”€â”€
   const [step, setStep] = useState<Step>("paket");
-
-  // â”€â”€ Customer info (Step 2) â”€â”€
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
-
-  // â”€â”€ Wedding data (Step 3) â”€â”€
   const [weddingData, setWeddingData] = useState<WeddingData | null>(null);
-
-  // â”€â”€ Order (created at Review â†’ Pembayaran transition) â”€â”€
   const [orderId, setOrderId] = useState<string | null>(null);
   const [orderDbId, setOrderDbId] = useState<number | null>(null);
   const [invitationUrl, setInvitationUrl] = useState<string | null>(null);
-
-  // â”€â”€ Submission state â”€â”€
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -185,7 +159,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
     return () => observer.disconnect();
   }, []);
 
-  // Scroll to top saat step berubah
   useEffect(() => {
     if (ref.current) {
       ref.current.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -197,11 +170,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
   const priceInIdr = price * 1000;
   const isFree = selected === "free";
 
-  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-  // Handlers
-  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-
-  // â”€â”€ Step 2 â†’ Step 3: validate customer info â”€â”€
   function goToUndangan() {
     setSubmitError(null);
     if (!customerName.trim()) {
@@ -215,16 +183,13 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
     setStep("undangan");
   }
 
-  // â”€â”€ Step 3 â†’ Step 4: FormDataUndangan / FreeForm submit â”€â”€
   function handleUndanganSubmit(data: WeddingData) {
     setWeddingData(data);
     setStep("review");
   }
 
-  // â”€â”€ Step 4 â†’ Step 5: POST /api/orders â”€â”€
   async function createOrder() {
     setSubmitError(null);
-
     if (!weddingData) {
       setSubmitError("Data undangan belum lengkap. Silakan kembali ke step Data Undangan.");
       return;
@@ -252,12 +217,9 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
       }
       setOrderId(data.order_id);
       setOrderDbId(data.id);
-      // Untuk Luna free, simpan invitation_url dari response API
       if (data.invitation_url) {
         setInvitationUrl(data.invitation_url);
       }
-      // Free package: skip pembayaran, langsung ke done.
-      // API sudah set status='published' untuk Luna free (auto-publish).
       if (isFree) {
         setStep("done");
       } else {
@@ -271,11 +233,9 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
     }
   }
 
-  // â”€â”€ Step 5 â†’ Step 6: POST /api/orders/[id]/confirm-payment â”€â”€
   async function confirmPayment() {
     setSubmitError(null);
     if (!orderId) return;
-
     setSubmitting(true);
     try {
       const res = await fetch(`/api/orders/${orderId}/confirm-payment`, {
@@ -297,14 +257,12 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
     }
   }
 
-  // â”€â”€ Copy invitation link to clipboard â”€â”€
   async function copyInvitationLink() {
     if (!invitationUrl) return;
     try {
       await navigator.clipboard.writeText(invitationUrl);
       alert("Link undangan berhasil disalin!");
     } catch {
-      // Fallback untuk browser lama
       const textarea = document.createElement("textarea");
       textarea.value = invitationUrl;
       document.body.appendChild(textarea);
@@ -315,9 +273,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
     }
   }
 
-  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-  // Render
-  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   return (
     <section
       ref={ref}
@@ -327,7 +282,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
         padding: "80px 24px",
       }}
     >
-      {/* Ambient glow */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
@@ -339,7 +293,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
       />
 
       <div className="relative z-10 mx-auto max-w-[520px]">
-        {/* â”€â”€â”€ TITLE (dynamic per step) â”€â”€â”€ */}
         <h2
           style={{
             fontFamily: "var(--font-bodoni)",
@@ -357,7 +310,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
           {STEP_TITLES[step]}
         </h2>
 
-        {/* â”€â”€â”€ STEP INDICATOR â”€â”€â”€ */}
         <div
           style={{
             display: "flex",
@@ -392,7 +344,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
           })}
         </div>
 
-        {/* Divider */}
         <div
           style={{
             height: "1px",
@@ -402,10 +353,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
             transition: "opacity 1.2s ease-out 0.15s",
           }}
         />
-
-        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
-        {/* STEP 1: PAKET â€” pilih Free/Basic/Premium                        */}
-        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+                {/* STEP 1: PAKET */}
         {step === "paket" && (
           <div
             style={{
@@ -442,7 +390,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                 : "Pilih paket yang sesuai kebutuhan Anda."}
             </p>
 
-            {/* Package toggle */}
             <div
               style={{
                 display: "grid",
@@ -451,7 +398,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                 marginTop: "28px",
               }}
             >
-              {/* Free option (hanya kalau freeAvailable) */}
               {freeAvailable && (
                 <button
                   onClick={() => setSelected("free")}
@@ -465,46 +411,18 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                     textAlign: "center",
                   }}
                 >
-                  <span
-                    style={{
-                      fontFamily: "var(--font-inter)",
-                      fontSize: "10px",
-                      letterSpacing: "0.15em",
-                      textTransform: "uppercase",
-                      color: selected === "free" ? "rgba(201,169,110,0.75)" : "rgba(255,255,255,0.35)",
-                      display: "block",
-                    }}
-                  >
+                  <span style={{ fontFamily: "var(--font-inter)", fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase", color: selected === "free" ? "rgba(201,169,110,0.75)" : "rgba(255,255,255,0.35)", display: "block" }}>
                     Free
                   </span>
-                  <span
-                    style={{
-                      fontFamily: "var(--font-bodoni)",
-                      fontSize: "20px",
-                      fontWeight: 400,
-                      color: selected === "free" ? "rgba(201,169,110,0.8)" : "rgba(255,255,255,0.35)",
-                      display: "block",
-                      marginTop: "8px",
-                    }}
-                  >
+                  <span style={{ fontFamily: "var(--font-bodoni)", fontSize: "20px", fontWeight: 400, color: selected === "free" ? "rgba(201,169,110,0.8)" : "rgba(255,255,255,0.35)", display: "block", marginTop: "8px" }}>
                     GRATIS
                   </span>
-                  <span
-                    style={{
-                      fontFamily: "var(--font-inter)",
-                      fontSize: "9px",
-                      color: "rgba(255,255,255,0.30)",
-                      display: "block",
-                      marginTop: "6px",
-                      letterSpacing: "0.05em",
-                    }}
-                  >
+                  <span style={{ fontFamily: "var(--font-inter)", fontSize: "9px", color: "rgba(255,255,255,0.30)", display: "block", marginTop: "6px", letterSpacing: "0.05em" }}>
                     tanpa QRIS
                   </span>
                 </button>
               )}
 
-              {/* Basic option */}
               <button
                 onClick={() => setSelected("basic")}
                 style={{
@@ -517,33 +435,14 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                   textAlign: "center",
                 }}
               >
-                <span
-                  style={{
-                    fontFamily: "var(--font-inter)",
-                    fontSize: "11px",
-                    letterSpacing: "0.15em",
-                    textTransform: "uppercase",
-                    color: selected === "basic" ? "rgba(255,255,255,0.75)" : "rgba(255,255,255,0.35)",
-                    display: "block",
-                  }}
-                >
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", letterSpacing: "0.15em", textTransform: "uppercase", color: selected === "basic" ? "rgba(255,255,255,0.75)" : "rgba(255,255,255,0.35)", display: "block" }}>
                   Basic
                 </span>
-                <span
-                  style={{
-                    fontFamily: "var(--font-bodoni)",
-                    fontSize: "22px",
-                    fontWeight: 400,
-                    color: selected === "basic" ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.35)",
-                    display: "block",
-                    marginTop: "8px",
-                  }}
-                >
+                <span style={{ fontFamily: "var(--font-bodoni)", fontSize: "22px", fontWeight: 400, color: selected === "basic" ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.35)", display: "block", marginTop: "8px" }}>
                   {basicPrice}rb
                 </span>
               </button>
 
-              {/* Premium option */}
               <button
                 onClick={() => setSelected("premium")}
                 style={{
@@ -556,34 +455,15 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                   textAlign: "center",
                 }}
               >
-                <span
-                  style={{
-                    fontFamily: "var(--font-inter)",
-                    fontSize: "11px",
-                    letterSpacing: "0.15em",
-                    textTransform: "uppercase",
-                    color: selected === "premium" ? "rgba(201,169,110,0.75)" : "rgba(255,255,255,0.35)",
-                    display: "block",
-                  }}
-                >
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", letterSpacing: "0.15em", textTransform: "uppercase", color: selected === "premium" ? "rgba(201,169,110,0.75)" : "rgba(255,255,255,0.35)", display: "block" }}>
                   Premium
                 </span>
-                <span
-                  style={{
-                    fontFamily: "var(--font-bodoni)",
-                    fontSize: "22px",
-                    fontWeight: 400,
-                    color: selected === "premium" ? "rgba(201,169,110,0.8)" : "rgba(255,255,255,0.35)",
-                    display: "block",
-                    marginTop: "8px",
-                  }}
-                >
+                <span style={{ fontFamily: "var(--font-bodoni)", fontSize: "22px", fontWeight: 400, color: selected === "premium" ? "rgba(201,169,110,0.8)" : "rgba(255,255,255,0.35)", display: "block", marginTop: "8px" }}>
                   {premiumPrice}rb
                 </span>
               </button>
             </div>
 
-            {/* Total */}
             <div
               style={{
                 marginTop: "28px",
@@ -595,20 +475,12 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
             >
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <span style={{ fontFamily: "var(--font-inter)", fontSize: "13px", color: "rgba(255,255,255,0.50)" }}>Total</span>
-                <span
-                  style={{
-                    fontFamily: "var(--font-bodoni)",
-                    fontSize: "20px",
-                    fontWeight: 400,
-                    color: "rgba(255,255,255,0.85)",
-                  }}
-                >
+                <span style={{ fontFamily: "var(--font-bodoni)", fontSize: "20px", fontWeight: 400, color: "rgba(255,255,255,0.85)" }}>
                   {formatRupiah(price)}
                 </span>
               </div>
             </div>
 
-            {/* CTA: Lanjut ke Data Pemesan */}
             <button
               onClick={() => {
                 setSubmitError(null);
@@ -629,25 +501,13 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                 cursor: "pointer",
                 transition: "border-color 0.3s ease, background 0.3s ease, color 0.3s ease",
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "rgba(201,169,110,0.35)";
-                e.currentTarget.style.background = "rgba(201,169,110,0.10)";
-                e.currentTarget.style.color = "rgba(201,169,110,0.95)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "rgba(201,169,110,0.20)";
-                e.currentTarget.style.background = "rgba(201,169,110,0.06)";
-                e.currentTarget.style.color = "rgba(201,169,110,0.85)";
-              }}
             >
               Lanjut ke Data Pemesan
             </button>
           </div>
         )}
 
-        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
-        {/* STEP 2: PEMESAN â€” nama, WA, email                              */}
-        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+        {/* STEP 2: PEMESAN */}
         {step === "pemesan" && (
           <div
             style={{
@@ -656,7 +516,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               transition: "opacity 1.3s ease-out 0.2s, transform 1.3s ease-out 0.2s",
             }}
           >
-            {/* Recap ringkas: template + paket yang dipilih */}
             <div
               style={{
                 padding: "14px 16px",
@@ -680,19 +539,9 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               </div>
             </div>
 
-            {/* Form */}
             <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
               <div>
-                <label
-                  htmlFor="cust-name"
-                  style={{
-                    fontFamily: "var(--font-inter)",
-                    fontSize: "11px",
-                    color: "rgba(255,255,255,0.45)",
-                    display: "block",
-                    marginBottom: "6px",
-                  }}
-                >
+                <label htmlFor="cust-name" style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)", display: "block", marginBottom: "6px" }}>
                   Nama <span style={{ color: "rgba(201,169,110,0.7)" }}>*</span>
                 </label>
                 <input
@@ -711,22 +560,12 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
                     fontSize: "13px",
                     color: "rgba(255,255,255,0.85)",
                     outline: "none",
-                    transition: "border-color 0.3s ease, background 0.3s ease",
                   }}
                 />
               </div>
 
               <div>
-                <label
-                  htmlFor="cust-phone"
-                  style={{
-                    fontFamily: "var(--font-inter)",
-                    fontSize: "11px",
-                    color: "rgba(255,255,255,0.45)",
-                    display: "block",
-                    marginBottom: "6px",
-                  }}
-                >
+                <label htmlFor="cust-phone" style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)", display: "block", marginBottom: "6px" }}>
                   No. WhatsApp <span style={{ color: "rgba(201,169,110,0.7)" }}>*</span>
                 </label>
                 <input
@@ -750,16 +589,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               </div>
 
               <div>
-                <label
-                  htmlFor="cust-email"
-                  style={{
-                    fontFamily: "var(--font-inter)",
-                    fontSize: "11px",
-                    color: "rgba(255,255,255,0.45)",
-                    display: "block",
-                    marginBottom: "6px",
-                  }}
-                >
+                <label htmlFor="cust-email" style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)", display: "block", marginBottom: "6px" }}>
                   Email <span style={{ color: "rgba(255,255,255,0.30)" }}>(opsional)</span>
                 </label>
                 <input
@@ -784,108 +614,37 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
             </div>
 
             {submitError && (
-              <p
-                style={{
-                  fontFamily: "var(--font-inter)",
-                  fontSize: "12px",
-                  color: "rgba(220, 100, 100, 0.85)",
-                  textAlign: "center",
-                  marginTop: "16px",
-                  padding: "10px 14px",
-                  borderRadius: "8px",
-                  background: "rgba(220, 100, 100, 0.06)",
-                  border: "1px solid rgba(220, 100, 100, 0.15)",
-                }}
-              >
+              <p style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(220, 100, 100, 0.85)", textAlign: "center", marginTop: "16px", padding: "10px 14px", borderRadius: "8px", background: "rgba(220, 100, 100, 0.06)", border: "1px solid rgba(220, 100, 100, 0.15)" }}>
                 {submitError}
               </p>
             )}
 
-            {/* Buttons: Kembali + Lanjut */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "10px", marginTop: "32px" }}>
-              <button
-                onClick={() => setStep("paket")}
-                style={{
-                  padding: "16px 18px",
-                  borderRadius: "12px",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                  background: "transparent",
-                  fontFamily: "var(--font-inter)",
-                  fontSize: "12px",
-                  color: "rgba(255,255,255,0.55)",
-                  cursor: "pointer",
-                  transition: "all 0.3s ease",
-                }}
-              >
+              <button onClick={() => setStep("paket")} style={{ padding: "16px 18px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.08)", background: "transparent", fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(255,255,255,0.55)", cursor: "pointer" }}>
                 Kembali
               </button>
-              <button
-                onClick={goToUndangan}
-                style={{
-                  padding: "16px 24px",
-                  borderRadius: "12px",
-                  border: "1px solid rgba(201,169,110,0.20)",
-                  background: "rgba(201,169,110,0.06)",
-                  fontFamily: "var(--font-inter)",
-                  fontSize: "13px",
-                  letterSpacing: "0.1em",
-                  color: "rgba(201,169,110,0.85)",
-                  cursor: "pointer",
-                  transition: "all 0.3s ease",
-                }}
-              >
+              <button onClick={goToUndangan} style={{ padding: "16px 24px", borderRadius: "12px", border: "1px solid rgba(201,169,110,0.20)", background: "rgba(201,169,110,0.06)", fontFamily: "var(--font-inter)", fontSize: "13px", letterSpacing: "0.1em", color: "rgba(201,169,110,0.85)", cursor: "pointer" }}>
                 Lanjut ke Data Undangan
               </button>
             </div>
           </div>
         )}
-
-        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
-        {/* STEP 3: UNDANGAN â€” conditional rendering                        */}
-        {/*   - Luna free â†’ NaukaFreeForm (simpel)                          */}
-        {/*   - Sacred/Celestial â†’ NaukaFormDataUndangan (lengkap)          */}
-        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+                {/* STEP 3: UNDANGAN */}
         {step === "undangan" && (
           <div>
-            <button
-              onClick={() => setStep("pemesan")}
-              style={{
-                padding: "10px 16px",
-                borderRadius: "8px",
-                border: "1px solid rgba(255,255,255,0.08)",
-                background: "transparent",
-                fontFamily: "var(--font-inter)",
-                fontSize: "11px",
-                color: "rgba(255,255,255,0.55)",
-                cursor: "pointer",
-                marginBottom: "20px",
-                transition: "all 0.3s ease",
-              }}
-            >
-              â† Kembali ke Data Pemesan
+            <button onClick={() => setStep("pemesan")} style={{ padding: "10px 16px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.08)", background: "transparent", fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.55)", cursor: "pointer", marginBottom: "20px" }}>
+              ← Kembali ke Data Pemesan
             </button>
 
             {templateId === "luna" ? (
-              <NaukaFreeForm
-                template={templateId}
-                onSubmit={handleUndanganSubmit}
-                submitLabel="Lanjut ke Ringkasan"
-                submitting={false}
-              />
+              <NaukaFreeForm template={templateId} onSubmit={handleUndanganSubmit} submitLabel="Lanjut ke Ringkasan" submitting={false} />
             ) : (
-              <NaukaFormDataUndangan
-                template={templateId as "sacred" | "celestial"}
-                onSubmit={handleUndanganSubmit}
-                submitLabel="Lanjut ke Ringkasan"
-                submitting={false}
-              />
+              <NaukaFormDataUndangan template={templateId as "sacred" | "celestial"} onSubmit={handleUndanganSubmit} submitLabel="Lanjut ke Ringkasan" submitting={false} />
             )}
           </div>
         )}
 
-        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
-        {/* STEP 4: REVIEW â€” ringkasan semua data sebelum create order      */}
-        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+        {/* STEP 4: REVIEW */}
         {step === "review" && weddingData && (
           <div
             style={{
@@ -894,16 +653,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               transition: "opacity 1.3s ease-out 0.2s, transform 1.3s ease-out 0.2s",
             }}
           >
-            <p
-              style={{
-                fontFamily: "var(--font-inter)",
-                fontSize: "12px",
-                color: "rgba(255,255,255,0.45)",
-                textAlign: "center",
-                marginBottom: "24px",
-                lineHeight: 1.6,
-              }}
-            >
+            <p style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(255,255,255,0.45)", textAlign: "center", marginBottom: "24px", lineHeight: 1.6 }}>
               Mohon periksa kembali semua data di bawah. Setelah klik <strong style={{ color: "rgba(201,169,110,0.85)" }}>{isFree ? "Kirim Pesanan" : "Lanjut ke Pembayaran"}</strong>, pesanan akan dibuat dengan nomor <code style={{ color: "rgba(201,169,110,0.85)" }}>NAUKA-{new Date().getFullYear()}-...</code> dan tidak dapat diubah.
             </p>
 
@@ -949,290 +699,77 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
             </ReviewSection>
 
             {submitError && (
-              <p
-                style={{
-                  fontFamily: "var(--font-inter)",
-                  fontSize: "12px",
-                  color: "rgba(220, 100, 100, 0.85)",
-                  textAlign: "center",
-                  marginTop: "16px",
-                  padding: "10px 14px",
-                  borderRadius: "8px",
-                  background: "rgba(220, 100, 100, 0.06)",
-                  border: "1px solid rgba(220, 100, 100, 0.15)",
-                }}
-              >
+              <p style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(220, 100, 100, 0.85)", textAlign: "center", marginTop: "16px", padding: "10px 14px", borderRadius: "8px", background: "rgba(220, 100, 100, 0.06)", border: "1px solid rgba(220, 100, 100, 0.15)" }}>
                 {submitError}
               </p>
             )}
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "10px", marginTop: "32px" }}>
-              <button
-                onClick={() => setStep("undangan")}
-                disabled={submitting}
-                style={{
-                  padding: "16px 18px",
-                  borderRadius: "12px",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                  background: "transparent",
-                  fontFamily: "var(--font-inter)",
-                  fontSize: "12px",
-                  color: "rgba(255,255,255,0.55)",
-                  cursor: submitting ? "not-allowed" : "pointer",
-                  opacity: submitting ? 0.5 : 1,
-                  transition: "all 0.3s ease",
-                }}
-              >
+              <button onClick={() => setStep("undangan")} disabled={submitting} style={{ padding: "16px 18px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.08)", background: "transparent", fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(255,255,255,0.55)", cursor: submitting ? "not-allowed" : "pointer", opacity: submitting ? 0.5 : 1 }}>
                 Kembali
               </button>
-              <button
-                onClick={createOrder}
-                disabled={submitting}
-                style={{
-                  padding: "16px 24px",
-                  borderRadius: "12px",
-                  border: "1px solid rgba(201,169,110,0.20)",
-                  background: submitting ? "rgba(201,169,110,0.03)" : "rgba(201,169,110,0.06)",
-                  fontFamily: "var(--font-inter)",
-                  fontSize: "13px",
-                  letterSpacing: "0.1em",
-                  color: submitting ? "rgba(201,169,110,0.4)" : "rgba(201,169,110,0.85)",
-                  cursor: submitting ? "not-allowed" : "pointer",
-                  transition: "all 0.3s ease",
-                }}
-              >
+              <button onClick={createOrder} disabled={submitting} style={{ padding: "16px 24px", borderRadius: "12px", border: "1px solid rgba(201,169,110,0.20)", background: submitting ? "rgba(201,169,110,0.03)" : "rgba(201,169,110,0.06)", fontFamily: "var(--font-inter)", fontSize: "13px", letterSpacing: "0.1em", color: submitting ? "rgba(201,169,110,0.4)" : "rgba(201,169,110,0.85)", cursor: submitting ? "not-allowed" : "pointer" }}>
                 {submitting ? "Sedang merangkai undangan kamu..." : isFree ? "Kirim Pesanan (Gratis)" : "Lanjut ke Pembayaran"}
               </button>
             </div>
           </div>
         )}
 
-        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
-        {/* STEP 5: PEMBAYARAN â€” QRIS + tombol "saya sudah bayar"           */}
-        {/* (HANYA untuk Basic/Premium â€” Luna free skip step ini)           */}
-        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+        {/* STEP 5: PEMBAYARAN */}
         {step === "pembayaran" && orderId && (
-          <div
-            style={{
-              opacity: 1,
-              transform: "translateY(0)",
-              transition: "opacity 0.6s ease-out, transform 0.6s ease-out",
-            }}
-          >
+          <div style={{ opacity: 1, transform: "translateY(0)", transition: "opacity 0.6s ease-out, transform 0.6s ease-out" }}>
             <div style={{ textAlign: "center", marginBottom: "24px" }}>
-              <div
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "8px 16px",
-                  borderRadius: "999px",
-                  border: "1px solid rgba(201,169,110,0.20)",
-                  background: "rgba(201,169,110,0.05)",
-                }}
-              >
-                <span
-                  style={{
-                    width: "6px",
-                    height: "6px",
-                    borderRadius: "50%",
-                    background: "rgba(201,169,110,0.7)",
-                    boxShadow: "0 0 8px rgba(201,169,110,0.5)",
-                  }}
-                />
-                <span
-                  style={{
-                    fontFamily: "var(--font-inter)",
-                    fontSize: "11px",
-                    letterSpacing: "0.1em",
-                    textTransform: "uppercase",
-                    color: "rgba(201,169,110,0.75)",
-                  }}
-                >
+              <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "8px 16px", borderRadius: "999px", border: "1px solid rgba(201,169,110,0.20)", background: "rgba(201,169,110,0.05)" }}>
+                <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "rgba(201,169,110,0.7)", boxShadow: "0 0 8px rgba(201,169,110,0.5)" }} />
+                <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(201,169,110,0.75)" }}>
                   Menunggu Pembayaran
                 </span>
               </div>
             </div>
 
             <div style={{ textAlign: "center", marginBottom: "24px" }}>
-              <p
-                style={{
-                  fontFamily: "var(--font-inter)",
-                  fontSize: "10px",
-                  letterSpacing: "0.2em",
-                  textTransform: "uppercase",
-                  color: "rgba(255,255,255,0.35)",
-                  marginBottom: "8px",
-                }}
-              >
+              <p style={{ fontFamily: "var(--font-inter)", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: "8px" }}>
                 Nomor Pesanan
               </p>
-              <p
-                style={{
-                  fontFamily: "var(--font-bodoni)",
-                  fontSize: "24px",
-                  fontWeight: 400,
-                  letterSpacing: "0.08em",
-                  color: "rgba(201,169,110,0.9)",
-                }}
-              >
+              <p style={{ fontFamily: "var(--font-bodoni)", fontSize: "24px", fontWeight: 400, letterSpacing: "0.08em", color: "rgba(201,169,110,0.9)" }}>
                 {orderId}
               </p>
             </div>
 
-            <div
-              style={{
-                padding: "16px 18px",
-                borderRadius: "10px",
-                border: "1px solid rgba(201,169,110,0.15)",
-                background: "rgba(201,169,110,0.02)",
-                marginBottom: "24px",
-                textAlign: "center",
-              }}
-            >
-              <p
-                style={{
-                  fontFamily: "var(--font-inter)",
-                  fontSize: "10px",
-                  letterSpacing: "0.2em",
-                  textTransform: "uppercase",
-                  color: "rgba(255,255,255,0.35)",
-                  marginBottom: "6px",
-                }}
-              >
+            <div style={{ padding: "16px 18px", borderRadius: "10px", border: "1px solid rgba(201,169,110,0.15)", background: "rgba(201,169,110,0.02)", marginBottom: "24px", textAlign: "center" }}>
+              <p style={{ fontFamily: "var(--font-inter)", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: "6px" }}>
                 Total Pembayaran
               </p>
-              <p
-                style={{
-                  fontFamily: "var(--font-bodoni)",
-                  fontSize: "26px",
-                  fontWeight: 400,
-                  color: "rgba(201,169,110,0.9)",
-                }}
-              >
+              <p style={{ fontFamily: "var(--font-bodoni)", fontSize: "26px", fontWeight: 400, color: "rgba(201,169,110,0.9)" }}>
                 {formatRupiah(price)}
               </p>
             </div>
 
-            <div
-              style={{
-                padding: "28px 24px",
-                borderRadius: "16px",
-                border: "1px solid rgba(255,255,255,0.07)",
-                background: "rgba(255,255,255,0.025)",
-                boxShadow: "0 4px 32px rgba(0,0,0,0.2), 0 0 80px rgba(201,169,110,0.02)",
-                textAlign: "center",
-              }}
-            >
-              <div
-                style={{
-                  width: "200px",
-                  height: "200px",
-                  margin: "0 auto",
-                  borderRadius: "12px",
-                  overflow: "hidden",
-                  position: "relative",
-                  background: "#ffffff",
-                  padding: "12px",
-                }}
-              >
-                <Image
-                  src="/qris.png"
-                  alt="QRIS Payment"
-                  fill
-                  sizes="200px"
-                  className="object-contain"
-                  style={{ borderRadius: "8px" }}
-                  priority
-                />
+            <div style={{ padding: "28px 24px", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.025)", boxShadow: "0 4px 32px rgba(0,0,0,0.2), 0 0 80px rgba(201,169,110,0.02)", textAlign: "center" }}>
+              <div style={{ width: "200px", height: "200px", margin: "0 auto", borderRadius: "12px", overflow: "hidden", position: "relative", background: "#ffffff", padding: "12px" }}>
+                <Image src="/qris.png" alt="QRIS Payment" fill sizes="200px" className="object-contain" style={{ borderRadius: "8px" }} priority />
               </div>
-
-              <span
-                style={{
-                  fontFamily: "var(--font-inter)",
-                  fontSize: "13px",
-                  fontWeight: 500,
-                  letterSpacing: "0.06em",
-                  color: "rgba(255,255,255,0.60)",
-                  display: "block",
-                  marginTop: "18px",
-                }}
-              >
+              <span style={{ fontFamily: "var(--font-inter)", fontSize: "13px", fontWeight: 500, letterSpacing: "0.06em", color: "rgba(255,255,255,0.60)", display: "block", marginTop: "18px" }}>
                 QRIS
               </span>
-
-              <p
-                style={{
-                  fontFamily: "var(--font-inter)",
-                  fontSize: "11px",
-                  fontWeight: 400,
-                  lineHeight: 1.5,
-                  color: "rgba(255,255,255,0.28)",
-                  marginTop: "8px",
-                }}
-              >
+              <p style={{ fontFamily: "var(--font-inter)", fontSize: "11px", fontWeight: 400, lineHeight: 1.5, color: "rgba(255,255,255,0.28)", marginTop: "8px" }}>
                 Dapat dibayar melalui semua aplikasi pembayaran &amp; mobile banking
               </p>
             </div>
 
-            <div
-              style={{
-                marginTop: "24px",
-                padding: "16px 18px",
-                borderRadius: "10px",
-                border: "1px solid rgba(255,255,255,0.05)",
-                background: "rgba(255,255,255,0.015)",
-              }}
-            >
-              <p
-                style={{
-                  fontFamily: "var(--font-inter)",
-                  fontSize: "12px",
-                  fontWeight: 400,
-                  lineHeight: 1.65,
-                  color: "rgba(255,255,255,0.38)",
-                }}
-              >
+            <div style={{ marginTop: "24px", padding: "16px 18px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.05)", background: "rgba(255,255,255,0.015)" }}>
+              <p style={{ fontFamily: "var(--font-inter)", fontSize: "12px", fontWeight: 400, lineHeight: 1.65, color: "rgba(255,255,255,0.38)" }}>
                 Setelah pembayaran berhasil di aplikasi Anda, klik tombol di bawah. Admin akan verifikasi pembayaran dan memulai pengerjaan undangan Anda.
               </p>
             </div>
 
             {submitError && (
-              <p
-                style={{
-                  fontFamily: "var(--font-inter)",
-                  fontSize: "12px",
-                  color: "rgba(220, 100, 100, 0.85)",
-                  textAlign: "center",
-                  marginTop: "16px",
-                  padding: "10px 14px",
-                  borderRadius: "8px",
-                  background: "rgba(220, 100, 100, 0.06)",
-                  border: "1px solid rgba(220, 100, 100, 0.15)",
-                }}
-              >
+              <p style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(220, 100, 100, 0.85)", textAlign: "center", marginTop: "16px", padding: "10px 14px", borderRadius: "8px", background: "rgba(220, 100, 100, 0.06)", border: "1px solid rgba(220, 100, 100, 0.15)" }}>
                 {submitError}
               </p>
             )}
 
-            <button
-              onClick={confirmPayment}
-              disabled={submitting}
-              style={{
-                width: "100%",
-                marginTop: "32px",
-                padding: "16px 24px",
-                borderRadius: "12px",
-                border: "1px solid rgba(201,169,110,0.20)",
-                background: submitting ? "rgba(201,169,110,0.03)" : "rgba(201,169,110,0.06)",
-                fontFamily: "var(--font-inter)",
-                fontSize: "13px",
-                letterSpacing: "0.1em",
-                color: submitting ? "rgba(201,169,110,0.4)" : "rgba(201,169,110,0.85)",
-                cursor: submitting ? "not-allowed" : "pointer",
-                transition: "all 0.3s ease",
-              }}
-            >
+            <button onClick={confirmPayment} disabled={submitting} style={{ width: "100%", marginTop: "32px", padding: "16px 24px", borderRadius: "12px", border: "1px solid rgba(201,169,110,0.20)", background: submitting ? "rgba(201,169,110,0.03)" : "rgba(201,169,110,0.06)", fontFamily: "var(--font-inter)", fontSize: "13px", letterSpacing: "0.1em", color: submitting ? "rgba(201,169,110,0.4)" : "rgba(201,169,110,0.85)", cursor: submitting ? "not-allowed" : "pointer" }}>
               {submitting ? "Memproses..." : "Saya sudah bayar"}
             </button>
 
@@ -1241,135 +778,45 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
             </p>
           </div>
         )}
-
-        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
-        {/* STEP 6: DONE â€” Terima kasih + aksi                             */}
-        {/*   - Luna free: tampilkan link undangan + tombol share          */}
-        {/*   - Berbayar: tampilkan konfirmasi + WA ke admin               */}
-        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+                {/* STEP 6: DONE */}
         {step === "done" && orderId && weddingData && (
-          <div
-            style={{
-              opacity: 1,
-              transform: "translateY(0)",
-              transition: "opacity 0.6s ease-out, transform 0.6s ease-out",
-              textAlign: "center",
-            }}
-          >
-            {/* Success icon */}
-            <div
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "64px",
-                height: "64px",
-                borderRadius: "50%",
-                border: "1px solid rgba(201,169,110,0.25)",
-                background: "rgba(201,169,110,0.05)",
-                marginBottom: "24px",
-              }}
-            >
-              <span
-                style={{
-                  fontFamily: "var(--font-bodoni)",
-                  fontSize: "28px",
-                  color: "rgba(201,169,110,0.85)",
-                }}
-              >
-                âœ“
-              </span>
+          <div style={{ opacity: 1, transform: "translateY(0)", transition: "opacity 0.6s ease-out, transform 0.6s ease-out", textAlign: "center" }}>
+            <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "64px", height: "64px", borderRadius: "50%", border: "1px solid rgba(201,169,110,0.25)", background: "rgba(201,169,110,0.05)", marginBottom: "24px" }}>
+              <span style={{ fontFamily: "var(--font-bodoni)", fontSize: "28px", color: "rgba(201,169,110,0.85)" }}>✓</span>
             </div>
 
-            <h3
-              style={{
-                fontFamily: "var(--font-bodoni)",
-                fontSize: "22px",
-                fontWeight: 400,
-                letterSpacing: "0.04em",
-                color: "rgba(255,255,255,0.85)",
-                marginBottom: "12px",
-              }}
-            >
+            <h3 style={{ fontFamily: "var(--font-bodoni)", fontSize: "22px", fontWeight: 400, letterSpacing: "0.04em", color: "rgba(255,255,255,0.85)", marginBottom: "12px" }}>
               {isLunaFree ? "Undangan Kamu Sudah Siap" : "Terima Kasih"}
             </h3>
 
-            <p
-              style={{
-                fontFamily: "var(--font-inter)",
-                fontSize: "13px",
-                color: "rgba(255,255,255,0.55)",
-                lineHeight: 1.7,
-                marginBottom: "24px",
-                maxWidth: "380px",
-                margin: "0 auto 24px",
-              }}
-            >
+            <p style={{ fontFamily: "var(--font-inter)", fontSize: "13px", color: "rgba(255,255,255,0.55)", lineHeight: 1.7, marginBottom: "24px", maxWidth: "380px", margin: "0 auto 24px" }}>
               {isLunaFree ? (
                 <>
                   Pesanan <strong style={{ color: "rgba(201,169,110,0.85)" }}>{orderId}</strong> telah kami terima.
-                  <br />
-                  <br />
+                  <br /><br />
                   Undangan kamu sudah otomatis aktif. Kamu bisa langsung membagikannya ke orang-orang tersayang.
                 </>
               ) : (
                 <>
                   Pesanan <strong style={{ color: "rgba(201,169,110,0.85)" }}>{orderId}</strong> telah kami terima bersama seluruh data undangan.
-                  <br />
-                  <br />
+                  <br /><br />
                   Konfirmasi pembayaran Anda telah tercatat dengan status <em>menunggu verifikasi admin</em>. Pengerjaan undangan akan dimulai setelah admin memverifikasi pembayaran.
                 </>
               )}
             </p>
 
-            {/* â”€â”€ KHUSUS LUNA FREE: tampilkan link undangan prominently â”€â”€ */}
             {isLunaFree && invitationUrl && (
-              <div
-                style={{
-                  padding: "20px",
-                  borderRadius: "12px",
-                  border: "1px solid rgba(201,169,110,0.20)",
-                  background: "rgba(201,169,110,0.04)",
-                  marginBottom: "20px",
-                }}
-              >
-                <p
-                  style={{
-                    fontFamily: "var(--font-inter)",
-                    fontSize: "10px",
-                    letterSpacing: "0.2em",
-                    textTransform: "uppercase",
-                    color: "rgba(201,169,110,0.6)",
-                    marginBottom: "10px",
-                  }}
-                >
+              <div style={{ padding: "20px", borderRadius: "12px", border: "1px solid rgba(201,169,110,0.20)", background: "rgba(201,169,110,0.04)", marginBottom: "20px" }}>
+                <p style={{ fontFamily: "var(--font-inter)", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(201,169,110,0.6)", marginBottom: "10px" }}>
                   Link Undangan Kamu
                 </p>
-                <p
-                  style={{
-                    fontFamily: "var(--font-bodoni)",
-                    fontSize: "14px",
-                    color: "rgba(201,169,110,0.9)",
-                    wordBreak: "break-all",
-                    margin: 0,
-                  }}
-                >
+                <p style={{ fontFamily: "var(--font-bodoni)", fontSize: "14px", color: "rgba(201,169,110,0.9)", wordBreak: "break-all", margin: 0 }}>
                   {invitationUrl}
                 </p>
               </div>
             )}
 
-            {/* Recap card */}
-            <div
-              style={{
-                padding: "20px",
-                borderRadius: "12px",
-                border: "1px solid rgba(255,255,255,0.06)",
-                background: "rgba(255,255,255,0.02)",
-                textAlign: "left",
-                marginBottom: "24px",
-              }}
-            >
+            <div style={{ padding: "20px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)", textAlign: "left", marginBottom: "24px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
                 <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>Nomor Pesanan</span>
                 <span style={{ fontFamily: "var(--font-bodoni)", fontSize: "13px", color: "rgba(201,169,110,0.85)", letterSpacing: "0.04em" }}>{orderId}</span>
@@ -1394,149 +841,38 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
               </div>
             </div>
 
-            {/* â”€â”€ KHUSUS LUNA FREE: tombol aksi untuk share undangan â”€â”€ */}
             {isLunaFree && invitationUrl && (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "10px",
-                  marginBottom: "20px",
-                }}
-              >
-                {/* Tombol utama: Lihat Undangan */}
-                <a
-                  href={invitationUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    display: "block",
-                    padding: "16px 24px",
-                    borderRadius: "12px",
-                    border: "1px solid rgba(201,169,110,0.35)",
-                    background: "rgba(201,169,110,0.10)",
-                    fontFamily: "var(--font-inter)",
-                    fontSize: "13px",
-                    letterSpacing: "0.1em",
-                    color: "rgba(201,169,110,0.95)",
-                    textDecoration: "none",
-                    fontWeight: 500,
-                    transition: "all 0.3s ease",
-                  }}
-                >
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "20px" }}>
+                <a href={invitationUrl} target="_blank" rel="noopener noreferrer" style={{ display: "block", padding: "16px 24px", borderRadius: "12px", border: "1px solid rgba(201,169,110,0.35)", background: "rgba(201,169,110,0.10)", fontFamily: "var(--font-inter)", fontSize: "13px", letterSpacing: "0.1em", color: "rgba(201,169,110,0.95)", textDecoration: "none", fontWeight: 500 }}>
                   Lihat Undangan
                 </a>
-
-                {/* Tombol secondary: Bagikan via WhatsApp */}
-                <a
-                  href={buildLunaShareWaUrl(invitationUrl, weddingData)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    display: "block",
-                    padding: "14px 24px",
-                    borderRadius: "12px",
-                    border: "1px solid rgba(201,169,110,0.20)",
-                    background: "transparent",
-                    fontFamily: "var(--font-inter)",
-                    fontSize: "12px",
-                    letterSpacing: "0.1em",
-                    color: "rgba(201,169,110,0.85)",
-                    textDecoration: "none",
-                    transition: "all 0.3s ease",
-                  }}
-                >
+                <a href={buildLunaShareWaUrl(invitationUrl, weddingData)} target="_blank" rel="noopener noreferrer" style={{ display: "block", padding: "14px 24px", borderRadius: "12px", border: "1px solid rgba(201,169,110,0.20)", background: "transparent", fontFamily: "var(--font-inter)", fontSize: "12px", letterSpacing: "0.1em", color: "rgba(201,169,110,0.85)", textDecoration: "none" }}>
                   Bagikan ke WhatsApp
                 </a>
-
-                {/* Tombol tertiary: Salin Link */}
-                <button
-                  onClick={copyInvitationLink}
-                  style={{
-                    padding: "14px 24px",
-                    borderRadius: "12px",
-                    border: "1px solid rgba(255,255,255,0.10)",
-                    background: "transparent",
-                    fontFamily: "var(--font-inter)",
-                    fontSize: "12px",
-                    letterSpacing: "0.1em",
-                    color: "rgba(255,255,255,0.6)",
-                    cursor: "pointer",
-                    transition: "all 0.3s ease",
-                  }}
-                >
+                <button onClick={copyInvitationLink} style={{ padding: "14px 24px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.10)", background: "transparent", fontFamily: "var(--font-inter)", fontSize: "12px", letterSpacing: "0.1em", color: "rgba(255,255,255,0.6)", cursor: "pointer" }}>
                   Salin Link
                 </button>
               </div>
             )}
 
-            {/* â”€â”€ UNTUK BERBAYAR: tombol WA konfirmasi ke admin â”€â”€ */}
             {!isLunaFree && (
               <>
-                <p
-                  style={{
-                    fontFamily: "var(--font-inter)",
-                    fontSize: "11px",
-                    color: "rgba(255,255,255,0.45)",
-                    textAlign: "center",
-                    marginBottom: "16px",
-                    lineHeight: 1.6,
-                  }}
-                >
+                <p style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)", textAlign: "center", marginBottom: "16px", lineHeight: 1.6 }}>
                   Selanjutnya, kirim konfirmasi ke admin via WhatsApp dengan data pesanan sudah ter-prefill:
                 </p>
-
-                <a
-                  href={buildWaUrl(orderId, templateName, selected, weddingData)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    display: "inline-block",
-                    padding: "14px 28px",
-                    borderRadius: "10px",
-                    border: "1px solid rgba(201,169,110,0.20)",
-                    background: "rgba(201,169,110,0.06)",
-                    fontFamily: "var(--font-inter)",
-                    fontSize: "12px",
-                    letterSpacing: "0.1em",
-                    color: "rgba(201,169,110,0.8)",
-                    textDecoration: "none",
-                    transition: "all 0.3s ease",
-                  }}
-                >
+                <a href={buildWaUrl(orderId, templateName, selected, weddingData)} target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", padding: "14px 28px", borderRadius: "10px", border: "1px solid rgba(201,169,110,0.20)", background: "rgba(201,169,110,0.06)", fontFamily: "var(--font-inter)", fontSize: "12px", letterSpacing: "0.1em", color: "rgba(201,169,110,0.8)", textDecoration: "none" }}>
                   Konfirmasi via WhatsApp
                 </a>
               </>
             )}
 
-            {/* â”€â”€ Human touch closing â”€â”€ */}
             {isLunaFree && (
-              <p
-                style={{
-                  fontFamily: "var(--font-bodoni)",
-                  fontSize: "14px",
-                  fontStyle: "italic",
-                  color: "rgba(201,169,110,0.7)",
-                  marginTop: "28px",
-                  lineHeight: 1.6,
-                  maxWidth: "340px",
-                  marginLeft: "auto",
-                  marginRight: "auto",
-                }}
-              >
+              <p style={{ fontFamily: "var(--font-bodoni)", fontSize: "14px", fontStyle: "italic", color: "rgba(201,169,110,0.7)", marginTop: "28px", lineHeight: 1.6, maxWidth: "340px", marginLeft: "auto", marginRight: "auto" }}>
                 Semoga undangan ini menjadi bagian dari momen indah kalian.
               </p>
             )}
 
-            <p
-              style={{
-                fontFamily: "var(--font-inter)",
-                fontSize: "10px",
-                color: "rgba(255,255,255,0.30)",
-                marginTop: "24px",
-                lineHeight: 1.6,
-              }}
-            >
+            <p style={{ fontFamily: "var(--font-inter)", fontSize: "10px", color: "rgba(255,255,255,0.30)", marginTop: "24px", lineHeight: 1.6 }}>
               Simpan nomor pesanan Anda untuk referensi.
               <br />
               {isLunaFree ? (
@@ -1547,8 +883,7 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
             </p>
           </div>
         )}
-
-        {/* Fallback: state tidak valid */}
+                {/* Fallback: state tidak valid */}
         {step === "done" && !orderId && (
           <div style={{ textAlign: "center", padding: "40px" }}>
             <p style={{ fontFamily: "var(--font-inter)", fontSize: "13px", color: "rgba(255,255,255,0.55)" }}>
@@ -1582,10 +917,6 @@ export function NaukaCheckout({ templateName, templateId, basicPrice, premiumPri
     </section>
   );
 }
-
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// Helper components for Review step
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 function ReviewSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (

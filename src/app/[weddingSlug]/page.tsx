@@ -130,4 +130,33 @@ export default async function BasicInvitePage({
 
 function PendingView() {
   return (
-    <main style={{ minHeight: "100vh", background: "#0B1120", color
+    <main style={{ minHeight: "100vh", background: "#0B1120", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px" }}>
+      <div style={{ textAlign: "center", maxWidth: 400 }}>
+        <p style={{ fontFamily: "var(--font-bodoni, Georgia, serif)", fontSize: 24, color: "rgba(201,169,110,0.85)", margin: "0 0 16px" }}>Sedang Disiapkan</p>
+        <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.7, margin: 0 }}>Undangan ini sedang dalam proses penyiapan. Silakan kembali lagi nanti.</p>
+      </div>
+    </main>
+  );
+}
+
+function CancelledView() {
+  return (
+    <main style={{ minHeight: "100vh", background: "#0B1120", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px" }}>
+      <div style={{ textAlign: "center", maxWidth: 400 }}>
+        <p style={{ fontFamily: "var(--font-bodoni, Georgia, serif)", fontSize: 24, color: "rgba(255,150,150,0.85)", margin: "0 0 16px" }}>Undangan Tidak Tersedia</p>
+        <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.7, margin: 0 }}>Undangan ini sudah tidak aktif.</p>
+      </div>
+    </main>
+  );
+}
+
+function ExpiredView({ pkg, activeDays }: { pkg: string; activeDays: number }) {
+  return (
+    <main style={{ minHeight: "100vh", background: "#0B1120", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px" }}>
+      <div style={{ textAlign: "center", maxWidth: 400 }}>
+        <p style={{ fontFamily: "var(--font-bodoni, Georgia, serif)", fontSize: 24, color: "rgba(201,169,110,0.85)", margin: "0 0 16px" }}>Undangan Telah Berakhir</p>
+        <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.7, margin: 0 }}>Masa aktif undangan ini ({activeDays} hari setelah acara) telah habis.<br />Paket {pkg} — terima kasih sudah menggunakan Nauka.</p>
+      </div>
+    </main>
+  );
+}

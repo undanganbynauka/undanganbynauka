@@ -186,7 +186,7 @@ export function Marwah({ data }: MarwahProps = {}) {
         <Penutup groomName={groomDisplay} brideName={brideDisplay} akadDate={d.akadDate} />
         <NaukaFooter />
       </div>
-      <AudioToggle />
+            <AudioToggle bgmType={d.bgmType} />
     </main>
   );
 }
@@ -331,7 +331,8 @@ function NaukaFooter() {
   );
 }
 
-function AudioToggle() {
+function AudioToggle({ bgmType }: { bgmType: string }) {
+  if (bgmType === "hening") return null;
   const [playing, setPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   useEffect(() => {

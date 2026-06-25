@@ -148,7 +148,7 @@ export function NaukaPrinsip() {
               fontStyle: "italic",
             }}
           >
-            Nauka adalah ruang kecil untuk momen yang besar.
+            Nauka adalah ruang kecil untuk momen yang besar .
           </p>
         </div>
 

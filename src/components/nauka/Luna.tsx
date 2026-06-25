@@ -1163,22 +1163,18 @@ function AudioToggle({ bgmType }: { bgmType: string }) {
   const [playing, setPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  useEffect(() => {
-    // Free hanya support sound_alam (birds-morning.mp3) atau hening
-    if (bgmType === "sound_alam") {
-      const audio = new Audio("/nauka/birds-morning.mp3");
-      audio.loop = true;
-      audio.volume = 0.4;
-      audio.preload = "auto";
-      audioRef.current = audio;
-      return () => {
-        audio.pause();
-        audioRef.current = null;
-      };
-    }
-    // hening â†’ gak render button
-    return;
-  }, [bgmType]);
+    useEffect(() => {
+    // Selalu load birds-morning.mp3
+    const audio = new Audio("/nauka/birds-morning.mp3");
+    audio.loop = true;
+    audio.volume = 0.4;
+    audio.preload = "auto";
+    audioRef.current = audio;
+    return () => {
+      audio.pause();
+      audioRef.current = null;
+    };
+  }, []);
 
   const toggle = useCallback(() => {
     const audio = audioRef.current;
@@ -1194,9 +1190,7 @@ function AudioToggle({ bgmType }: { bgmType: string }) {
     }
   }, [playing]);
 
-  // Kalau hening, gak render tombol audio
-  if (bgmType !== "sound_alam") return null;
-
+  // Tombol selalu muncul, default OFF
   return (
     <button
       onClick={toggle}

@@ -3,11 +3,25 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 
 const BANK_ACCOUNTS = [
-  { name: "Ali Rahman", bank: "Bank Syariah Indonesia", number: "1234567890" },
-  { name: "Lyla Azzahra", bank: "Bank Muamalat Indonesia", number: "1234567890" },
+  { name: groomFullName, bank: groomBank, number: groomRekening },
+  { name: brideFullName, bank: brideBank, number: brideRekening },
 ];
 
-export function CelestialClosing() {
+interface CelestialClosingProps {
+  groomName?: string;
+  brideName?: string;
+  akadDate?: string;
+  groomFullName?: string;
+  groomBank?: string;
+  groomRekening?: string;
+  brideFullName?: string;
+  brideBank?: string;
+  brideRekening?: string;
+  giftRecipientName?: string;
+  giftAddress?: string;
+}
+
+export function CelestialClosing({ groomName = "Ali", brideName = "Lyla", akadDate = "2026-12-05", groomFullName = "Ali Rahman", groomBank = "Bank Syariah Indonesia", groomRekening = "1234567890", brideFullName = "Lyla Azzahra", brideBank = "Bank Muamalat Indonesia", brideRekening = "1234567890", giftRecipientName = "Lyla Azzahra", giftAddress = "Jakarta Pusat" }: CelestialClosingProps = {}) {
   const [visible, setVisible] = useState(false);
   const [step, setStep] = useState(0);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
@@ -405,7 +419,7 @@ export function CelestialClosing() {
             ...(step >= 10 ? { animation: "celClosingNameBreath 6s ease-in-out infinite" } : {}),
           }}
         >
-          Ali{" "}
+                    {groomName}{" "}
           <span
             style={{
               color: "var(--cel-accent)",
@@ -414,7 +428,7 @@ export function CelestialClosing() {
           >
             &amp;
           </span>{" "}
-          Lyla
+                    {brideName}
         </p>
 
         {/* ── Date ── */}
@@ -431,7 +445,7 @@ export function CelestialClosing() {
             transition: `opacity 0.8s ${easeCinematic}`,
           }}
         >
-          5 Desember 2026
+                    {new Date(`${akadDate}T00:00:00+07:00`).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Jakarta" })}
         </p>
 
         {/* ── Rekening / Gift Section — visible, inviting, sacred ── */}
@@ -627,8 +641,8 @@ export function CelestialClosing() {
                       opacity: 0.8,
                     }}
                   >
-                    Lyla Azzahra<br />
-                    Kebon Jahe Kober 1, Jakarta Pusat
+                                        {giftRecipientName}<br />
+                    {giftAddress}
                   </p>
                 </div>
               </div>

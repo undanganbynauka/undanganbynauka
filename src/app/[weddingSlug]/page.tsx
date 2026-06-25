@@ -102,6 +102,20 @@ export default async function BasicInvitePage({
     );
   }
 
+  // ── Render Celestial ──
+  if (orderData.template === "celestial") {
+    const { CelestialContent } = await import("@/app/celestial/page");
+    return (
+      <>
+        <title>{pageTitle}</title>
+        <meta name="description" content={metaDesc} />
+        <Suspense fallback={<main className="celestial-page"><div style={{ minHeight: "100vh" }} /></main>}>
+          <CelestialContent data={weddingData} />
+        </Suspense>
+      </>
+    );
+  }
+
   // ── Render Marwah ──
   if (orderData.template === "marwah") {
     return (
@@ -154,4 +168,4 @@ function ExpiredView({ pkg, activeDays }: { pkg: string; activeDays: number }) {
       </div>
     </main>
   );
-}
+      }

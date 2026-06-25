@@ -1190,7 +1190,8 @@ function AudioToggle({ bgmType }: { bgmType: string }) {
     }
   }, [playing]);
 
-  // Tombol selalu muncul, default OFF
+    // Tombol selalu muncul, default OFF
+  if (bgmType === "hening") return null;
   return (
     <button
       onClick={toggle}

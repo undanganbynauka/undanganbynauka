@@ -17,30 +17,44 @@ import { CelestialClosing } from "@/components/celestial/CelestialClosing";
 import { CelestialNav } from "@/components/celestial/CelestialNav";
 import { CelestialMusic } from "@/components/celestial/CelestialMusic";
 import { CelestialSectionReveal } from "@/components/celestial/CelestialSectionReveal";
+import type { WeddingData } from "@/components/nauka/NaukaFormDataUndangan";
 
 type Phase = "checking" | "gate" | "opening" | "inside";
 
 const STORAGE_KEY = "nauka-celestial-opened";
 
-function CelestialContent() {
+const DEFAULT_DATA: WeddingData = {
+  groomFullName: "Ali Rahman", groomNickname: "Ali", groomFatherName: "Hendri", groomMotherName: "Ningsih", groomBirthOrder: "",
+  brideFullName: "Lyla Azzahra", brideNickname: "Lyla", brideFatherName: "Yusuf", brideMotherName: "Rahayu", brideBirthOrder: "",
+  akadDate: "2026-12-05", akadStartTime: "08:00", akadEndTime: "10:00", akadAddress: "Gedung Auditorium Koni", akadMapsLink: "", akadCity: "Jakarta Pusat",
+  hasResepsi: true, resepsiDate: "2026-12-05", resepsiStartTime: "11:00", resepsiEndTime: "14:00", resepsiAddress: "Gedung Auditorium Koni", resepsiMapsLink: "", resepsiCity: "Jakarta Pusat",
+  slug: "ali-lyla", quote: "", openingMessage: "", bgmType: "hening", bgmVocalOnlyNote: "",
+  journey: [], timelineEvents: [], adminNote: "", additionalRequest: "",
+  groomBank: "Bank Syariah Indonesia", groomRekening: "1234567890", groomAn: "", brideBank: "Bank Muamalat Indonesia", brideRekening: "1234567890", brideAn: "",
+  giftRecipientName: "Lyla Azzahra", giftAddress: "Jakarta Pusat",
+};
+
+interface CelestialContentProps {
+  data?: WeddingData;
+}
+
+export function CelestialContent({ data }: CelestialContentProps = {}) {
+  const d: WeddingData = { ...DEFAULT_DATA, ...(data || {}) };
   const [phase, setPhase] = React.useState<Phase>("checking");
   const searchParams = useSearchParams();
   const isPreview = searchParams.get("preview") === "true";
 
+  const groomName = d.groomNickname.trim() || d.groomFullName.split(/\s+/)[0] || "Ali";
+  const brideName = d.brideNickname.trim() || d.brideFullName.split(/\s+/)[0] || "Lyla";
+
   React.useEffect(() => {
-    if (isPreview) {
-      setPhase("gate");
-    } else if (localStorage.getItem(STORAGE_KEY) === "true") {
-      setPhase("inside");
-    } else {
-      setPhase("gate");
-    }
+    if (isPreview) { setPhase("gate"); }
+    else if (localStorage.getItem(STORAGE_KEY) === "true") { setPhase("inside"); }
+    else { setPhase("gate"); }
   }, [isPreview]);
 
   const handleOpen = React.useCallback(() => {
-    if (!isPreview) {
-      localStorage.setItem(STORAGE_KEY, "true");
-    }
+    if (!isPreview) { localStorage.setItem(STORAGE_KEY, "true"); }
     setPhase("opening");
     setTimeout(() => setPhase("inside"), 2200);
   }, [isPreview]);
@@ -60,31 +74,21 @@ function CelestialContent() {
       <ShootingStar />
 
       {(phase === "gate" || phase === "opening") && (
-        <div style={{
-          position: "fixed",
-          inset: 0,
-          zIndex: 50,
-          pointerEvents: phase === "gate" ? "auto" : "none",
-          opacity: phase === "gate" ? 1 : 0,
-          transition: "opacity 2s ease",
-        }}>
-          <CelestialHero onOpen={phase === "gate" ? handleOpen : undefined} />
+        <div style={{ position: "fixed", inset: 0, zIndex: 50, pointerEvents: phase === "gate" ? "auto" : "none", opacity: phase === "gate" ? 1 : 0, transition: "opacity 2s ease" }}>
+          <CelestialHero onOpen={phase === "gate" ? handleOpen : undefined} groomName={groomName} brideName={brideName} akadDate={d.akadDate} />
         </div>
       )}
 
       {phase !== "gate" && (
-        <div style={{
-          opacity: phase === "opening" ? 0 : 1,
-          transition: "opacity 1.8s ease 0.6s",
-        }}>
-          <CelestialSaveTheDate />
-          <CelestialSectionReveal><CelestialCountdown /></CelestialSectionReveal>
-          <CelestialSectionReveal><CelestialBrideGroom /></CelestialSectionReveal>
-          <CelestialSectionReveal><CelestialEvent /></CelestialSectionReveal>
+        <div style={{ opacity: phase === "opening" ? 0 : 1, transition: "opacity 1.8s ease 0.6s" }}>
+          <CelestialSaveTheDate groomName={groomName} brideName={brideName} akadDate={d.akadDate} />
+          <CelestialSectionReveal><CelestialCountdown groomName={groomName} brideName={brideName} akadDate={d.akadDate} akadStartTime={d.akadStartTime} resepsiEndTime={d.resepsiEndTime} akadAddress={`${d.akadAddress}, ${d.akadCity}`} /></CelestialSectionReveal>
+          <CelestialSectionReveal><CelestialBrideGroom groomFullName={d.groomFullName} groomFatherName={d.groomFatherName} groomMotherName={d.groomMotherName} brideFullName={d.brideFullName} brideFatherName={d.brideFatherName} brideMotherName={d.brideMotherName} /></CelestialSectionReveal>
+          <CelestialSectionReveal><CelestialEvent akadDate={d.akadDate} akadStartTime={d.akadStartTime} akadEndTime={d.akadEndTime} akadAddress={d.akadAddress} akadCity={d.akadCity} akadMapsLink={d.akadMapsLink} hasResepsi={d.hasResepsi} resepsiDate={d.resepsiDate} resepsiStartTime={d.resepsiStartTime} resepsiEndTime={d.resepsiEndTime} resepsiAddress={d.resepsiAddress} resepsiCity={d.resepsiCity} resepsiMapsLink={d.resepsiMapsLink} /></CelestialSectionReveal>
           <CelestialSectionReveal><CelestialJourney /></CelestialSectionReveal>
           <CelestialSectionReveal><CelestialRSVP /></CelestialSectionReveal>
           <CelestialSectionReveal><CelestialWishes /></CelestialSectionReveal>
-          <CelestialSectionReveal><CelestialClosing /></CelestialSectionReveal>
+          <CelestialSectionReveal><CelestialClosing groomName={groomName} brideName={brideName} akadDate={d.akadDate} groomFullName={d.groomFullName} groomBank={d.groomBank} groomRekening={d.groomRekening} brideFullName={d.brideFullName} brideBank={d.brideBank} brideRekening={d.brideRekening} giftRecipientName={d.giftRecipientName} giftAddress={d.giftAddress} /></CelestialSectionReveal>
           <CelestialNav />
         </div>
       )}

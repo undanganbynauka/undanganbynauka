@@ -2,10 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 
-const BANK_ACCOUNTS = [
-  { name: groomFullName, bank: groomBank, number: groomRekening },
-  { name: brideFullName, bank: brideBank, number: brideRekening },
-];
+export function CelestialClosing({ ...
 
 interface CelestialClosingProps {
   groomName?: string;
@@ -26,7 +23,12 @@ export function CelestialClosing({ groomName = "Ali", brideName = "Lyla", akadDa
   const [step, setStep] = useState(0);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [showRekening, setShowRekening] = useState(false);
-  const sectionRef = useRef<HTMLDivElement>(null);
+    const sectionRef = useRef<HTMLDivElement>(null);
+
+  const BANK_ACCOUNTS = [
+    { name: groomFullName, bank: groomBank, number: groomRekening },
+    { name: brideFullName, bank: brideBank, number: brideRekening },
+  ];
 
   // IntersectionObserver — trigger once
   useEffect(() => {

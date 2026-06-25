@@ -19,6 +19,18 @@ interface Template {
 
 const syariTemplates: Template[] = [
   {
+    id: "marwah",
+    name: "Marwah",
+    collection: "Syar'i",
+    href: "/detail/marwah",
+    preview: "/marwah/couple-illustration-marwah.png",
+    liveHref: "/marwah",
+    tier: "free",
+    price: "Gratis",
+    tagline: "Undangan syar'i yang sederhana, khidmat, dan penuh makna.",
+    video: "/etalase/marwah-preview.mp4",
+  },
+];
   id: "sacred",
   name: "Sacred",
   collection: "Syar'i",

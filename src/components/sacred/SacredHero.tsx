@@ -2,7 +2,6 @@
 
 import React, { useState, useRef, useCallback, useEffect } from "react";
 
-// Omar Esa — The Wedding Nasheed (Vocals Only)
 const BGM_FILE = "/sacred/bgm.mp3";
 
 function fadeIn(audio: HTMLAudioElement, targetVolume: number) {
@@ -33,38 +32,56 @@ function fadeOut(audio: HTMLAudioElement, onComplete?: () => void) {
   }, stepTime);
 }
 
+// ── Helper: format tanggal ISO → "Sabtu, 5 Desember 2026" ──
+function formatLongDate(isoDate: string): string {
+  if (!isoDate) return "-";
+  try {
+    const d = new Date(`${isoDate}T00:00:00+07:00`);
+    if (isNaN(d.getTime())) return isoDate;
+    return d.toLocaleDateString("id-ID", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      timeZone: "Asia/Jakarta",
+    });
+  } catch {
+    return isoDate;
+  }
+}
+
 interface SacredHeroProps {
   onOpen?: () => void;
   guestName?: string;
+  groomName?: string;
+  brideName?: string;
+  akadDate?: string;
 }
 
-export function SacredHero({ onOpen, guestName }: SacredHeroProps) {
+export function SacredHero({ onOpen, guestName, groomName = "Ali", brideName = "Lyla", akadDate = "2026-12-05" }: SacredHeroProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  const dateLabel = formatLongDate(akadDate);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
-    // Reuse existing audio instance from window (shared with SoundToggle)
     const existing = (window as any).__sacredAudio as HTMLAudioElement | undefined;
     const audio = existing || new Audio();
     audio.loop = true;
     audio.preload = "metadata";
     audioRef.current = audio;
     (window as any).__sacredAudio = audio;
-    // Check if already playing
     if (!audio.paused && audio.volume > 0) {
       setIsPlaying(true);
     }
-    return () => {
-      // Don't destroy audio on unmount — SoundToggle will take over
-    };
+    return () => {};
   }, []);
 
   const toggle = useCallback(() => {
     const audio = audioRef.current;
     if (!audio) return;
-
     if (isPlaying) {
       fadeOut(audio, () => {
         audio.pause();
@@ -87,94 +104,40 @@ export function SacredHero({ onOpen, guestName }: SacredHeroProps) {
   const accent = "#7D6A52";
   return (
     <section className="sacred-hero">
-      {/* Arch — atas, sesuai lebar layer */}
       <img src="/sacred/arch.png" alt="Arch" className="sacred-arch" />
-
-      {/* Groom — kiri */}
       <img src="/sacred/groom.png" alt="Groom" className="sacred-groom" />
-
-      {/* Center Content */}
       <div className="sacred-hero-content">
-        <div className="sacred-hero-subtitle">
-          The Wedding Invitation Of
-        </div>
-
-        <div className="sacred-hero-title">
-          Ali &amp; Lyla
-        </div>
-
-        <div className="sacred-hero-date">
-          Sabtu &bull; 05 Desember 2026
-        </div>
-
+        <div className="sacred-hero-subtitle">The Wedding Invitation Of</div>
+        <div className="sacred-hero-title">{groomName} &amp; {brideName}</div>
+        <div className="sacred-hero-date">{dateLabel}</div>
         <div className="sacred-hero-recipient">
           <p>Kepada Yth.</p>
           <p>Bapak/Ibu/Saudara/i</p>
-          <p className="sacred-guest-name">
-            {guestName || "Nama Tamu"}
-          </p>
+          <p className="sacred-guest-name">{guestName || "Nama Tamu"}</p>
         </div>
-
         <div className="sacred-hero-button">
-          <button onClick={onOpen} disabled={!onOpen}>
-            Open Invitation
-          </button>
+          <button onClick={onOpen} disabled={!onOpen}>Open Invitation</button>
         </div>
       </div>
-
-      {/* Bride — kanan, sebagian keluar canvas */}
       <img src="/sacred/bride.png" alt="Bride" className="sacred-bride" />
-
-      {/* Bottom Fade */}
       <div className="sacred-bottom-fade" />
-
-      {/* Music Toggle — on gate/hero screen */}
       <button
         onClick={toggle}
         style={{
-          position: "fixed",
-          bottom: "1rem",
-          left: "1rem",
-          width: "40px",
-          height: "40px",
-          borderRadius: "50%",
-          border: "1px solid rgba(125, 110, 99, 0.15)",
-          background: "rgba(255, 255, 255, 0.55)",
-          backdropFilter: "blur(12px)",
-          WebkitBackdropFilter: "blur(12px)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          cursor: isLoading ? "wait" : "pointer",
-          transition: "all 0.3s ease",
-          zIndex: 60,
-          boxShadow: isPlaying
-            ? "0 0 8px rgba(125,106,82,0.25), 0 0 16px rgba(125,106,82,0.1)"
-            : "0 1px 4px rgba(125, 106, 82, 0.08)",
-          opacity: isLoading ? 0.6 : 1,
-          animation: isPlaying ? "sacredPulse 3s ease-in-out infinite" : "none",
+          position: "fixed", bottom: "1rem", left: "1rem", width: "40px", height: "40px",
+          borderRadius: "50%", border: "1px solid rgba(125, 110, 99, 0.15)",
+          background: "rgba(255, 255, 255, 0.55)", backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)", display: "flex", alignItems: "center", justifyContent: "center",
+          cursor: isLoading ? "wait" : "pointer", transition: "all 0.3s ease", zIndex: 60,
+          boxShadow: isPlaying ? "0 0 8px rgba(125,106,82,0.25), 0 0 16px rgba(125,106,82,0.1)" : "0 1px 4px rgba(125, 106, 82, 0.08)",
+          opacity: isLoading ? 0.6 : 1, animation: isPlaying ? "sacredPulse 3s ease-in-out infinite" : "none",
         }}
         title={isPlaying ? "Matikan musik" : "Putar musik"}
       >
         {isLoading ? (
-          <div style={{
-            width: "14px", height: "14px",
-            border: `2px solid ${accent}`,
-            borderTopColor: "transparent",
-            borderRadius: "50%",
-            animation: "sacredSpin 0.8s linear infinite",
-          }} />
+          <div style={{ width: "14px", height: "14px", border: `2px solid ${accent}`, borderTopColor: "transparent", borderRadius: "50%", animation: "sacredSpin 0.8s linear infinite" }} />
         ) : (
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke={accent}
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             {isPlaying ? (
               <>
                 <path d="M9 18V5l12-2v13" />
@@ -191,7 +154,6 @@ export function SacredHero({ onOpen, guestName }: SacredHeroProps) {
             )}
           </svg>
         )}
-
         <style>{`
           @keyframes sacredPulse {
             0%, 100% { box-shadow: 0 0 8px rgba(125,106,82,0.25), 0 0 16px rgba(125,106,82,0.1); }

@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { NaukaFreeForm, type WeddingData } from "./NaukaFreeForm";
 
 // ════════════════════════════════════════════════════════════════
-// LUNA CLAIM FORM — Khusus Luna Free (TANPA opsi Basic/Premium)
+// MARWAH CLAIM FORM — Khusus Marwah Free (TANPA opsi Basic/Premium)
 //
 // Flow simpel:
 //   1. Data Pemesan
@@ -18,7 +18,7 @@ import { NaukaFreeForm, type WeddingData } from "./NaukaFreeForm";
 //   - Opsi Basic/Premium di UI manapun
 // ════════════════════════════════════════════════════════════════
 
-interface LunaClaimFormProps {
+interface MarwahClaimFormProps {
   templateName?: string;
 }
 
@@ -34,8 +34,8 @@ const STEP_TITLES: Record<Step, string> = {
   done: "Selesai",
 };
 
-// ── Helper: build WhatsApp URL untuk SHARE UNDANGAN Luna free ──
-function buildLunaShareWaUrl(invitationUrl: string, data: WeddingData): string {
+// ── Helper: build WhatsApp URL untuk SHARE UNDANGAN Marwah free ──
+function buildMarwahShareWaUrl(invitationUrl: string, data: WeddingData): string {
   let dateLabel = "";
   if (data.akadDate) {
     try {
@@ -70,23 +70,16 @@ function buildLunaShareWaUrl(invitationUrl: string, data: WeddingData): string {
   return `https://wa.me/?text=${encodeURIComponent(lines.join("\n"))}`;
 }
 
-export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}) {
+export function MarwahClaimForm({ templateName = "Marwah" }: MarwahClaimFormProps = {}) {
   const [visible, setVisible] = useState(false);
   const [step, setStep] = useState<Step>("pemesan");
 
-  // Customer info
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
-
-  // Wedding data
   const [weddingData, setWeddingData] = useState<WeddingData | null>(null);
-
-  // Order
   const [orderId, setOrderId] = useState<string | null>(null);
   const [invitationUrl, setInvitationUrl] = useState<string | null>(null);
-
-  // Submission state
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -94,9 +87,7 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setVisible(true);
-      },
+      ([entry]) => { if (entry.isIntersecting) setVisible(true); },
       { threshold: 0.1 }
     );
     if (ref.current) observer.observe(ref.current);
@@ -109,7 +100,6 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}
     }
   }, [step]);
 
-  // Validasi Step Pemesan → lanjut ke Undangan
   function goToUndangan() {
     setSubmitError(null);
     if (!customerName.trim()) {
@@ -123,13 +113,11 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}
     setStep("undangan");
   }
 
-  // Handler submit dari NaukaFreeForm
   function handleUndanganSubmit(data: WeddingData) {
     setWeddingData(data);
     setStep("review");
   }
 
-  // POST ke /api/orders untuk create order
   async function createOrder() {
     setSubmitError(null);
     if (!weddingData) {
@@ -143,7 +131,7 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          template: "luna",
+          template: "marwah",
           package: "free",
           price: 0,
           customer_name: customerName.trim(),
@@ -161,17 +149,15 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}
       if (data.invitation_url) {
         setInvitationUrl(data.invitation_url);
       }
-      // Luna free: langsung ke done (auto-publish)
       setStep("done");
     } catch (err) {
-      console.error("[luna-claim] create order error:", err);
+      console.error("[marwah-claim] create order error:", err);
       setSubmitError("Terjadi kesalahan jaringan. Silakan coba lagi.");
     } finally {
       setSubmitting(false);
     }
   }
 
-  // Copy link ke clipboard
   async function copyInvitationLink() {
     if (!invitationUrl) return;
     try {
@@ -188,9 +174,6 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}
     }
   }
 
-  // ════════════════════════════════════════════════════════════════
-  // Render
-  // ════════════════════════════════════════════════════════════════
   return (
     <section
       ref={ref}
@@ -200,7 +183,6 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}
         padding: "80px 24px",
       }}
     >
-      {/* Ambient glow */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
@@ -212,7 +194,6 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}
       />
 
       <div className="relative z-10 mx-auto max-w-[520px]">
-        {/* ─── TITLE ─── */}
         <h2
           style={{
             fontFamily: "var(--font-bodoni)",
@@ -230,7 +211,6 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}
           {STEP_TITLES[step]}
         </h2>
 
-        {/* ─── STEP INDICATOR (4 langkah) ─── */}
         <div
           style={{
             display: "flex",
@@ -265,7 +245,6 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}
           })}
         </div>
 
-        {/* Divider */}
         <div
           style={{
             height: "1px",
@@ -276,9 +255,7 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}
           }}
         />
 
-        {/* ════════════════════════════════════════════════════════════ */}
-        {/* STEP 1: PEMESAN                                            */}
-        {/* ════════════════════════════════════════════════════════════ */}
+        {/* STEP 1: PEMESAN */}
         {step === "pemesan" && (
           <div
             style={{
@@ -287,7 +264,6 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}
               transition: "opacity 1.3s ease-out 0.2s, transform 1.3s ease-out 0.2s",
             }}
           >
-            {/* Header ramah */}
             <div style={{ textAlign: "center", marginBottom: "28px" }}>
               <p
                 style={{
@@ -302,7 +278,6 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}
               </p>
             </div>
 
-            {/* Recap ringkas: Luna + Free */}
             <div
               style={{
                 padding: "14px 16px",
@@ -326,127 +301,56 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}
               </div>
             </div>
 
-            {/* Form */}
             <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
               <div>
-                <label
-                  htmlFor="luna-name"
-                  style={{
-                    fontFamily: "var(--font-inter)",
-                    fontSize: "11px",
-                    color: "rgba(255,255,255,0.45)",
-                    display: "block",
-                    marginBottom: "6px",
-                  }}
-                >
+                <label htmlFor="marwah-name" style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)", display: "block", marginBottom: "6px" }}>
                   Nama <span style={{ color: "rgba(201,169,110,0.7)" }}>*</span>
                 </label>
                 <input
-                  id="luna-name"
+                  id="marwah-name"
                   type="text"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                   placeholder="Nama lengkap pemesan"
-                  style={{
-                    width: "100%",
-                    padding: "12px 14px",
-                    borderRadius: "10px",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    background: "rgba(255,255,255,0.02)",
-                    fontFamily: "var(--font-inter)",
-                    fontSize: "13px",
-                    color: "rgba(255,255,255,0.85)",
-                    outline: "none",
-                  }}
+                  style={{ width: "100%", padding: "12px 14px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.02)", fontFamily: "var(--font-inter)", fontSize: "13px", color: "rgba(255,255,255,0.85)", outline: "none" }}
                 />
               </div>
 
               <div>
-                <label
-                  htmlFor="luna-phone"
-                  style={{
-                    fontFamily: "var(--font-inter)",
-                    fontSize: "11px",
-                    color: "rgba(255,255,255,0.45)",
-                    display: "block",
-                    marginBottom: "6px",
-                  }}
-                >
+                <label htmlFor="marwah-phone" style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)", display: "block", marginBottom: "6px" }}>
                   No. WhatsApp <span style={{ color: "rgba(201,169,110,0.7)" }}>*</span>
                 </label>
                 <input
-                  id="luna-phone"
+                  id="marwah-phone"
                   type="tel"
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value)}
                   placeholder="08xxxxxxxxxx"
-                  style={{
-                    width: "100%",
-                    padding: "12px 14px",
-                    borderRadius: "10px",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    background: "rgba(255,255,255,0.02)",
-                    fontFamily: "var(--font-inter)",
-                    fontSize: "13px",
-                    color: "rgba(255,255,255,0.85)",
-                    outline: "none",
-                  }}
+                  style={{ width: "100%", padding: "12px 14px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.02)", fontFamily: "var(--font-inter)", fontSize: "13px", color: "rgba(255,255,255,0.85)", outline: "none" }}
                 />
               </div>
 
               <div>
-                <label
-                  htmlFor="luna-email"
-                  style={{
-                    fontFamily: "var(--font-inter)",
-                    fontSize: "11px",
-                    color: "rgba(255,255,255,0.45)",
-                    display: "block",
-                    marginBottom: "6px",
-                  }}
-                >
+                <label htmlFor="marwah-email" style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)", display: "block", marginBottom: "6px" }}>
                   Email <span style={{ color: "rgba(255,255,255,0.30)" }}>(opsional)</span>
                 </label>
                 <input
-                  id="luna-email"
+                  id="marwah-email"
                   type="email"
                   value={customerEmail}
                   onChange={(e) => setCustomerEmail(e.target.value)}
                   placeholder="email@contoh.com"
-                  style={{
-                    width: "100%",
-                    padding: "12px 14px",
-                    borderRadius: "10px",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    background: "rgba(255,255,255,0.02)",
-                    fontFamily: "var(--font-inter)",
-                    fontSize: "13px",
-                    color: "rgba(255,255,255,0.85)",
-                    outline: "none",
-                  }}
+                  style={{ width: "100%", padding: "12px 14px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.02)", fontFamily: "var(--font-inter)", fontSize: "13px", color: "rgba(255,255,255,0.85)", outline: "none" }}
                 />
               </div>
             </div>
 
             {submitError && (
-              <p
-                style={{
-                  fontFamily: "var(--font-inter)",
-                  fontSize: "12px",
-                  color: "rgba(220, 100, 100, 0.85)",
-                  textAlign: "center",
-                  marginTop: "16px",
-                  padding: "10px 14px",
-                  borderRadius: "8px",
-                  background: "rgba(220, 100, 100, 0.06)",
-                  border: "1px solid rgba(220, 100, 100, 0.15)",
-                }}
-              >
+              <p style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(220, 100, 100, 0.85)", textAlign: "center", marginTop: "16px", padding: "10px 14px", borderRadius: "8px", background: "rgba(220, 100, 100, 0.06)", border: "1px solid rgba(220, 100, 100, 0.15)" }}>
                 {submitError}
               </p>
             )}
 
-            {/* CTA */}
             <button
               onClick={goToUndangan}
               style={{
@@ -469,30 +373,18 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}
           </div>
         )}
 
-        {/* ════════════════════════════════════════════════════════════ */}
-        {/* STEP 2: UNDANGAN (pakai NaukaFreeForm)                     */}
-        {/* ════════════════════════════════════════════════════════════ */}
+        {/* STEP 2: UNDANGAN */}
         {step === "undangan" && (
           <div>
             <button
               onClick={() => setStep("pemesan")}
-              style={{
-                padding: "10px 16px",
-                borderRadius: "8px",
-                border: "1px solid rgba(255,255,255,0.08)",
-                background: "transparent",
-                fontFamily: "var(--font-inter)",
-                fontSize: "11px",
-                color: "rgba(255,255,255,0.55)",
-                cursor: "pointer",
-                marginBottom: "20px",
-              }}
+              style={{ padding: "10px 16px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.08)", background: "transparent", fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.55)", cursor: "pointer", marginBottom: "20px" }}
             >
               ← Kembali ke Data Pemesan
             </button>
 
             <NaukaFreeForm
-              template="luna"
+              template="marwah"
               onSubmit={handleUndanganSubmit}
               submitLabel="Lanjut ke Ringkasan"
               submitting={false}
@@ -500,9 +392,7 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}
           </div>
         )}
 
-        {/* ════════════════════════════════════════════════════════════ */}
-        {/* STEP 3: REVIEW                                              */}
-        {/* ════════════════════════════════════════════════════════════ */}
+        {/* STEP 3: REVIEW */}
         {step === "review" && weddingData && (
           <div
             style={{
@@ -511,16 +401,7 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}
               transition: "opacity 1.3s ease-out 0.2s, transform 1.3s ease-out 0.2s",
             }}
           >
-            <p
-              style={{
-                fontFamily: "var(--font-inter)",
-                fontSize: "12px",
-                color: "rgba(255,255,255,0.45)",
-                textAlign: "center",
-                marginBottom: "24px",
-                lineHeight: 1.6,
-              }}
-            >
+            <p style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(255,255,255,0.45)", textAlign: "center", marginBottom: "24px", lineHeight: 1.6 }}>
               Mohon periksa kembali semua data di bawah. Setelah klik <strong style={{ color: "rgba(201,169,110,0.85)" }}>Kirim Pesanan</strong>, undangan kamu akan langsung aktif.
             </p>
 
@@ -566,19 +447,7 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}
             </ReviewSection>
 
             {submitError && (
-              <p
-                style={{
-                  fontFamily: "var(--font-inter)",
-                  fontSize: "12px",
-                  color: "rgba(220, 100, 100, 0.85)",
-                  textAlign: "center",
-                  marginTop: "16px",
-                  padding: "10px 14px",
-                  borderRadius: "8px",
-                  background: "rgba(220, 100, 100, 0.06)",
-                  border: "1px solid rgba(220, 100, 100, 0.15)",
-                }}
-              >
+              <p style={{ fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(220, 100, 100, 0.85)", textAlign: "center", marginTop: "16px", padding: "10px 14px", borderRadius: "8px", background: "rgba(220, 100, 100, 0.06)", border: "1px solid rgba(220, 100, 100, 0.15)" }}>
                 {submitError}
               </p>
             )}
@@ -587,34 +456,14 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}
               <button
                 onClick={() => setStep("undangan")}
                 disabled={submitting}
-                style={{
-                  padding: "16px 18px",
-                  borderRadius: "12px",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                  background: "transparent",
-                  fontFamily: "var(--font-inter)",
-                  fontSize: "12px",
-                  color: "rgba(255,255,255,0.55)",
-                  cursor: submitting ? "not-allowed" : "pointer",
-                  opacity: submitting ? 0.5 : 1,
-                }}
+                style={{ padding: "16px 18px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.08)", background: "transparent", fontFamily: "var(--font-inter)", fontSize: "12px", color: "rgba(255,255,255,0.55)", cursor: submitting ? "not-allowed" : "pointer", opacity: submitting ? 0.5 : 1 }}
               >
                 Kembali
               </button>
               <button
                 onClick={createOrder}
                 disabled={submitting}
-                style={{
-                  padding: "16px 24px",
-                  borderRadius: "12px",
-                  border: "1px solid rgba(201,169,110,0.20)",
-                  background: submitting ? "rgba(201,169,110,0.03)" : "rgba(201,169,110,0.06)",
-                  fontFamily: "var(--font-inter)",
-                  fontSize: "13px",
-                  letterSpacing: "0.1em",
-                  color: submitting ? "rgba(201,169,110,0.4)" : "rgba(201,169,110,0.85)",
-                  cursor: submitting ? "not-allowed" : "pointer",
-                }}
+                style={{ padding: "16px 24px", borderRadius: "12px", border: "1px solid rgba(201,169,110,0.20)", background: submitting ? "rgba(201,169,110,0.03)" : "rgba(201,169,110,0.06)", fontFamily: "var(--font-inter)", fontSize: "13px", letterSpacing: "0.1em", color: submitting ? "rgba(201,169,110,0.4)" : "rgba(201,169,110,0.85)", cursor: submitting ? "not-allowed" : "pointer" }}
               >
                 {submitting ? "Sedang merangkai undangan kamu..." : "Kirim Pesanan (Gratis)"}
               </button>
@@ -622,25 +471,10 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}
           </div>
         )}
 
-        {/* ════════════════════════════════════════════════════════════ */}
-        {/* STEP 4: DONE — Undangan sudah siap                          */}
-        {/* ════════════════════════════════════════════════════════════ */}
+        {/* STEP 4: DONE */}
         {step === "done" && orderId && weddingData && (
           <div style={{ opacity: 1, transform: "translateY(0)", transition: "opacity 0.6s ease-out, transform 0.6s ease-out", textAlign: "center" }}>
-            {/* Success icon */}
-            <div
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "64px",
-                height: "64px",
-                borderRadius: "50%",
-                border: "1px solid rgba(201,169,110,0.25)",
-                background: "rgba(201,169,110,0.05)",
-                marginBottom: "24px",
-              }}
-            >
+            <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "64px", height: "64px", borderRadius: "50%", border: "1px solid rgba(201,169,110,0.25)", background: "rgba(201,169,110,0.05)", marginBottom: "24px" }}>
               <span style={{ fontFamily: "var(--font-bodoni)", fontSize: "28px", color: "rgba(201,169,110,0.85)" }}>✓</span>
             </div>
 
@@ -654,7 +488,6 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}
               Undangan kamu sudah otomatis aktif. Kamu bisa langsung membagikannya ke orang-orang tersayang.
             </p>
 
-            {/* Link undangan */}
             {invitationUrl && (
               <div style={{ padding: "20px", borderRadius: "12px", border: "1px solid rgba(201,169,110,0.20)", background: "rgba(201,169,110,0.04)", marginBottom: "20px" }}>
                 <p style={{ fontFamily: "var(--font-inter)", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(201,169,110,0.6)", marginBottom: "10px" }}>
@@ -666,7 +499,6 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}
               </div>
             )}
 
-            {/* Recap card */}
             <div style={{ padding: "20px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)", textAlign: "left", marginBottom: "24px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
                 <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(255,255,255,0.45)" }}>Nomor Pesanan</span>
@@ -690,13 +522,12 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}
               </div>
             </div>
 
-            {/* Tombol aksi */}
             {invitationUrl && (
               <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "20px" }}>
                 <a href={invitationUrl} target="_blank" rel="noopener noreferrer" style={{ display: "block", padding: "16px 24px", borderRadius: "12px", border: "1px solid rgba(201,169,110,0.35)", background: "rgba(201,169,110,0.10)", fontFamily: "var(--font-inter)", fontSize: "13px", letterSpacing: "0.1em", color: "rgba(201,169,110,0.95)", textDecoration: "none", fontWeight: 500 }}>
                   Lihat Undangan
                 </a>
-                <a href={buildLunaShareWaUrl(invitationUrl, weddingData)} target="_blank" rel="noopener noreferrer" style={{ display: "block", padding: "14px 24px", borderRadius: "12px", border: "1px solid rgba(201,169,110,0.20)", background: "transparent", fontFamily: "var(--font-inter)", fontSize: "12px", letterSpacing: "0.1em", color: "rgba(201,169,110,0.85)", textDecoration: "none" }}>
+                <a href={buildMarwahShareWaUrl(invitationUrl, weddingData)} target="_blank" rel="noopener noreferrer" style={{ display: "block", padding: "14px 24px", borderRadius: "12px", border: "1px solid rgba(201,169,110,0.20)", background: "transparent", fontFamily: "var(--font-inter)", fontSize: "12px", letterSpacing: "0.1em", color: "rgba(201,169,110,0.85)", textDecoration: "none" }}>
                   Bagikan ke WhatsApp
                 </a>
                 <button onClick={copyInvitationLink} style={{ padding: "14px 24px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.10)", background: "transparent", fontFamily: "var(--font-inter)", fontSize: "12px", letterSpacing: "0.1em", color: "rgba(255,255,255,0.6)", cursor: "pointer" }}>
@@ -705,7 +536,6 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}
               </div>
             )}
 
-            {/* Human touch closing */}
             <p style={{ fontFamily: "var(--font-bodoni)", fontSize: "14px", fontStyle: "italic", color: "rgba(201,169,110,0.7)", marginTop: "28px", lineHeight: 1.6, maxWidth: "340px", marginLeft: "auto", marginRight: "auto" }}>
               Semoga undangan ini menjadi bagian dari momen indah kalian.
             </p>
@@ -718,7 +548,6 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}
           </div>
         )}
 
-        {/* Fallback */}
         {step === "done" && !orderId && (
           <div style={{ textAlign: "center", padding: "40px" }}>
             <p style={{ fontFamily: "var(--font-inter)", fontSize: "13px", color: "rgba(255,255,255,0.55)" }}>
@@ -741,10 +570,6 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}
     </section>
   );
 }
-
-// ════════════════════════════════════════════════════════════════
-// Helper components for Review step
-// ════════════════════════════════════════════════════════════════
 
 function ReviewSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (

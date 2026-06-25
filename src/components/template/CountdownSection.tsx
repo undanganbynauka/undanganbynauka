@@ -2,7 +2,23 @@
 
 import React, { useState, useEffect, useRef } from "react";
 
-export function CountdownSection() {
+interface CountdownSectionProps {
+  groomName?: string;
+  brideName?: string;
+  akadDate?: string;
+  akadStartTime?: string;
+}
+
+function formatLongDate(isoDate: string): string {
+  if (!isoDate) return "-";
+  try {
+    const d = new Date(`${isoDate}T00:00:00+07:00`);
+    if (isNaN(d.getTime())) return isoDate;
+    return d.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Jakarta" });
+  } catch { return isoDate; }
+}
+
+export function CountdownSection({ groomName = "Ali", brideName = "Lyla", akadDate = "2026-12-05", akadStartTime = "08:00" }: CountdownSectionProps = {}) {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [bannerVisible, setBannerVisible] = useState(false);
   const [textVisible, setTextVisible] = useState(false);
@@ -11,8 +27,12 @@ export function CountdownSection() {
   const textRef = useRef<HTMLDivElement>(null);
   const countdownRef = useRef<HTMLDivElement>(null);
 
+  const dateLabel = formatLongDate(akadDate);
+  const coupleName = `${groomName} & ${brideName}`;
+
   useEffect(() => {
-    const target = new Date("2026-12-05T08:00:00+07:00").getTime();
+    const target = new Date(`${akadDate}T${akadStartTime}:00+07:00`).getTime();
+    if (isNaN(target)) return;
     const tick = () => {
       const now = Date.now();
       const diff = Math.max(0, target - now);
@@ -26,40 +46,28 @@ export function CountdownSection() {
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
-  }, []);
+  }, [akadDate, akadStartTime]);
 
-  // Observer for the section / banner image
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting && !bannerVisible) setBannerVisible(true); },
-      { threshold: 0.1 }
-    );
+    const observer = new IntersectionObserver(([entry]) => { if (entry.isIntersecting && !bannerVisible) setBannerVisible(true); }, { threshold: 0.1 });
     observer.observe(el);
     return () => observer.disconnect();
   }, [bannerVisible]);
 
-  // Observer for the banner text area — triggers staggered letter reveal
   useEffect(() => {
     const el = textRef.current;
     if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting && !textVisible) setTextVisible(true); },
-      { threshold: 0.3 }
-    );
+    const observer = new IntersectionObserver(([entry]) => { if (entry.isIntersecting && !textVisible) setTextVisible(true); }, { threshold: 0.3 });
     observer.observe(el);
     return () => observer.disconnect();
   }, [textVisible]);
 
-  // Observer for the countdown content area
   useEffect(() => {
     const el = countdownRef.current;
     if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting && !countdownVisible) setCountdownVisible(true); },
-      { threshold: 0.2 }
-    );
+    const observer = new IntersectionObserver(([entry]) => { if (entry.isIntersecting && !countdownVisible) setCountdownVisible(true); }, { threshold: 0.2 });
     observer.observe(el);
     return () => observer.disconnect();
   }, [countdownVisible]);
@@ -72,143 +80,40 @@ export function CountdownSection() {
     { label: "Detik", value: timeLeft.seconds },
   ];
 
-  // Staggered letter reveal helper — uses textVisible state
-  const renderLetters = (
-    text: string,
-    baseDelay: number,
-    delayPerChar: number = 0.04
-  ) =>
+  const renderLetters = (text: string, baseDelay: number, delayPerChar: number = 0.04) =>
     text.split("").map((char, i) => (
-      <span
-        key={i}
-        style={{
-          display: "inline-block",
-          opacity: textVisible ? 1 : 0,
-          transform: textVisible ? "translateY(0)" : "translateY(10px)",
-          transition: `opacity 0.6s ${ease} ${baseDelay + i * delayPerChar}s, transform 0.6s ${ease} ${baseDelay + i * delayPerChar}s`,
-          whiteSpace: char === " " ? "pre" : undefined,
-        }}
-      >
+      <span key={i} style={{ display: "inline-block", opacity: textVisible ? 1 : 0, transform: textVisible ? "translateY(0)" : "translateY(10px)", transition: `opacity 0.6s ${ease} ${baseDelay + i * delayPerChar}s, transform 0.6s ${ease} ${baseDelay + i * delayPerChar}s`, whiteSpace: char === " " ? "pre" : undefined }}>
         {char === " " ? "\u00A0" : char}
       </span>
     ));
 
   return (
-    <section
-      ref={sectionRef}
-      id="home"
-      style={{
-        position: "relative",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        background: "#FAF7F2",
-      }}
-    >
-      {/* Full-bleed banner image — fills entire viewport, no gap */}
-      <div style={{
-        position: "relative",
-        width: "100vw",
-        height: "100vh",
-        marginLeft: "calc(-50vw + 50%)",
-        overflow: "hidden",
-        opacity: bannerVisible ? 1 : 0,
-        transform: bannerVisible ? "translateY(0)" : "translateY(15px)",
-        transition: `opacity 1s ${ease}, transform 1s ${ease}`,
-      }}>
-        <img
-          src="/sacred/countdown-top.png"
-          alt="The Wedding of Ali & Lyla"
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            objectPosition: "center",
-            display: "block",
-          }}
-        />
-        {/* Bottom gradient overlay */}
-        <div style={{
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: "50%",
-          background: "linear-gradient(to top, rgba(250,247,242,0.9) 0%, rgba(250,247,242,0.3) 50%, transparent 100%)",
-          pointerEvents: "none",
-        }} />
-        {/* Text at bottom-right — has its own IntersectionObserver */}
-        <div
-          ref={textRef}
-          style={{
-            position: "absolute",
-            bottom: "3.5rem",
-            right: "1.5rem",
-            textAlign: "right",
-            zIndex: 2,
-          }}
-        >
-          <p style={{
-            fontFamily: "var(--font-cormorant)", fontSize: "0.8125rem", fontWeight: 400,
-            fontStyle: "italic", color: "#6F6F6F", letterSpacing: "0.06em",
-            marginBottom: "0.625rem", margin: 0,
-          }}>
+    <section ref={sectionRef} id="home" style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", background: "#FAF7F2" }}>
+      <div style={{ position: "relative", width: "100vw", height: "100vh", marginLeft: "calc(-50vw + 50%)", overflow: "hidden", opacity: bannerVisible ? 1 : 0, transform: bannerVisible ? "translateY(0)" : "translateY(15px)", transition: `opacity 1s ${ease}, transform 1s ${ease}` }}>
+        <img src="/sacred/countdown-top.png" alt={`The Wedding of ${coupleName}`} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }} />
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "50%", background: "linear-gradient(to top, rgba(250,247,242,0.9) 0%, rgba(250,247,242,0.3) 50%, transparent 100%)", pointerEvents: "none" }} />
+        <div ref={textRef} style={{ position: "absolute", bottom: "3.5rem", right: "1.5rem", textAlign: "right", zIndex: 2 }}>
+          <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "0.8125rem", fontWeight: 400, fontStyle: "italic", color: "#6F6F6F", letterSpacing: "0.06em", marginBottom: "0.625rem", margin: 0 }}>
             {renderLetters("The Wedding of", 0.2, 0.035)}
           </p>
-          <h2 style={{
-            fontFamily: "var(--font-cormorant)", fontSize: "1.75rem", fontWeight: 500,
-            color: "#2E2E2E", letterSpacing: "0.02em",
-            marginBottom: "0.625rem",
-          }}>
-            {renderLetters("Ali & Lyla", 0.7, 0.05)}
+          <h2 style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.75rem", fontWeight: 500, color: "#2E2E2E", letterSpacing: "0.02em", marginBottom: "0.625rem" }}>
+            {renderLetters(coupleName, 0.7, 0.05)}
           </h2>
-          <p style={{
-            fontFamily: "var(--font-jakarta)", fontSize: "0.625rem", fontWeight: 400,
-            color: "#8A8A8A", letterSpacing: "0.1em",
-            opacity: textVisible ? 1 : 0, transform: textVisible ? "translateY(0)" : "translateY(8px)",
-            transition: `opacity 0.7s ${ease} 1.2s, transform 0.7s ${ease} 1.2s`,
-          }}>
-            Sabtu, 5 Desember 2026
+          <p style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.625rem", fontWeight: 400, color: "#8A8A8A", letterSpacing: "0.1em", opacity: textVisible ? 1 : 0, transform: textVisible ? "translateY(0)" : "translateY(8px)", transition: `opacity 0.7s ${ease} 1.2s, transform 0.7s ${ease} 1.2s` }}>
+            {dateLabel}
           </p>
         </div>
       </div>
-
-      {/* Content below image — separate scroll trigger */}
-      <div
-        ref={countdownRef}
-        style={{
-          padding: "3rem 1.5rem 4rem",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          width: "100%",
-        }}
-      >
-        <p style={{
-          fontFamily: "var(--font-jakarta)", fontSize: "0.6875rem", fontWeight: 400,
-          letterSpacing: "0.15em", textTransform: "uppercase", color: "#8A8A8A",
-          marginBottom: "0.5rem",
-          opacity: countdownVisible ? 1 : 0, transform: countdownVisible ? "translateY(0)" : "translateY(15px)",
-          transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}`,
-        }}>
+      <div ref={countdownRef} style={{ padding: "3rem 1.5rem 4rem", display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
+        <p style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.6875rem", fontWeight: 400, letterSpacing: "0.15em", textTransform: "uppercase", color: "#8A8A8A", marginBottom: "0.5rem", opacity: countdownVisible ? 1 : 0, transform: countdownVisible ? "translateY(0)" : "translateY(15px)", transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}` }}>
           Menghitung Hari
         </p>
-        <h2 style={{
-          fontFamily: "var(--font-cormorant)", fontSize: "1.75rem", fontWeight: 500,
-          color: "#2E2E2E", marginBottom: "2rem",
-          opacity: countdownVisible ? 1 : 0, transform: countdownVisible ? "translateY(0)" : "translateY(15px)",
-          transition: `opacity 0.8s ${ease} 0.1s, transform 0.8s ${ease} 0.1s`,
-        }}>
+        <h2 style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.75rem", fontWeight: 500, color: "#2E2E2E", marginBottom: "2rem", opacity: countdownVisible ? 1 : 0, transform: countdownVisible ? "translateY(0)" : "translateY(15px)", transition: `opacity 0.8s ${ease} 0.1s, transform 0.8s ${ease} 0.1s` }}>
           Countdown
         </h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "0.75rem", maxWidth: "20rem", width: "100%" }}>
           {units.map((u, i) => (
-            <div key={u.label} style={{
-              background: "rgba(125, 110, 99, 0.04)", border: "1px solid rgba(125, 110, 99, 0.12)",
-              borderRadius: "16px", padding: "1.25rem 0.5rem", textAlign: "center",
-              opacity: countdownVisible ? 1 : 0, transform: countdownVisible ? "translateY(0) scale(1)" : "translateY(20px) scale(0.95)",
-              transition: `opacity 0.7s ${ease} ${0.15 + i * 0.1}s, transform 0.7s ${ease} ${0.15 + i * 0.1}s`,
-            }}>
+            <div key={u.label} style={{ background: "rgba(125, 110, 99, 0.04)", border: "1px solid rgba(125, 110, 99, 0.12)", borderRadius: "16px", padding: "1.25rem 0.5rem", textAlign: "center", opacity: countdownVisible ? 1 : 0, transform: countdownVisible ? "translateY(0) scale(1)" : "translateY(20px) scale(0.95)", transition: `opacity 0.7s ${ease} ${0.15 + i * 0.1}s, transform 0.7s ${ease} ${0.15 + i * 0.1}s` }}>
               <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.75rem", fontWeight: 500, color: "#2E2E2E", lineHeight: 1, marginBottom: "0.375rem" }}>
                 {String(u.value).padStart(2, "0")}
               </p>

@@ -85,6 +85,7 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}
   // Order
   const [orderId, setOrderId] = useState<string | null>(null);
   const [invitationUrl, setInvitationUrl] = useState<string | null>(null);
+  const [dashboardUrl, setDashboardUrl] = useState<string | null>(null);
 
   // Submission state
   const [submitting, setSubmitting] = useState(false);
@@ -160,6 +161,10 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}
       setOrderId(data.order_id);
       if (data.invitation_url) {
         setInvitationUrl(data.invitation_url);
+      }
+      // Simpan dashboard_url (magic link login untuk user dashboard)
+      if (data.dashboard_url) {
+        setDashboardUrl(data.dashboard_url);
       }
       // Luna free: langsung ke done (auto-publish)
       setStep("done");
@@ -689,6 +694,18 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}
                 <span style={{ fontFamily: "var(--font-inter)", fontSize: "11px", color: "rgba(201,169,110,0.7)" }}>Published (Aktif)</span>
               </div>
             </div>
+
+            {/* ── TOMBOL BUKA DASHBOARD (untuk semua order: free & berbayar) ── */}
+            {dashboardUrl && (
+              <div style={{ padding: "16px 20px", borderRadius: "12px", border: "1px dashed rgba(201,169,110,0.25)", background: "rgba(201,169,110,0.03)", marginBottom: "20px", textAlign: "left" }}>
+                <p style={{ fontFamily: "var(--font-inter)", fontSize: "11px", letterSpacing: "0.04em", color: "rgba(255,255,255,0.65)", margin: "0 0 12px 0", lineHeight: 1.6 }}>
+                  Simpan link dashboard untuk melihat status &amp; mengelola undangan kamu kapan saja.
+                </p>
+                <a href={dashboardUrl} target="_blank" rel="noopener noreferrer" style={{ display: "block", padding: "12px 20px", borderRadius: "10px", border: "1px solid rgba(201,169,110,0.20)", background: "transparent", fontFamily: "var(--font-inter)", fontSize: "12px", letterSpacing: "0.1em", color: "rgba(201,169,110,0.9)", textDecoration: "none", textAlign: "center", fontWeight: 500, transition: "all 0.3s ease" }}>
+                  Buka Dashboard
+                </a>
+              </div>
+            )}
 
             {/* Tombol aksi */}
             {invitationUrl && (

@@ -18,13 +18,13 @@ import { getSupabaseServer, isAdminAuthorized } from "@/lib/supabase-server";
 //   3. INSERT row using service role (RLS bypassed)
 //      - order_id sementara: NAUKA-PENDING-{timestamp}
 //      - status awal: tergantung paket
-//        * Luna free → 'published' (auto-publish, skip admin review)
+//        * Luna/Marwah free → 'published' (auto-publish, skip admin review)
 //        * Sacred/Celestial → 'pending_payment' (user belum bayar QRIS)
 //   4. Generate real order_id from BIGSERIAL id: NAUKA-{YYYY}-{NNN}
 //   5. UPDATE order_id using service role
 //
 // Body:
-//   - template: 'sacred' | 'celestial' | 'luna'
+//   - template: 'sacred' | 'celestial' | 'luna' | 'marwah'
 //   - package: 'basic' | 'premium' | 'free'
 //   - price: number (IDR)
 //   - customer_name: string
@@ -33,7 +33,7 @@ import { getSupabaseServer, isAdminAuthorized } from "@/lib/supabase-server";
 //   - wedding_data?: object (seluruh data undangan — dikirim dari step Review)
 //
 // Status awal:
-//   - Luna free → 'published' (auto-publish, link langsung aktif)
+//   - Luna/Marwah free → 'published' (auto-publish, link langsung aktif)
 //   - Sacred/Celestial → 'pending_payment' (user belum bayar QRIS)
 //
 // Response:
@@ -58,9 +58,9 @@ export async function POST(req: NextRequest) {
     } = body;
 
     // ── Validation ──
-    if (!template || !["sacred", "celestial", "luna"].includes(template)) {
+    if (!template || !["sacred", "celestial", "luna", "marwah"].includes(template)) {
       return NextResponse.json(
-        { error: "Template harus 'sacred', 'celestial', atau 'luna'." },
+        { error: "Template harus 'sacred', 'celestial', 'luna', atau 'marwah'." },
         { status: 400 }
       );
     }
@@ -90,18 +90,18 @@ export async function POST(req: NextRequest) {
     }
 
     // ── Tentukan status awal ──
-    // Luna free → auto-publish (skip admin review, langsung aktif)
+    // Luna/Marwah free → auto-publish (skip admin review, langsung aktif)
     // Sacred/Celestial → pending_payment (user belum bayar QRIS)
-    const isLunaFree = template === "luna" && pkg === "free";
-    const initialStatus = isLunaFree ? "published" : "pending_payment";
+    const isFreeTemplate = (template === "luna" || template === "marwah") && pkg === "free";
+    const initialStatus = isFreeTemplate ? "published" : "pending_payment";
 
-    // ── Anti-collision slug check (untuk Luna free) ──
+    // ── Anti-collision slug check (untuk Luna/Marwah free) ──
     // Kalau wedding_data.slug sudah dipakai order lain yang published,
     // append suffix -2, -3, dst.
     let finalWeddingData = wedding_data || {};
     let finalSlug: string | null = null;
 
-    if (isLunaFree && wedding_data?.slug) {
+    if (isFreeTemplate && wedding_data?.slug) {
       const baseSlug: string = wedding_data.slug;
       let candidateSlug = baseSlug;
       let suffix = 2;
@@ -195,7 +195,7 @@ export async function POST(req: NextRequest) {
 
     // ── Build response ──
     // Sertakan dashboard_token supaya frontend bisa bangun link dashboard.
-    // Untuk Luna free: sertakan juga slug & invitation_url supaya frontend bisa
+    // Untuk Luna/Marwah free: sertakan juga slug & invitation_url supaya frontend bisa
     // tampilkan link langsung di halaman "Selesai"
     const responseData: Record<string, unknown> = {
       order_id: orderId,
@@ -205,7 +205,7 @@ export async function POST(req: NextRequest) {
       dashboard_url: `${SITE_BASE_URL}/dashboard?token=${dashboardToken}`,
     };
 
-    if (isLunaFree && finalSlug) {
+    if (isFreeTemplate && finalSlug) {
       responseData.slug = finalSlug;
       responseData.invitation_url = `${SITE_BASE_URL}/${finalSlug}`;
     }
@@ -296,4 +296,4 @@ export async function GET(req: NextRequest) {
     const message = err instanceof Error ? err.message : "Internal server error";
     return NextResponse.json({ data: [], error: message }, { status: 500 });
   }
-    }
+}

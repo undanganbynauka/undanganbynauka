@@ -2,8 +2,6 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 
-export function CelestialClosing({ ...
-
 interface CelestialClosingProps {
   groomName?: string;
   brideName?: string;
@@ -18,815 +16,157 @@ interface CelestialClosingProps {
   giftAddress?: string;
 }
 
+function formatShortDate(isoDate: string): string {
+  if (!isoDate) return "5 Desember 2026";
+  try {
+    const d = new Date(`${isoDate}T00:00:00+07:00`);
+    if (isNaN(d.getTime())) return isoDate;
+    return d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Jakarta" });
+  } catch { return isoDate; }
+}
+
+function maskNumber(num: string) {
+  return "\u2022\u2022\u2022\u2022 \u2022\u2022\u2022\u2022 \u2022\u2022\u2022\u2022 " + (num ? num.slice(-4) : "0000");
+}
+
 export function CelestialClosing({ groomName = "Ali", brideName = "Lyla", akadDate = "2026-12-05", groomFullName = "Ali Rahman", groomBank = "Bank Syariah Indonesia", groomRekening = "1234567890", brideFullName = "Lyla Azzahra", brideBank = "Bank Muamalat Indonesia", brideRekening = "1234567890", giftRecipientName = "Lyla Azzahra", giftAddress = "Jakarta Pusat" }: CelestialClosingProps = {}) {
   const [visible, setVisible] = useState(false);
   const [step, setStep] = useState(0);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [showRekening, setShowRekening] = useState(false);
-    const sectionRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
 
   const BANK_ACCOUNTS = [
     { name: groomFullName, bank: groomBank, number: groomRekening },
     { name: brideFullName, bank: brideBank, number: brideRekening },
   ];
 
-  // IntersectionObserver — trigger once
+  const dateLabel = formatShortDate(akadDate);
+  const coupleName = `${groomName} & ${brideName}`;
+
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !visible) setVisible(true);
-      },
-      { threshold: 0.1 }
-    );
+    const observer = new IntersectionObserver(([entry]) => { if (entry.isIntersecting && !visible) setVisible(true); }, { threshold: 0.1 });
     observer.observe(el);
     return () => observer.disconnect();
   }, [visible]);
 
-  // Master animation sequence — balanced cinematic pacing
-  // Total ~9.5s — elegant but keeps momentum
   useEffect(() => {
     if (!visible) return;
     const timers: ReturnType<typeof setTimeout>[] = [];
-
-    // 1. Atmospheric fade
     timers.push(setTimeout(() => setStep(1), 200));
-
-    // 2. Shooting star — opening gesture
     timers.push(setTimeout(() => setStep(2), 600));
-
-    // 3. Shooting star fades, light spreads
-    timers.push(setTimeout(() => setStep(3), 1500));
-
-    // 4. Crescent moon appears
-    timers.push(setTimeout(() => setStep(4), 2000));
-
-    // 5. Doa line 1
-    timers.push(setTimeout(() => setStep(5), 3200));
-
-    // 6. Doa line 2
-    timers.push(setTimeout(() => setStep(6), 4300));
-
-    // 7. Doa line 3
-    timers.push(setTimeout(() => setStep(7), 5400));
-
-    // 8. Author attribution
-    timers.push(setTimeout(() => setStep(8), 6200));
-
-    // 9. Ornamental divider
-    timers.push(setTimeout(() => setStep(9), 6800));
-
-    // 10. Couple names — focal point
-    timers.push(setTimeout(() => setStep(10), 7500));
-
-    // 11. Date
-    timers.push(setTimeout(() => setStep(11), 8200));
-
-    // 12. Rekening / Gift section
-    timers.push(setTimeout(() => setStep(12), 9000));
-
-    // 13. Nauka logo — final element
-    timers.push(setTimeout(() => setStep(13), 9500));
-
+    timers.push(setTimeout(() => setStep(3), 1000));
+    timers.push(setTimeout(() => setStep(4), 1400));
+    timers.push(setTimeout(() => setStep(5), 1800));
+    timers.push(setTimeout(() => setStep(6), 2200));
+    timers.push(setTimeout(() => setStep(7), 2600));
+    timers.push(setTimeout(() => setStep(8), 3000));
+    timers.push(setTimeout(() => setStep(9), 3400));
+    timers.push(setTimeout(() => setStep(10), 3800));
+    timers.push(setTimeout(() => setStep(11), 4200));
     return () => timers.forEach(clearTimeout);
   }, [visible]);
 
-  // Copy handler — calm, sacred feedback
-  const handleCopy = useCallback((num: string, key: string) => {
-    navigator.clipboard.writeText(num).catch(() => {
+  const handleCopy = useCallback(async (number: string, key: string) => {
+    try { await navigator.clipboard.writeText(number); } catch {
       const ta = document.createElement("textarea");
-      ta.value = num;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand("copy");
-      document.body.removeChild(ta);
-    });
+      ta.value = number; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select(); document.execCommand("copy"); document.body.removeChild(ta);
+    }
     setCopiedKey(key);
     setTimeout(() => setCopiedKey(null), 2000);
   }, []);
 
-  const easeCinematic = "cubic-bezier(0.42, 0, 0.58, 1)";
-  const easeSacred = "cubic-bezier(0.25, 0.1, 0.25, 1)";
+  const ease = "cubic-bezier(0.25, 0.1, 0.25, 1)";
 
   return (
-    <section
-      ref={sectionRef}
-      id="closing"
-      className="celestial-section"
-      style={{
-        position: "relative",
-        padding: 0,
-        minHeight: "100vh",
-        justifyContent: "center",
-        overflowX: "hidden",
-      }}
-    >
-      {/* ── Background image — slower, more intimate reveal ── */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          backgroundImage: "url('/celestial/cover.jpg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center center",
-          backgroundRepeat: "no-repeat",
-          opacity: visible ? 1 : 0,
-          transition: `opacity 2.5s ${easeCinematic}`,
-        }}
-      />
-
-      {/* ── Dark overlay — deeper, more intimate than other sections ── */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          background:
-            "linear-gradient(180deg, rgba(8,12,32,0.70) 0%, rgba(8,12,32,0.55) 25%, rgba(8,12,32,0.50) 45%, rgba(8,12,32,0.60) 65%, rgba(8,12,32,0.90) 100%)",
-          opacity: visible ? 1 : 0,
-          transition: `opacity 2.5s ${easeCinematic} 0.3s`,
-        }}
-      />
-
-      {/* ── Top gradient fade — seamless blend from previous section ── */}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: "30%",
-          background:
-            "linear-gradient(to bottom, #0B1026 0%, rgba(11,16,38,0.6) 40%, transparent 100%)",
-          pointerEvents: "none",
-        }}
-      />
-
-      {/* ── Slower, sparser background particles — "everything slows down" ── */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          pointerEvents: "none",
-          overflow: "hidden",
-        }}
-      >
-        {Array.from({ length: 8 }).map((_, i) => (
-          <div
-            key={`particle-${i}`}
-            style={{
-              position: "absolute",
-              width: `${0.8 + Math.random() * 1.2}px`,
-              height: `${0.8 + Math.random() * 1.2}px`,
-              borderRadius: "50%",
-              background:
-                i % 3 === 0
-                  ? "rgba(201,169,110,0.35)"
-                  : "rgba(255,255,255,0.25)",
-              left: `${8 + Math.random() * 84}%`,
-              top: `${5 + Math.random() * 85}%`,
-              opacity: 0,
-              animation: step >= 1
-                ? `celClosingParticle ${8 + Math.random() * 10}s ease-in-out ${Math.random() * 5}s infinite`
-                : "none",
-            }}
-          />
+    <section ref={sectionRef} id="closing" className="celestial-section" style={{ background: "var(--cel-deep)", padding: "4rem 1.5rem", position: "relative", overflow: "hidden" }}>
+      {/* Stars */}
+      <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
+        {Array.from({ length: 12 }).map((_, i) => (
+          <div key={`star-${i}`} style={{ position: "absolute", width: `${1 + Math.random() * 1.5}px`, height: `${1 + Math.random() * 1.5}px`, borderRadius: "50%", background: i % 3 === 0 ? "rgba(201,169,110,0.5)" : "rgba(255,255,255,0.4)", left: `${5 + Math.random() * 90}%`, top: `${5 + Math.random() * 90}%`, opacity: 0, animation: `celBgParticle ${5 + Math.random() * 7}s ease-in-out ${Math.random() * 4}s infinite` }} />
         ))}
       </div>
 
-      {/* ── Shooting star — opening gesture ── */}
-      {step >= 2 && step < 4 && (
-        <div
-          style={{
-            position: "absolute",
-            top: "8%",
-            left: "5%",
-            pointerEvents: "none",
-            zIndex: 5,
-          }}
-        >
-          <div
-            style={{
-              width: "3px",
-              height: "3px",
-              borderRadius: "50%",
-              background: "#fff",
-              animation:
-                step === 2
-                  ? "celClosingShoot 2s ease-out forwards"
-                  : step >= 3
-                  ? "celClosingShootFade 1.2s ease-out forwards"
-                  : "none",
-            }}
-          />
-        </div>
-      )}
-
-      {/* ── Light spread after shooting star ── */}
-      {step >= 3 && (
-        <div
-          style={{
-            position: "absolute",
-            top: "14%",
-            right: "10%",
-            width: "80px",
-            height: "80px",
-            borderRadius: "50%",
-            background:
-              "radial-gradient(circle, rgba(201,169,110,0.08) 0%, transparent 70%)",
-            pointerEvents: "none",
-            animation: "celClosingLightSpread 2s ease-out forwards",
-          }}
-        />
-      )}
-
-      {/* ── Content — centered, breathable ── */}
-      <div
-        style={{
-          position: "relative",
-          textAlign: "center",
-          maxWidth: "22rem",
-          padding: "5rem 1.5rem 2rem",
-          minHeight: showRekening ? "auto" : "100vh",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: showRekening ? "flex-start" : "center",
-          paddingBottom: showRekening ? "18rem" : "2rem",
-        }}
-      >
-        {/* ── Crescent Moon — slower, more sacred ── */}
-        <div
-          style={{
-            position: "relative",
-            width: "100px",
-            height: "100px",
-            margin: "0 auto 3rem",
-            opacity: step >= 4 ? 1 : 0,
-            transform: step >= 4 ? "scale(1) translateY(0)" : "scale(0.92) translateY(8px)",
-            transition: `opacity 1.1s ${easeCinematic}, transform 1.1s ${easeCinematic}`,
-          }}
-        >
-          <img
-            src="/celestial/moon.png"
-            alt=""
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "contain",
-              filter: "brightness(1.05)",
-              animation: step >= 4
-                ? "celClosingMoonFloat 7s ease-in-out infinite, celClosingMoonGlow 5s ease-in-out infinite"
-                : "none",
-            }}
-          />
-        </div>
-
-        {/* ── Doa / Closing Text — breathable, read-aloud feel ── */}
-        <div
-          style={{
-            marginBottom: "1rem",
-            textAlign: "center",
-          }}
-        >
-          <p
-            style={{
-              fontFamily: "var(--font-cormorant)",
-              fontSize: "1.0625rem",
-              fontWeight: 400,
-              fontStyle: "italic",
-              color: "var(--cel-text)",
-              lineHeight: 2.6,
-              letterSpacing: "0.03em",
-              textShadow: "0 2px 18px rgba(0,0,0,0.5)",
-              margin: 0,
-              opacity: step >= 5 ? 1 : 0,
-              transform: step >= 5 ? "translateY(0)" : "translateY(10px)",
-              transition: `opacity 0.8s ${easeCinematic}, transform 0.8s ${easeCinematic}`,
-            }}
-          >
-            &ldquo;Cinta bukan tentang saling memandang,
-          </p>
-          <p
-            style={{
-              fontFamily: "var(--font-cormorant)",
-              fontSize: "1.0625rem",
-              fontWeight: 400,
-              fontStyle: "italic",
-              color: "var(--cel-text)",
-              lineHeight: 2.6,
-              letterSpacing: "0.03em",
-              textShadow: "0 2px 18px rgba(0,0,0,0.5)",
-              margin: 0,
-              opacity: step >= 6 ? 1 : 0,
-              transform: step >= 6 ? "translateY(0)" : "translateY(10px)",
-              transition: `opacity 0.8s ${easeCinematic}, transform 0.8s ${easeCinematic}`,
-            }}
-          >
-            tetapi tentang melihat
-          </p>
-          <p
-            style={{
-              fontFamily: "var(--font-cormorant)",
-              fontSize: "1.0625rem",
-              fontWeight: 400,
-              fontStyle: "italic",
-              color: "var(--cel-text)",
-              lineHeight: 2.6,
-              letterSpacing: "0.03em",
-              textShadow: "0 2px 18px rgba(0,0,0,0.5)",
-              margin: 0,
-              opacity: step >= 7 ? 1 : 0,
-              transform: step >= 7 ? "translateY(0)" : "translateY(10px)",
-              transition: `opacity 0.8s ${easeCinematic}, transform 0.8s ${easeCinematic}`,
-            }}
-          >
-            ke arah yang sama.&rdquo;
-          </p>
-        </div>
-
-        {/* ── Author — slide from left, slower ── */}
-        <p
-          style={{
-            fontFamily: "var(--font-inter)",
-            fontSize: "0.5625rem",
-            fontWeight: 400,
-            color: "var(--cel-accent)",
-            lineHeight: 1.8,
-            marginBottom: "2.5rem",
-            letterSpacing: "0.1em",
-            textShadow: "0 1px 12px rgba(0,0,0,0.4)",
-            opacity: step >= 8 ? 1 : 0,
-            transform: step >= 8 ? "translateX(0)" : "translateX(-12px)",
-            transition: `opacity 0.7s ${easeCinematic}, transform 0.7s ${easeCinematic}`,
-          }}
-        >
-          &mdash; Antoine de Saint-Exup&eacute;ry
+      <div style={{ maxWidth: "20rem", width: "100%", textAlign: "center" }}>
+        {/* Quote */}
+        <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "0.8125rem", fontStyle: "italic", fontWeight: 400, color: "var(--cel-text)", lineHeight: 2, letterSpacing: "0.02em", maxWidth: "18rem", margin: "0 auto 2.5rem", opacity: step >= 1 ? 0.9 : 0, transform: step >= 1 ? "translateY(0)" : "translateY(15px)", transition: `opacity 1.2s ${ease}, transform 1.2s ${ease}` }}>
+          Setiap langkah dalam hidup membawa cerita, dan pada titik tertentu, dua perjalanan yang berbeda dipertemukan untuk berjalan ke arah yang sama.
         </p>
 
-        {/* ── Ornament divider ── */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "0.75rem",
-            marginBottom: "2.5rem",
-          }}
-        >
-          <div
-            style={{
-              width: step >= 9 ? "3.5rem" : "0",
-              height: "0.5px",
-              background: "linear-gradient(to right, transparent, var(--cel-accent))",
-              opacity: step >= 9 ? 0.3 : 0,
-              transition: `width 0.8s ${easeCinematic}, opacity 0.8s ${easeCinematic}`,
-              overflow: "hidden",
-            }}
-          />
-          <span
-            style={{
-              color: "var(--cel-accent)",
-              fontSize: "0.5rem",
-              opacity: step >= 9 ? 0.4 : 0,
-              transition: `opacity 0.6s ${easeCinematic} 0.4s`,
-            }}
-          >
-            ✦
-          </span>
-          <div
-            style={{
-              width: step >= 9 ? "3.5rem" : "0",
-              height: "0.5px",
-              background: "linear-gradient(to left, transparent, var(--cel-accent))",
-              opacity: step >= 9 ? 0.3 : 0,
-              transition: `width 0.8s ${easeCinematic}, opacity 0.8s ${easeCinematic}`,
-              overflow: "hidden",
-            }}
-          />
+        {/* Divider */}
+        <div className="celestial-divider" style={{ justifyContent: "center", margin: "0 auto 2.5rem", opacity: step >= 2 ? 1 : 0, transition: `opacity 1s ${ease}` }}>
+          <div className="celestial-divider-line" /><span className="celestial-divider-star">✦</span><div className="celestial-divider-line" />
         </div>
 
-        {/* ── Couple Names — focal point, subtle glow breathing ── */}
-        <p
-          style={{
-            fontFamily: "var(--font-cormorant)",
-            fontSize: "1.875rem",
-            fontWeight: 300,
-            color: "var(--cel-text)",
-            letterSpacing: "0.1em",
-            marginBottom: "0.625rem",
-            opacity: step >= 10 ? 1 : 0,
-            transform: step >= 10 ? "translateY(0)" : "translateY(12px)",
-            transition: `opacity 0.9s ${easeCinematic}, transform 0.9s ${easeCinematic}`,
-            ...(step >= 10 ? { animation: "celClosingNameBreath 6s ease-in-out infinite" } : {}),
-          }}
-        >
-                    {groomName}{" "}
-          <span
-            style={{
-              color: "var(--cel-accent)",
-              ...(step >= 10 ? { animation: "celClosingAmpGlow 6s ease-in-out infinite" } : {}),
-            }}
-          >
-            &amp;
-          </span>{" "}
-                    {brideName}
+        {/* Doa */}
+        <p style={{ fontFamily: "var(--font-amiri)", fontSize: "1.25rem", fontWeight: 400, color: "var(--cel-text)", lineHeight: 2.2, textAlign: "center", direction: "rtl", marginBottom: "1rem", opacity: step >= 3 ? 1 : 0, transform: step >= 3 ? "translateY(0)" : "translateY(20px)", transition: `opacity 1.2s ${ease}, transform 1.2s ${ease}` }}>
+          بَارَكَ اللهُ لَكُمَا وَبَارَكَ عَلَيْكُمَا وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ
+        </p>
+        <p style={{ fontFamily: "var(--font-cormorant)", fontStyle: "italic", fontSize: "0.75rem", fontWeight: 400, color: "var(--cel-text-dim)", lineHeight: 1.9, textAlign: "center", marginBottom: "1rem", opacity: step >= 4 ? 1 : 0, transform: step >= 4 ? "translateY(0)" : "translateY(15px)", transition: `opacity 1s ${ease}, transform 1s ${ease}` }}>
+          Baarakallahu lakuma wa baaraka &lsquo;alaikuma wa jama&lsquo;a bainakuma fii khair
+        </p>
+        <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.625rem", fontWeight: 400, color: "var(--cel-text-muted)", lineHeight: 1.8, textAlign: "center", marginBottom: "2rem", opacity: step >= 5 ? 0.7 : 0, transform: step >= 5 ? "translateY(0)" : "translateY(10px)", transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}` }}>
+          Semoga Allah memberkahimu berdua dan memberkai pernikahanmu, serta menghimpun kalian berdua dalam kebaikan.
         </p>
 
-        {/* ── Date ── */}
-        <p
-          style={{
-            fontFamily: "var(--font-inter)",
-            fontSize: "0.5rem",
-            fontWeight: 400,
-            color: "var(--cel-text-muted)",
-            letterSpacing: "0.18em",
-            textTransform: "uppercase",
-            marginBottom: "3rem",
-            opacity: step >= 11 ? 0.5 : 0,
-            transition: `opacity 0.8s ${easeCinematic}`,
-          }}
-        >
-                    {new Date(`${akadDate}T00:00:00+07:00`).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Jakarta" })}
+        {/* Ucapan */}
+        <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.6875rem", fontWeight: 400, color: "var(--cel-text-dim)", lineHeight: 1.9, textAlign: "center", maxWidth: "17rem", margin: "0 auto 2.5rem", opacity: step >= 6 ? 0.6 : 0, transform: step >= 6 ? "translateY(0)" : "translateY(10px)", transition: `opacity 1s ${ease}, transform 1s ${ease}` }}>
+          Terima kasih telah menjadi bagian dari perjalanan kecil kami menuju kisah baru.
         </p>
 
-        {/* ── Rekening / Gift Section — visible, inviting, sacred ── */}
-        {step >= 12 && (
-          <div
-            id="hadiah"
-            style={{
-              maxWidth: "20rem",
-              width: "100%",
-              margin: "0 auto",
-              opacity: 1,
-              animation: "celClosingReveal 1s cubic-bezier(0.42, 0, 0.58, 1) forwards",
-            }}
-          >
-            {!showRekening ? (
-              <button
-                onClick={() => setShowRekening(true)}
-                style={{
-                  padding: "0.75rem 2rem",
-                  border: "1px solid rgba(201,169,110,0.4)",
-                  borderRadius: "9999px",
-                  background: "linear-gradient(135deg, rgba(201,169,110,0.12) 0%, rgba(201,169,110,0.06) 100%)",
-                  color: "var(--cel-accent)",
-                  fontFamily: "var(--font-inter)",
-                  fontSize: "0.6875rem",
-                  fontWeight: 500,
-                  letterSpacing: "0.14em",
-                  textTransform: "uppercase",
-                  cursor: "pointer",
-                  transition: "all 0.5s ease",
-                  opacity: 1,
-                  boxShadow: "0 0 24px rgba(201,169,110,0.08), inset 0 0 12px rgba(201,169,110,0.04)",
-                  animation: "celGiftPulse 3s ease-in-out infinite",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "0.5rem",
-                  margin: "0 auto",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.opacity = "1";
-                  e.currentTarget.style.borderColor = "rgba(201,169,110,0.6)";
-                  e.currentTarget.style.boxShadow = "0 0 32px rgba(201,169,110,0.18), inset 0 0 16px rgba(201,169,110,0.06)";
-                  e.currentTarget.style.transform = "scale(1.03)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.opacity = "1";
-                  e.currentTarget.style.borderColor = "rgba(201,169,110,0.4)";
-                  e.currentTarget.style.boxShadow = "0 0 24px rgba(201,169,110,0.08), inset 0 0 12px rgba(201,169,110,0.04)";
-                  e.currentTarget.style.transform = "scale(1)";
-                }}
-              >
-                <span style={{ fontSize: "0.875rem" }}>🎁</span>
-                Tanda Kasih
-              </button>
-            ) : (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "0.75rem",
-                  animation: "celClosingReveal 0.8s cubic-bezier(0.42, 0, 0.58, 1) forwards",
-                }}
-              >
-                {BANK_ACCOUNTS.map((acc) => (
-                  <div
-                    key={acc.name}
-                    style={{
-                      background: "rgba(255,255,255,0.02)",
-                      border: "1px solid rgba(201,169,110,0.08)",
-                      borderRadius: "14px",
-                      padding: "0.875rem 1.125rem",
-                      transition: "all 0.4s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = "rgba(201,169,110,0.18)";
-                      e.currentTarget.style.background = "rgba(255,255,255,0.04)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = "rgba(201,169,110,0.08)";
-                      e.currentTarget.style.background = "rgba(255,255,255,0.02)";
-                    }}
-                  >
-                    <p
-                      style={{
-                        fontFamily: "var(--font-cormorant)",
-                        fontSize: "0.875rem",
-                        fontWeight: 400,
-                        color: "var(--cel-text)",
-                        marginBottom: "0.125rem",
-                        opacity: 0.9,
-                      }}
-                    >
-                      {acc.name}
-                    </p>
-                    <p
-                      style={{
-                        fontFamily: "var(--font-inter)",
-                        fontSize: "0.5rem",
-                        color: "var(--cel-text-muted)",
-                        letterSpacing: "0.08em",
-                        marginBottom: "0.5rem",
-                        opacity: 0.7,
-                      }}
-                    >
-                      {acc.bank}
-                    </p>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.625rem",
-                      }}
-                    >
-                      <p
-                        style={{
-                          fontFamily: "var(--font-inter)",
-                          fontSize: "0.75rem",
-                          color: "var(--cel-accent)",
-                          letterSpacing: "0.05em",
-                          fontWeight: 400,
-                          opacity: 0.85,
-                        }}
-                      >
-                        {acc.number}
-                      </p>
-                      <button
-                        onClick={() => handleCopy(acc.number, acc.name)}
-                        style={{
-                          background: "none",
-                          border: "1px solid rgba(201,169,110,0.15)",
-                          borderRadius: "6px",
-                          padding: "0.25rem 0.5rem",
-                          cursor: "pointer",
-                          fontFamily: "var(--font-inter)",
-                          fontSize: "0.4375rem",
-                          fontWeight: 400,
-                          letterSpacing: "0.12em",
-                          textTransform: "uppercase",
-                          color: "var(--cel-accent)",
-                          opacity: 0.6,
-                          transition: "all 0.4s ease",
-                          transform: copiedKey === acc.name ? "scale(1.08)" : "scale(1)",
-                          boxShadow: copiedKey === acc.name
-                            ? "0 0 12px rgba(201,169,110,0.15)"
-                            : "none",
-                        }}
-                      >
-                        {copiedKey === acc.name ? "Tersalin" : "Salin"}
-                      </button>
-                    </div>
-                  </div>
-                ))}
+        {/* Divider 2 */}
+        <div className="celestial-divider" style={{ justifyContent: "center", margin: "0 auto 2rem", opacity: step >= 7 ? 1 : 0, transition: `opacity 1s ${ease}` }}>
+          <div className="celestial-divider-line" /><span className="celestial-divider-star">✦</span><div className="celestial-divider-line" />
+        </div>
 
-                {/* Kado Fisik */}
-                <div
-                  style={{
-                    background: "rgba(255,255,255,0.02)",
-                    border: "1px solid rgba(201,169,110,0.08)",
-                    borderRadius: "14px",
-                    padding: "0.875rem 1.125rem",
-                    transition: "all 0.4s ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(201,169,110,0.18)";
-                    e.currentTarget.style.background = "rgba(255,255,255,0.04)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(201,169,110,0.08)";
-                    e.currentTarget.style.background = "rgba(255,255,255,0.02)";
-                  }}
-                >
-                  <p
-                    style={{
-                      fontFamily: "var(--font-inter)",
-                      fontSize: "0.5rem",
-                      fontWeight: 500,
-                      letterSpacing: "0.15em",
-                      textTransform: "uppercase",
-                      color: "var(--cel-accent)",
-                      marginBottom: "0.5rem",
-                      opacity: 0.8,
-                    }}
-                  >
-                    Kado Fisik
-                  </p>
-                  <p
-                    style={{
-                      fontFamily: "var(--font-inter)",
-                      fontSize: "0.6875rem",
-                      color: "var(--cel-text-dim)",
-                      lineHeight: 1.7,
-                      opacity: 0.8,
-                    }}
-                  >
-                                        {giftRecipientName}<br />
-                    {giftAddress}
-                  </p>
+        {/* Couple Names */}
+        <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.875rem", fontWeight: 300, color: "var(--cel-text)", letterSpacing: "0.1em", marginBottom: "0.625rem", opacity: step >= 8 ? 1 : 0, transform: step >= 8 ? "translateY(0)" : "translateY(12px)", transition: `opacity 0.9s ${ease}, transform 0.9s ${ease}` }}>
+          {groomName}{" "}<span style={{ color: "var(--cel-accent)" }}>&amp;</span>{" "}{brideName}
+        </p>
+
+        {/* Date */}
+        <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.5rem", fontWeight: 400, color: "var(--cel-text-muted)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: "2.5rem", opacity: step >= 9 ? 0.5 : 0, transition: `opacity 0.8s ${ease}` }}>
+          {dateLabel}
+        </p>
+
+        {/* Amplop Digital */}
+        <div style={{ opacity: step >= 10 ? 1 : 0, transform: step >= 10 ? "translateY(0)" : "translateY(15px)", transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}` }}>
+          {!showRekening ? (
+            <button onClick={() => setShowRekening(true)} style={{ padding: "0.625rem 1.5rem", border: "1px solid var(--cel-border)", borderRadius: "9999px", background: "var(--cel-glass)", color: "var(--cel-accent)", fontFamily: "var(--font-inter)", fontSize: "0.625rem", fontWeight: 400, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer", transition: "all 0.3s ease", marginBottom: "1.5rem" }} onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(201,169,110,0.1)"; }} onMouseLeave={(e) => { e.currentTarget.style.background = "var(--cel-glass)"; }}>Tanda Kasih</button>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem", maxWidth: "20rem", margin: "0 auto 1.5rem", animation: "fadeInUp 0.5s ease forwards" }}>
+              {BANK_ACCOUNTS.map((acc, i) => (
+                <div key={i} style={{ background: "var(--cel-glass)", border: "1px solid var(--cel-border)", borderRadius: "16px", padding: "1.25rem", textAlign: "center" }}>
+                  <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1rem", fontWeight: 400, color: "var(--cel-text)", marginBottom: "0.25rem" }}>{acc.name}</p>
+                  <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.625rem", color: "var(--cel-text-dim)", marginBottom: "0.5rem" }}>{acc.bank}</p>
+                  <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.75rem", color: "var(--cel-accent)", fontWeight: 500, letterSpacing: "0.05em", marginBottom: "0.5rem" }}>{maskNumber(acc.number)}</p>
+                  <button onClick={() => handleCopy(acc.number, `acc-${i}`)} style={{ fontFamily: "var(--font-inter)", fontSize: "0.5625rem", fontWeight: 500, color: "var(--cel-accent)", background: "none", border: "none", cursor: "pointer" }}>
+                    {copiedKey === `acc-${i}` ? "✓ Tersalin!" : "📋 Salin"}
+                  </button>
                 </div>
+              ))}
+              {/* Gift physical */}
+              <div style={{ background: "var(--cel-glass)", border: "1px solid var(--cel-border)", borderRadius: "16px", padding: "1.25rem", textAlign: "center" }}>
+                <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.625rem", fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--cel-accent)", marginBottom: "0.5rem" }}>🎁 KADO FISIK</p>
+                <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "1rem", fontWeight: 400, color: "var(--cel-text)", marginBottom: "0.25rem" }}>{giftRecipientName}</p>
+                <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.625rem", color: "var(--cel-text-dim)", lineHeight: 1.7 }}>{giftAddress}</p>
               </div>
-            )}
-          </div>
-        )}
+              <style>{`@keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }`}</style>
+            </div>
+          )}
+        </div>
+
+        {/* Logo */}
+        <div style={{ marginTop: "2rem", opacity: step >= 11 ? 0.6 : 0, transform: step >= 11 ? "translateY(0)" : "translateY(8px)", transition: `opacity 1.5s ${ease}, transform 1.5s ${ease}` }}>
+          <img src="/nauka-logo.png" alt="Nauka" style={{ width: "64px", height: "auto", filter: "brightness(0.7)" }} />
+        </div>
       </div>
 
-      {/* ── Final Fade-to-Black — shrinks when gift section is open ── */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: showRekening ? "15%" : "35%",
-          background:
-            "linear-gradient(to top, rgba(8,12,32,0.98) 0%, rgba(8,12,32,0.7) 30%, rgba(8,12,32,0.3) 60%, transparent 100%)",
-          pointerEvents: "none",
-          opacity: visible ? 1 : 0,
-          transition: `opacity 2s ${easeCinematic} 1s, height 0.6s ease`,
-        }}
-      />
-
-      {/* ── Very bottom — absolute darkness ── */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: showRekening ? "3%" : "8%",
-          background: "#080C20",
-          pointerEvents: "none",
-          opacity: visible ? 1 : 0,
-          transition: `opacity 2.5s ${easeCinematic} 1.5s, height 0.6s ease`,
-        }}
-      />
-
-      {/* ── Nauka Logo — on top of everything, bottom center ── */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: "1.5rem",
-          left: "50%",
-          transform: `translateX(-50%) ${step >= 13 ? "translateY(0)" : "translateY(6px)"}`,
-          opacity: step >= 13 ? 0.5 : 0,
-          transition: `opacity 2s ${easeCinematic}, transform 2s ${easeCinematic}`,
-          zIndex: 10,
-        }}
-      >
-        <img
-          src="/nauka-logo-new.png"
-          alt="Undangan by Nauka"
-          style={{
-            width: "3.5rem",
-            height: "auto",
-            filter: "brightness(0) invert(1)",
-          }}
-        />
-      </div>
-
-      {/* ── Keyframes — slower, cinematic ── */}
       <style>{`
-        @keyframes celClosingParticle {
-          0%, 100% {
-            opacity: 0;
-            transform: translateY(0) translateX(0);
-          }
-          15% {
-            opacity: 0.15;
-          }
-          50% {
-            opacity: 0.06;
-            transform: translateY(-10px) translateX(3px);
-          }
-          85% {
-            opacity: 0.12;
-          }
-        }
-
-        @keyframes celClosingShoot {
-          0% {
-            transform: translateX(0) translateY(0);
-            box-shadow:
-              0 0 6px 2px rgba(255,255,255,0.85),
-              0 0 12px 4px rgba(201,169,110,0.45),
-              -8px 4px 10px 2px rgba(201,169,110,0.25),
-              -16px 8px 14px 1px rgba(255,255,255,0.1),
-              -24px 12px 18px 0 rgba(201,169,110,0.05);
-            opacity: 1;
-          }
-          60% {
-            opacity: 1;
-            box-shadow:
-              0 0 4px 1px rgba(255,255,255,0.5),
-              0 0 8px 2px rgba(201,169,110,0.25),
-              -6px 3px 8px 1px rgba(201,169,110,0.12);
-          }
-          100% {
-            transform: translateX(280px) translateY(140px);
-            box-shadow: 0 0 2px 1px rgba(201,169,110,0.1);
-            opacity: 0;
-          }
-        }
-
-        @keyframes celClosingShootFade {
-          from { opacity: 0.8; }
-          to { opacity: 0; }
-        }
-
-        @keyframes celClosingLightSpread {
-          0% {
-            transform: scale(0.2);
-            opacity: 0;
-          }
-          35% {
-            opacity: 0.5;
-          }
-          100% {
-            transform: scale(3);
-            opacity: 0;
-          }
-        }
-
-        @keyframes celClosingMoonFloat {
-          0%, 100% {
-            transform: translateY(0px);
-          }
-          50% {
-            transform: translateY(-3px);
-          }
-        }
-
-        @keyframes celClosingMoonGlow {
-          0%, 100% {
-            filter: brightness(1.05) drop-shadow(0 0 12px rgba(201,169,110,0.1));
-          }
-          50% {
-            filter: brightness(1.1) drop-shadow(0 0 24px rgba(201,169,110,0.18));
-          }
-        }
-
-        @keyframes celClosingNameBreath {
-          0%, 100% {
-            text-shadow: 0 2px 20px rgba(0,0,0,0.5);
-          }
-          50% {
-            text-shadow: 0 2px 20px rgba(0,0,0,0.5), 0 0 20px rgba(201,169,110,0.08), 0 0 40px rgba(201,169,110,0.03);
-          }
-        }
-
-        @keyframes celClosingAmpGlow {
-          0%, 100% {
-            text-shadow: 0 0 15px rgba(201,169,110,0.45), 0 0 35px rgba(201,169,110,0.15);
-          }
-          50% {
-            text-shadow: 0 0 20px rgba(201,169,110,0.6), 0 0 45px rgba(201,169,110,0.25), 0 0 55px rgba(201,169,110,0.06);
-          }
-        }
-
-        @keyframes celClosingReveal {
-          from {
-            opacity: 0;
-            transform: translateY(8px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes celGiftPulse {
-          0%, 100% {
-            box-shadow: 0 0 24px rgba(201,169,110,0.08), inset 0 0 12px rgba(201,169,110,0.04);
-            border-color: rgba(201,169,110,0.4);
-          }
-          50% {
-            box-shadow: 0 0 36px rgba(201,169,110,0.16), 0 0 60px rgba(201,169,110,0.06), inset 0 0 16px rgba(201,169,110,0.06);
-            border-color: rgba(201,169,110,0.55);
-          }
-        }
+        @keyframes celBgParticle { 0%, 100% { opacity: 0; transform: translateY(0) translateX(0); } 20% { opacity: 0.35; } 50% { opacity: 0.15; transform: translateY(-12px) translateX(4px); } 80% { opacity: 0.3; } }
       `}</style>
     </section>
   );

@@ -35,9 +35,11 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const orderId = searchParams.get("order_id");
 
-  let query = supabase
+    let query = supabase
     .from("guest_messages")
     .select("id, order_id, name, message, attendance, guest_count, created_at")
+    .not("message", "is", null)        // ← hanya yang ada pesannya
+    .neq("message", "")                // ← exclude string kosong
     .order("created_at", { ascending: false })
     .limit(100);
 

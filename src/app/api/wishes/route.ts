@@ -134,13 +134,13 @@ export async function POST(req: NextRequest) {
   }
 
   // ── INSERT ──
-  const insertPayload: {
+    const insertPayload: {
     name: string;
     message: string;
     order_id?: string;
   } = {
-    name: name.trim(),
-    message: message.trim(),
+    name: cleanName,
+    message: cleanMessage,
   };
 
   if (order_id && typeof order_id === "string") {

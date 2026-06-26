@@ -60,10 +60,27 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { order_id, name, message } = body;
 
-  // Validasi
-  if (!name?.trim()) {
+    // Validasi ketat
+  const cleanName = (name && typeof name === "string") ? name.trim() : "";
+  const cleanMessage = (message && typeof message === "string") ? message.trim() : "";
+
+  if (!cleanName) {
     return NextResponse.json(
       { error: "Nama wajib diisi." },
+      { status: 400 }
+    );
+  }
+  if (!cleanMessage) {
+    return NextResponse.json(
+      { error: "Ucapan wajib diisi." },
+      { status: 400 }
+    );
+  }
+  // Reject placeholder values dari field kosong yang dikirim sebagai string
+  const FORBIDDEN_MESSAGES = ["none", "null", "undefined", ""];
+  if (FORBIDDEN_MESSAGES.includes(cleanMessage.toLowerCase())) {
+    return NextResponse.json(
+      { error: "Ucapan tidak valid. Silakan tulis pesan Anda." },
       { status: 400 }
     );
   }

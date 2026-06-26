@@ -96,7 +96,7 @@ export default async function BasicInvitePage({
         <title>{pageTitle}</title>
         <meta name="description" content={metaDesc} />
         <Suspense fallback={<main style={{ minHeight: "100vh", background: "#FAF7F2" }} />}>
-          <SacredContent data={weddingData} />
+          <SacredContent data={weddingData} orderId={orderData.order_id} />
         </Suspense>
       </>
     );
@@ -110,7 +110,7 @@ export default async function BasicInvitePage({
         <title>{pageTitle}</title>
         <meta name="description" content={metaDesc} />
         <Suspense fallback={<main className="celestial-page"><div style={{ minHeight: "100vh" }} /></main>}>
-          <CelestialContent data={weddingData} />
+          <CelestialContent data={weddingData} orderId={orderData.order_id} />
         </Suspense>
       </>
     );
@@ -168,4 +168,4 @@ function ExpiredView({ pkg, activeDays }: { pkg: string; activeDays: number }) {
       </div>
     </main>
   );
-      }
+}

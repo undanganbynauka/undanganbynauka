@@ -194,18 +194,28 @@ export function Luna({ data }: LunaProps = {}) {
   const [opened, setOpened] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+    useEffect(() => {
     if (!opened) {
+      // Lock scroll lebih robust untuk iOS Safari & Android Chrome
       document.body.style.overflow = "hidden";
+      document.body.style.touchAction = "none";
+      document.documentElement.style.overflow = "hidden";
+      document.documentElement.style.touchAction = "none";
       window.scrollTo(0, 0);
     } else {
       document.body.style.overflow = "";
+      document.body.style.touchAction = "";
+      document.documentElement.style.overflow = "";
+      document.documentElement.style.touchAction = "";
       requestAnimationFrame(() => {
         contentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       });
     }
     return () => {
       document.body.style.overflow = "";
+      document.body.style.touchAction = "";
+      document.documentElement.style.overflow = "";
+      document.documentElement.style.touchAction = "";
     };
   }, [opened]);
 
@@ -225,12 +235,13 @@ export function Luna({ data }: LunaProps = {}) {
         WebkitFontSmoothing: "antialiased",
       }}
     >
-      <Hero
+            <Hero
         opened={opened}
         onOpen={handleOpen}
         groomName={groomDisplay}
         brideName={brideDisplay}
         akadDate={d.akadDate}
+        bgmType={d.bgmType}
       />
       <div ref={contentRef}>
         <QuoteAndCountdown quote={d.quote} countdownTarget={countdownTarget} />
@@ -257,7 +268,6 @@ export function Luna({ data }: LunaProps = {}) {
         <Penutup groomName={groomDisplay} brideName={brideDisplay} akadDate={d.akadDate} />
         <NaukaFooter />
       </div>
-      <AudioToggle bgmType={d.bgmType} />
     </main>
   );
 }
@@ -268,12 +278,14 @@ function Hero({
   groomName,
   brideName,
   akadDate,
+  bgmType,
 }: {
   opened: boolean;
   onOpen: () => void;
   groomName: string;
   brideName: string;
   akadDate: string;
+  bgmType: string;
 }) {
   const dateLabel = akadDate ? formatLongDate(akadDate) : "Sabtu, 5 Desember 2026";
 
@@ -472,9 +484,11 @@ function Hero({
             e.currentTarget.style.transform = "translateY(0)";
           }}
         >
-          Open Invitation
+                    Open Invitation
         </button>
       </div>
+      {/* Toggle audio di Hero — pojok kanan atas */}
+      <AudioToggle bgmType={bgmType} />
       <style>{`
         @keyframes lunaFadeUp {
           from {
@@ -1197,10 +1211,10 @@ function AudioToggle({ bgmType }: { bgmType: string }) {
       onClick={toggle}
       aria-label={playing ? "Matikan suara" : "Nyalakan suara"}
       style={{
-        position: "fixed",
-        bottom: "20px",
+        position: "absolute",
+        top: "20px",
         right: "20px",
-        zIndex: 999,
+        zIndex: 5,
         width: "44px",
         height: "44px",
         borderRadius: "999px",

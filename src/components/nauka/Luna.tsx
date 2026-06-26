@@ -184,7 +184,10 @@ interface LunaProps {
 }
 
 export function Luna({ data }: LunaProps = {}) {
-  const d: WeddingData = { ...DEFAULT_DATA, ...(data || {}) };
+    const d: WeddingData = { ...DEFAULT_DATA, ...(data || {}) };
+  // Preview mode = tidak ada data dari Supabase (pakai DEFAULT_DATA)
+  // Di preview, toggle audio selalu muncul biar tamu bisa denger preview musiknya
+  const isPreview = !data;
 
   // Nama yang tampil di hero: pakai nickname kalau ada, fallback ke first name dari fullName
   const groomDisplay = d.groomNickname.trim() || d.groomFullName.split(/\s+/)[0] || "Pria";
@@ -235,13 +238,14 @@ export function Luna({ data }: LunaProps = {}) {
         WebkitFontSmoothing: "antialiased",
       }}
     >
-            <Hero
+                  <Hero
         opened={opened}
         onOpen={handleOpen}
         groomName={groomDisplay}
         brideName={brideDisplay}
         akadDate={d.akadDate}
         bgmType={d.bgmType}
+        isPreview={isPreview}
       />
       <div ref={contentRef}>
         <QuoteAndCountdown quote={d.quote} countdownTarget={countdownTarget} />
@@ -279,6 +283,7 @@ function Hero({
   brideName,
   akadDate,
   bgmType,
+  isPreview,
 }: {
   opened: boolean;
   onOpen: () => void;
@@ -286,6 +291,7 @@ function Hero({
   brideName: string;
   akadDate: string;
   bgmType: string;
+  isPreview: boolean;
 }) {
   const dateLabel = akadDate ? formatLongDate(akadDate) : "Sabtu, 5 Desember 2026";
 
@@ -487,8 +493,8 @@ function Hero({
                     Open Invitation
         </button>
       </div>
-      {/* Toggle audio di Hero — pojok kanan atas */}
-      <AudioToggle bgmType={bgmType} />
+            {/* Toggle audio di Hero — pojok kanan atas */}
+      <AudioToggle bgmType={bgmType} isPreview={isPreview} />
       <style>{`
         @keyframes lunaFadeUp {
           from {
@@ -1173,7 +1179,7 @@ function NaukaFooter() {
 // AUDIO TOGGLE â€” Floating music button
 // For Free: default OFF (hening)
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-function AudioToggle({ bgmType }: { bgmType: string }) {
+function AudioToggle({ bgmType, isPreview }: { bgmType: string; isPreview?: boolean }) {
   const [playing, setPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -1205,7 +1211,8 @@ function AudioToggle({ bgmType }: { bgmType: string }) {
   }, [playing]);
 
     // Tombol selalu muncul, default OFF
-  if (bgmType === "hening") return null;
+    // Kalau bgmType === "hening" dan BUKAN preview mode, tombol tidak dirender
+  if (bgmType === "hening" && !isPreview) return null;
   return (
     <button
       onClick={toggle}

@@ -35,9 +35,11 @@ const DEFAULT_DATA: WeddingData = {
 
 interface SacredContentProps {
   data?: WeddingData;
+  /** Order ID (NAUKA-YYYY-NNN) — dipakai untuk filter RSVP & Wishes per undangan */
+  orderId?: string;
 }
 
-export function SacredContent({ data }: SacredContentProps = {}) {
+export function SacredContent({ data, orderId }: SacredContentProps = {}) {
   const d: WeddingData = { ...DEFAULT_DATA, ...(data || {}) };
   const [phase, setPhase] = useState<Phase>("gate");
   const searchParams = useSearchParams();
@@ -77,8 +79,8 @@ export function SacredContent({ data }: SacredContentProps = {}) {
           <BrideGroomSection groomFullName={d.groomFullName} groomFatherName={d.groomFatherName} groomMotherName={d.groomMotherName} brideFullName={d.brideFullName} brideFatherName={d.brideFatherName} brideMotherName={d.brideMotherName} />
           <EventSection akadDate={d.akadDate} akadStartTime={d.akadStartTime} akadEndTime={d.akadEndTime} akadAddress={d.akadAddress} akadCity={d.akadCity} akadMapsLink={d.akadMapsLink} hasResepsi={d.hasResepsi} resepsiDate={d.resepsiDate} resepsiStartTime={d.resepsiStartTime} resepsiEndTime={d.resepsiEndTime} resepsiAddress={d.resepsiAddress} resepsiCity={d.resepsiCity} resepsiMapsLink={d.resepsiMapsLink} />
           <OurJourneySection journey={d.journey?.length > 0 ? d.journey : undefined} />
-          <RsvpSection />
-          <WishesSection orderId={undefined} />
+          <RsvpSection orderId={orderId} />
+          <WishesSection orderId={orderId} />
           <AmplopDigitalSection groomFullName={d.groomFullName} groomBank={d.groomBank} groomRekening={d.groomRekening} groomAn={d.groomAn} brideFullName={d.brideFullName} brideBank={d.brideBank} brideRekening={d.brideRekening} brideAn={d.brideAn} giftRecipientName={d.giftRecipientName} giftAddress={d.giftAddress} />
           <ClosingSection groomName={groomName} brideName={brideName} akadDate={d.akadDate} />
           <FloatingNav />

@@ -155,6 +155,7 @@ interface MarwahProps {
 
 export function Marwah({ data }: MarwahProps = {}) {
   const d: WeddingData = { ...DEFAULT_DATA, ...(data || {}) };
+  const isPreview = !data;
   const groomDisplay = d.groomNickname.trim() || d.groomFullName.split(/\s+/)[0] || "Pria";
   const brideDisplay = d.brideNickname.trim() || d.brideFullName.split(/\s+/)[0] || "Wanita";
   const countdownTarget = buildCountdownTarget(d.akadDate, d.akadStartTime);
@@ -190,7 +191,7 @@ export function Marwah({ data }: MarwahProps = {}) {
 
   return (
     <main style={{ fontFamily: FONT_BODY, color: C.darkMocha, background: C.ivory, margin: 0, padding: 0, lineHeight: 1.6, WebkitFontSmoothing: "antialiased" }}>
-      <Hero opened={opened} onOpen={handleOpen} groomName={groomDisplay} brideName={brideDisplay} akadDate={d.akadDate} bgmType={d.bgmType} />
+            <Hero opened={opened} onOpen={handleOpen} groomName={groomDisplay} brideName={brideDisplay} akadDate={d.akadDate} bgmType={d.bgmType} isPreview={isPreview} />
       <div ref={contentRef}>
         <AyatAndCountdown countdownTarget={countdownTarget} />
         <Mempelai groomFullName={d.groomFullName} groomFatherName={d.groomFatherName} groomMotherName={d.groomMotherName} brideFullName={d.brideFullName} brideFatherName={d.brideFatherName} brideMotherName={d.brideMotherName} />
@@ -202,7 +203,7 @@ export function Marwah({ data }: MarwahProps = {}) {
   );
 }
 
-function Hero({ opened, onOpen, groomName, brideName, akadDate, bgmType }: { opened: boolean; onOpen: () => void; groomName: string; brideName: string; akadDate: string; bgmType: string; }) {
+function Hero({ opened, onOpen, groomName, brideName, akadDate, bgmType, isPreview }: { opened: boolean; onOpen: () => void; groomName: string; brideName: string; akadDate: string; bgmType: string; isPreview?: boolean; }) {
   const dateLabel = akadDate ? formatLongDate(akadDate) : "Sabtu, 5 Desember 2026";
   return (
     <section style={{ position: "relative", width: "100%", height: "100vh", minHeight: "100dvh", overflow: "hidden", background: C.darkMocha }}>
@@ -224,7 +225,7 @@ function Hero({ opened, onOpen, groomName, brideName, akadDate, bgmType }: { ope
         <button onClick={onOpen} aria-label="Open Invitation" style={{ padding: "12px 32px", fontFamily: FONT_BODY, fontSize: "10px", fontWeight: 600, letterSpacing: "0.32em", textTransform: "uppercase", color: C.darkMocha, background: C.softCream, border: `1px solid ${C.softCream}`, borderRadius: "999px", cursor: "pointer", boxShadow: "0 2px 8px rgba(0, 0, 0, 0.25)", transition: "background 0.3s ease, transform 0.2s ease", animation: "marwahFadeUp 1.4s cubic-bezier(0.22, 1, 0.36, 1) 1.6s both" }} onMouseEnter={(e) => { e.currentTarget.style.background = C.goldBeige; e.currentTarget.style.borderColor = C.goldBeige; e.currentTarget.style.transform = "translateY(-1px)"; }} onMouseLeave={(e) => { e.currentTarget.style.background = C.softCream; e.currentTarget.style.borderColor = C.softCream; e.currentTarget.style.transform = "translateY(0)"; }}>Open Invitation</button>
       </div>
       {/* Toggle audio di Hero — pojok kanan atas */}
-      <AudioToggle bgmType={bgmType} />
+            <AudioToggle bgmType={bgmType} isPreview={isPreview} />
       <style>{`@keyframes marwahFadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }`}</style>
     </section>
   );
@@ -344,7 +345,7 @@ function NaukaFooter() {
   );
 }
 
-function AudioToggle({ bgmType }: { bgmType: string }) {
+function AudioToggle({ bgmType, isPreview }: { bgmType: string; isPreview?: boolean }) {
   const [playing, setPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   useEffect(() => {
@@ -362,7 +363,7 @@ function AudioToggle({ bgmType }: { bgmType: string }) {
     else { audio.play().then(() => setPlaying(true)).catch(() => setPlaying(false)); }
   }, [playing]);
   // Kalau bgmType === "hening", tombol tidak dirender (tidak ada musik untuk dimainkan)
-  if (bgmType === "hening") return null;
+    if (bgmType === "hening" && !isPreview) return null;
   return (
     <button onClick={toggle} aria-label={playing ? "Matikan suara" : "Nyalakan suara"} style={{ position: "absolute", top: "18px", right: "18px", zIndex: 5, width: "40px", height: "40px", borderRadius: "999px", background: "rgba(74, 52, 40, 0.75)", border: `1px solid ${C.softCream}66`, color: C.softCream, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)", boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)", transition: "background 0.3s ease, transform 0.2s ease" }} onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(74, 52, 40, 0.95)"; e.currentTarget.style.transform = "translateY(-1px)"; }} onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(74, 52, 40, 0.75)"; e.currentTarget.style.transform = "translateY(0)"; }}>
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: playing ? 1 : 0.8 }}>

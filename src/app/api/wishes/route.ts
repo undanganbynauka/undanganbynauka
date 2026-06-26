@@ -8,6 +8,8 @@ import { NextRequest, NextResponse } from "next/server";
 // POST /api/wishes
 //   Body: { order_id?, name, message }
 //   → Insert wish baru ke tabel guest_messages
+//   → ANTI-SPAM: reject kalau ada wish dengan (name + message yang sama)
+//     dalam 5 menit terakhir (untuk order_id yang sama atau null)
 // ════════════════════════════════════════════════════════════════
 
 function getSupabaseClient() {
@@ -20,6 +22,9 @@ function getSupabaseClient() {
   const { createClient } = require("@supabase/supabase-js");
   return createClient(supabaseUrl, supabaseAnonKey);
 }
+
+// Window anti-spam: 5 menit (dalam millisecond)
+const DUPLICATE_WINDOW_MS = 5 * 60 * 1000;
 
 export async function GET(req: NextRequest) {
   const supabase = getSupabaseClient();
@@ -77,6 +82,41 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // ── ANTI-SPAM CHECK ──
+  // Cek apakah ada wish dengan (name + message yang sama persis)
+  // dalam 5 menit terakhir, untuk order_id yang sama (atau keduanya null)
+  const fiveMinAgo = new Date(Date.now() - DUPLICATE_WINDOW_MS).toISOString();
+
+  let dupQuery = supabase
+    .from("guest_messages")
+    .select("id, created_at")
+    .ilike("name", name.trim())
+    .ilike("message", message.trim())
+    .gte("created_at", fiveMinAgo)
+    .limit(1);
+
+  if (order_id && typeof order_id === "string") {
+    dupQuery = dupQuery.eq("order_id", order_id.trim());
+  } else {
+    dupQuery = dupQuery.is("order_id", "null");
+  }
+
+  const { data: existingDup, error: dupError } = await dupQuery.maybeSingle();
+
+  if (dupError) {
+    console.warn("[wishes POST] dup check error (skip check):", dupError);
+    // Lanjut insert aja — fail-open kalau cek dup gagal
+  } else if (existingDup) {
+    return NextResponse.json(
+      {
+        error: "Ucapan yang sama sudah dikirim dalam 5 menit terakhir. Tunggu sebentar ya.",
+        duplicate: true,
+      },
+      { status: 409 }
+    );
+  }
+
+  // ── INSERT ──
   const insertPayload: {
     name: string;
     message: string;
@@ -86,7 +126,6 @@ export async function POST(req: NextRequest) {
     message: message.trim(),
   };
 
-  // order_id opsional (untuk backward compat data lama)
   if (order_id && typeof order_id === "string") {
     insertPayload.order_id = order_id.trim();
   }

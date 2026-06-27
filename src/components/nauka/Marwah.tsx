@@ -151,9 +151,10 @@ function Reveal({ children, delay = 0, style }: { children: React.ReactNode; del
 
 interface MarwahProps {
   data?: WeddingData;
+  guestName?: string | null;
 }
 
-export function Marwah({ data }: MarwahProps = {}) {
+export function Marwah({ data, guestName }: MarwahProps = {}) {
   const d: WeddingData = { ...DEFAULT_DATA, ...(data || {}) };
   const isPreview = !data;
   const groomDisplay = d.groomNickname.trim() || d.groomFullName.split(/\s+/)[0] || "Pria";

@@ -163,6 +163,14 @@ export function CelestialWishes({ orderId }: CelestialWishesProps = {}) {
         const savedName = newWish.name.trim();
         const savedMessage = newWish.message.trim();
         setNewWish({ name: "", message: "" });
+                // Track analytics: wish_submit
+        if (orderId) {
+          fetch("/api/analytics", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ order_id: orderId, event_type: "wish_submit" }),
+          }).catch(() => {});
+        }
 
         // Trigger emotional sparkle
         triggerSparkle();

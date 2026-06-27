@@ -79,7 +79,7 @@ export function CelestialContent({ data, orderId, guestName }: CelestialContentP
 
       {(phase === "gate" || phase === "opening") && (
         <div style={{ position: "fixed", inset: 0, zIndex: 50, pointerEvents: phase === "gate" ? "auto" : "none", opacity: phase === "gate" ? 1 : 0, transition: "opacity 2s ease" }}>
-          <CelestialHero onOpen={phase === "gate" ? handleOpen : undefined} groomName={groomName} brideName={brideName} akadDate={d.akadDate} guestName={guestName} />
+          <CelestialHero onOpen={phase === "gate" ? handleOpen : undefined} groomName={groomName} brideName={brideName} akadDate={d.akadDate} />
         </div>
       )}
 

@@ -94,8 +94,13 @@ export default async function BasicInvitePage({
     const { SacredContent } = await import("@/app/sacred/page");
     return (
       <>
-        <title>{pageTitle}</title>
+                <title>{pageTitle}</title>
         <meta name="description" content={metaDesc} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={metaDesc} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${SITE_BASE_URL}/${wd.slug}`} />
+        <meta property="og:image" content={`${SITE_BASE_URL}/nauka-og.png`} />
         <AnalyticsTracker orderId={orderData.order_id} />
         <Suspense fallback={<main style={{ minHeight: "100vh", background: "#FAF7F2" }} />}>
           <SacredContent data={weddingData} orderId={orderData.order_id} guestName={guestName} />
@@ -109,8 +114,13 @@ export default async function BasicInvitePage({
     const { CelestialContent } = await import("@/app/celestial/page");
     return (
       <>
-        <title>{pageTitle}</title>
+                <title>{pageTitle}</title>
         <meta name="description" content={metaDesc} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={metaDesc} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${SITE_BASE_URL}/${wd.slug}`} />
+        <meta property="og:image" content={`${SITE_BASE_URL}/nauka-og.png`} />
         <AnalyticsTracker orderId={orderData.order_id} />
         <Suspense fallback={<main className="celestial-page"><div style={{ minHeight: "100vh" }} /></main>}>
           <CelestialContent data={weddingData} orderId={orderData.order_id} guestName={guestName} />
@@ -123,8 +133,13 @@ export default async function BasicInvitePage({
   if (orderData.template === "marwah") {
     return (
       <>
-        <title>{pageTitle}</title>
+                <title>{pageTitle}</title>
         <meta name="description" content={metaDesc} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={metaDesc} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${SITE_BASE_URL}/${wd.slug}`} />
+        <meta property="og:image" content={`${SITE_BASE_URL}/nauka-og.png`} />
         <AnalyticsTracker orderId={orderData.order_id} />
         <Marwah data={weddingData} guestName={guestName} />
       </>
@@ -134,9 +149,14 @@ export default async function BasicInvitePage({
   // ── Render Luna (default) ──
   return (
     <>
-      <title>{pageTitle}</title>
-      <meta name="description" content={metaDesc} />
-      <AnalyticsTracker orderId={orderData.order_id} />
+              <title>{pageTitle}</title>
+        <meta name="description" content={metaDesc} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={metaDesc} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${SITE_BASE_URL}/${wd.slug}`} />
+        <meta property="og:image" content={`${SITE_BASE_URL}/nauka-og.png`} />
+        <AnalyticsTracker orderId={orderData.order_id} />
       <Luna data={weddingData} guestName={guestName} />
     </>
   );

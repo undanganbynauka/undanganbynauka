@@ -38,9 +38,11 @@ interface CelestialContentProps {
   data?: WeddingData;
   /** Order ID (NAUKA-YYYY-NNN) — dipakai untuk filter RSVP & Wishes per undangan */
   orderId?: string;
+  /** Nama tamu untuk personalized greeting (Premium only). */
+  guestName?: string | null;
 }
 
-export function CelestialContent({ data, orderId }: CelestialContentProps = {}) {
+export function CelestialContent({ data, orderId, guestName }: CelestialContentProps = {}) {
   const d: WeddingData = { ...DEFAULT_DATA, ...(data || {}) };
   const [phase, setPhase] = React.useState<Phase>("checking");
   const searchParams = useSearchParams();

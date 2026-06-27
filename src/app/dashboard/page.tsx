@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-
+import { DashboardGuests } from "./DashboardGuests";
 interface OrderData {
   id: number;
   order_id: string;
@@ -52,6 +52,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"detail" | "tamu">("detail");
   const [editMode, setEditMode] = useState(false);
   const [editData, setEditData] = useState<any>(null);
   const [saving, setSaving] = useState(false);
@@ -193,8 +194,38 @@ export default function DashboardPage() {
         <div style={{ marginBottom: 32 }}>
           <h1 style={{ fontFamily: "var(--font-bodoni, Georgia, serif)", fontSize: 28, fontWeight: 400, margin: 0, color: "rgba(255,255,255,0.92)" }}>Dashboard Nauka</h1>
           <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 13, color: "rgba(255,255,255,0.5)", marginTop: 4 }}>Kelola undangan Anda</p>
+        </div>        
+        {/* Tab Navigation */}
+        <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+          <button
+            onClick={() => setActiveTab("detail")}
+            style={{
+              flex: 1, padding: "10px 16px", borderRadius: 10,
+              border: activeTab === "detail" ? "1px solid rgba(201,169,110,0.35)" : "1px solid rgba(255,255,255,0.08)",
+              background: activeTab === "detail" ? "rgba(201,169,110,0.10)" : "transparent",
+              fontFamily: "var(--font-inter, sans-serif)", fontSize: 12, letterSpacing: "0.1em",
+              color: activeTab === "detail" ? "rgba(201,169,110,0.95)" : "rgba(255,255,255,0.5)",
+              cursor: "pointer", fontWeight: 500,
+            }}
+          >
+            Detail
+          </button>
+          <button
+            onClick={() => setActiveTab("tamu")}
+            style={{
+              flex: 1, padding: "10px 16px", borderRadius: 10,
+              border: activeTab === "tamu" ? "1px solid rgba(201,169,110,0.35)" : "1px solid rgba(255,255,255,0.08)",
+              background: activeTab === "tamu" ? "rgba(201,169,110,0.10)" : "transparent",
+              fontFamily: "var(--font-inter, sans-serif)", fontSize: 12, letterSpacing: "0.1em",
+              color: activeTab === "tamu" ? "rgba(201,169,110,0.95)" : "rgba(255,255,255,0.5)",
+              cursor: "pointer", fontWeight: 500,
+            }}
+          >
+            Tamu
+          </button>
         </div>
 
+        {activeTab === "detail" && (
         {/* Status Card */}
         <div style={{ padding: 20, borderRadius: 12, border: `1px solid ${statusInfo.color}33`, background: `${statusInfo.color}0A`, marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div>
@@ -284,7 +315,16 @@ export default function DashboardPage() {
             )}
           </div>
         )}
+        )}
 
+        {activeTab === "tamu" && (
+          <DashboardGuests
+            orderId={order.order_id}
+            invitationSlug={wd.slug}
+            isPremium={order.package === "premium"}
+          />
+        )}
+      
         {/* Help */}
         <div style={{ padding: 16, borderRadius: 10, border: "1px solid rgba(255,255,255,0.05)", background: "rgba(255,255,255,0.015)", marginBottom: 16, textAlign: "center" }}>
           <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 12, color: "rgba(255,255,255,0.4)", lineHeight: 1.6, margin: 0 }}>

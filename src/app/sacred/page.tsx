@@ -37,9 +37,11 @@ interface SacredContentProps {
   data?: WeddingData;
   /** Order ID (NAUKA-YYYY-NNN) — dipakai untuk filter RSVP & Wishes per undangan */
   orderId?: string;
+  /** Nama tamu untuk personalized greeting (Premium only). */
+  guestName?: string | null;
 }
 
-export function SacredContent({ data, orderId }: SacredContentProps = {}) {
+export function SacredContent({ data, orderId, guestName }: SacredContentProps = {}) {
   const d: WeddingData = { ...DEFAULT_DATA, ...(data || {}) };
   const [phase, setPhase] = useState<Phase>("gate");
   const searchParams = useSearchParams();

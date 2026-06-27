@@ -38,8 +38,9 @@ export async function GET(req: NextRequest) {
     let query = supabase
     .from("guest_messages")
     .select("id, order_id, name, message, attendance, guest_count, created_at")
-    .not("message", "is", null)        // ← hanya yang ada pesannya
+        .not("message", "is", null)        // ← hanya yang ada pesannya
     .neq("message", "")                // ← exclude string kosong
+    .eq("status", "approved")          // ← hanya wishes yang sudah di-approve admin
     .order("created_at", { ascending: false })
     .limit(100);
 

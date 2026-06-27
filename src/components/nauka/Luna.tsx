@@ -181,9 +181,11 @@ function Reveal({
 interface LunaProps {
   /** Data undangan dari Supabase. Kalau kosong, pakai default Ali & Lyla (preview mode). */
   data?: WeddingData;
+  /** Nama tamu untuk personalized greeting (Premium only). */
+  guestName?: string | null;
 }
 
-export function Luna({ data }: LunaProps = {}) {
+export function Luna({ data, guestName }: LunaProps = {}) {
     const d: WeddingData = { ...DEFAULT_DATA, ...(data || {}) };
   // Preview mode = tidak ada data dari Supabase (pakai DEFAULT_DATA)
   // Di preview, toggle audio selalu muncul biar tamu bisa denger preview musiknya

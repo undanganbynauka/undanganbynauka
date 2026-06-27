@@ -188,7 +188,8 @@ export default function DashboardPage() {
         {/* Header */}
         <div style={{ marginBottom: 24 }}>
           <h1 style={{ fontFamily: "var(--font-bodoni, Georgia, serif)", fontSize: 28, fontWeight: 400, margin: 0, color: "rgba(255,255,255,0.92)" }}>Dashboard Nauka</h1>
-          <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 13, color: "rgba(255,255,255,0.5)", marginTop: 4 }}>Kelola undangan Anda</p>
+                    <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 13, color: "rgba(255,255,255,0.5)", marginTop: 4 }}>Kelola undangan Anda</p>
+          <button onClick={() => fetchOrder()} style={{ marginTop: 8, padding: "6px 14px", borderRadius: 8, border: "1px solid rgba(201,169,110,0.35)", background: "rgba(201,169,110,0.06)", fontFamily: "var(--font-inter, sans-serif)", fontSize: 11, color: "rgba(201,169,110,0.9)", cursor: "pointer" }}>↻ Refresh Data</button>
         </div>
 
         {/* Tab Navigation */}

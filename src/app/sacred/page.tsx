@@ -68,7 +68,7 @@ export function SacredContent({ data, orderId, guestName }: SacredContentProps =
     <main className="sacred-page">
       {(phase === "gate" || phase === "opening") && (
         <div style={{ position: "fixed", inset: 0, zIndex: 50, pointerEvents: phase === "gate" ? "auto" : "none", opacity: phase === "gate" ? 1 : 0, transition: "opacity 2s cubic-bezier(0.4, 0, 0.2, 1)" }}>
-          <SacredHero onOpen={phase === "gate" ? handleOpen : undefined} groomName={groomName} brideName={brideName} akadDate={d.akadDate} />
+          <SacredHero onOpen={phase === "gate" ? handleOpen : undefined} groomName={groomName} brideName={brideName} akadDate={d.akadDate} guestName={guestName} />
         </div>
       )}
 

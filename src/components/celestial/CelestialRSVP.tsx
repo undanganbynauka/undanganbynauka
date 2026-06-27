@@ -77,6 +77,14 @@ export function CelestialRSVP({ orderId }: CelestialRSVPProps = {}) {
         return;
       }
       setStatus("success");
+            // Track analytics: rsvp_submit
+      if (orderId) {
+        fetch("/api/analytics", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ order_id: orderId, event_type: "rsvp_submit" }),
+        }).catch(() => {});
+      }
     } catch (err) {
       console.error("[celestial-rsvp] error:", err);
       setStatus("error");

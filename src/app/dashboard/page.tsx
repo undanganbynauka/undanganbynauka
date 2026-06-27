@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { DashboardGuests } from "./DashboardGuests";
-
+import { DashboardAnalytics } from "./DashboardAnalytics";
 interface OrderData {
   id: number;
   order_id: string;
@@ -53,7 +53,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"detail" | "tamu">("detail");
+    const [activeTab, setActiveTab] = useState<"detail" | "tamu" | "analitik">("detail");
   const [editMode, setEditMode] = useState(false);
   const [editData, setEditData] = useState<any>(null);
   const [saving, setSaving] = useState(false);
@@ -219,6 +219,21 @@ export default function DashboardPage() {
           >
             Tamu
           </button>
+                    {order.package === "premium" && (
+            <button
+              onClick={() => setActiveTab("analitik")}
+              style={{
+                flex: 1, padding: "10px 16px", borderRadius: 10,
+                border: activeTab === "analitik" ? "1px solid rgba(201,169,110,0.35)" : "1px solid rgba(255,255,255,0.08)",
+                background: activeTab === "analitik" ? "rgba(201,169,110,0.10)" : "transparent",
+                fontFamily: "var(--font-inter, sans-serif)", fontSize: 12, letterSpacing: "0.1em",
+                color: activeTab === "analitik" ? "rgba(201,169,110,0.95)" : "rgba(255,255,255,0.5)",
+                cursor: "pointer", fontWeight: 500,
+              }}
+            >
+              Analitik
+            </button>
+          )}
         </div>
 
         {activeTab === "detail" && (

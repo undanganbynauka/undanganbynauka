@@ -2,12 +2,18 @@
 
 import React, { useState, useEffect, useRef } from "react";
 
-export function CelestialRSVP() {
-  const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
+interface CelestialRSVPProps {
+  orderId?: string;
+}
+
+export function CelestialRSVP({ orderId }: CelestialRSVPProps = {}) {
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [visible, setVisible] = useState(false);
   const [step, setStep] = useState(-1);
   const [btnPressed, setBtnPressed] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [formData, setFormData] = useState({ name: "", attendance: "", guests: "1" });
+  const [errorMsg, setErrorMsg] = useState<string>("");
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -36,12 +42,46 @@ export function CelestialRSVP() {
 
   const easeInOut = "cubic-bezier(0.42, 0, 0.58, 1)";
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMsg("");
+
+    if (!formData.name.trim()) {
+      setErrorMsg("Nama wajib diisi.");
+      return;
+    }
+    if (!formData.attendance) {
+      setErrorMsg("Silakan pilih konfirmasi kehadiran.");
+      return;
+    }
+
     setStatus("loading");
     setBtnPressed(true);
     setTimeout(() => setBtnPressed(false), 300);
-    setTimeout(() => setStatus("success"), 1500);
+
+    try {
+      const res = await fetch("/api/rsvp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          order_id: orderId,
+          name: formData.name,
+          attendance: formData.attendance,
+          guest_count: Number(formData.guests) || 1,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setStatus("error");
+        setErrorMsg(data.error || "Gagal mengirim konfirmasi. Coba lagi.");
+        return;
+      }
+      setStatus("success");
+    } catch (err) {
+      console.error("[celestial-rsvp] error:", err);
+      setStatus("error");
+      setErrorMsg("Terjadi kesalahan jaringan. Coba lagi.");
+    }
   };
 
   // Shared input focus/blur handlers
@@ -153,6 +193,8 @@ export function CelestialRSVP() {
             type="text"
             placeholder="Nama Lengkap"
             required
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             style={{
               padding: "0.75rem 1rem", border: "1px solid var(--cel-border)",
               borderRadius: "12px", background: "var(--cel-glass)",
@@ -165,11 +207,13 @@ export function CelestialRSVP() {
           />
           <select
             required
-            defaultValue=""
+            value={formData.attendance}
+            onChange={(e) => setFormData({ ...formData, attendance: e.target.value })}
             style={{
               padding: "0.75rem 1rem", border: "1px solid var(--cel-border)",
               borderRadius: "12px", background: "var(--cel-glass)",
-              color: "var(--cel-text-dim)", fontFamily: "var(--font-inter)",
+              color: formData.attendance ? "var(--cel-text)" : "var(--cel-text-dim)",
+              fontFamily: "var(--font-inter)",
               fontSize: "0.75rem", outline: "none",
               transition: "border-color 0.4s ease, box-shadow 0.4s ease",
             }}
@@ -178,7 +222,7 @@ export function CelestialRSVP() {
           >
             <option value="" disabled>Konfirmasi Kehadiran</option>
             <option value="hadir">Hadir</option>
-            <option value="tidak">Tidak Hadir</option>
+            <option value="tidak_hadir">Tidak Hadir</option>
             <option value="ragu">Masih Ragu</option>
           </select>
           <input
@@ -186,6 +230,8 @@ export function CelestialRSVP() {
             placeholder="Jumlah Tamu"
             min={1}
             max={5}
+            value={formData.guests}
+            onChange={(e) => setFormData({ ...formData, guests: e.target.value })}
             style={{
               padding: "0.75rem 1rem", border: "1px solid var(--cel-border)",
               borderRadius: "12px", background: "var(--cel-glass)",
@@ -196,6 +242,18 @@ export function CelestialRSVP() {
             onFocus={(e) => handleFocus("guests", e)}
             onBlur={handleBlur}
           />
+          {errorMsg && (
+            <p style={{
+              fontFamily: "var(--font-inter)", fontSize: "0.6875rem",
+              color: "rgba(220, 130, 130, 0.95)", textAlign: "center",
+              padding: "0.5rem 0.75rem",
+              background: "rgba(220, 130, 130, 0.08)",
+              border: "1px solid rgba(220, 130, 130, 0.2)",
+              borderRadius: "8px",
+            }}>
+              {errorMsg}
+            </p>
+          )}
           <button
             type="submit"
             disabled={status === "loading"}

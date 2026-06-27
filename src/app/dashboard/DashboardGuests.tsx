@@ -124,20 +124,25 @@ export function DashboardGuests({ orderId, invitationSlug, isPremium }: Dashboar
     window.open(waUrl, "_blank");
   }
 
-  function handleShareInstagram() {
-    if (!isPremium) return;
-    navigator.clipboard.writeText(getGuestLink(guests[0])).then(() => {
-      alert("Link tersalin! Buka Instagram DM, pilih kontak, paste link.");
-      window.open("https://www.instagram.com/", "_blank");
-    });
-  }
-
-  function handleShareTikTok() {
-    if (!isPremium) return;
-    navigator.clipboard.writeText(getGuestLink(guests[0])).then(() => {
-      alert("Link tersalin! Buka TikTok DM, pilih kontak, paste link.");
-      window.open("https://www.tiktok.com/", "_blank");
-    });
+  async function handleNativeShare(guest: Guest) {
+    const link = getGuestLink(guest);
+    const guestDisplay = guest.guest_suffix ? `${guest.guest_name} ${guest.guest_suffix}` : guest.guest_name;
+    const shareData = {
+      title: "Undangan Pernikahan",
+      text: `Assalamu'alaikum ${guestDisplay},\n\nKami mengundang Anda untuk hadir di acara pernikahan kami.\n\n${link}\n\nMerupakan kehormatan bagi kami apabila Anda berkenan hadir.\n\nTerima kasih 🙏`,
+      url: link,
+    };
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback: salin link ke clipboard
+        await navigator.clipboard.writeText(link);
+        alert("Link tersalin! Buka aplikasi tujuan, paste link.");
+      }
+    } catch (err) {
+      // User cancel share sheet — gak perlu error
+    }
   }
 
   if (loading) {
@@ -223,12 +228,7 @@ export function DashboardGuests({ orderId, invitationSlug, isPremium }: Dashboar
                   <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                     <button onClick={() => handleShareWA(guest)} style={shareBtnStyle}>WhatsApp</button>
                     <button onClick={() => handleCopyLink(guest)} style={shareBtnStyle}>{copiedSlug === guest.guest_slug ? "✓ Tersalin" : "Salin Link"}</button>
-                    {isPremium && (
-                      <>
-                        <button onClick={handleShareInstagram} style={shareBtnStyle}>Instagram</button>
-                        <button onClick={handleShareTikTok} style={shareBtnStyle}>TikTok</button>
-                      </>
-                    )}
+                                        <button onClick={() => handleNativeShare(guest)} style={shareBtnStyle}>Share</button>
                   </div>
                 </div>
               );

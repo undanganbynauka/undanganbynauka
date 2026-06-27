@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { getSupabaseServer } from "@/lib/supabase-server";
 import { Luna } from "@/components/nauka/Luna";
 import { Marwah } from "@/components/nauka/Marwah";
+import { AnalyticsTracker } from "@/components/AnalyticsTracker";
 import type { WeddingData } from "@/components/nauka/NaukaFormDataUndangan";
 
 const ACTIVE_DAYS: Record<string, number> = { free: 14, basic: 30, premium: 90 };
@@ -95,6 +96,7 @@ export default async function BasicInvitePage({
       <>
         <title>{pageTitle}</title>
         <meta name="description" content={metaDesc} />
+        <AnalyticsTracker orderId={orderData.order_id} />
         <Suspense fallback={<main style={{ minHeight: "100vh", background: "#FAF7F2" }} />}>
           <SacredContent data={weddingData} orderId={orderData.order_id} guestName={guestName} />
         </Suspense>
@@ -109,6 +111,7 @@ export default async function BasicInvitePage({
       <>
         <title>{pageTitle}</title>
         <meta name="description" content={metaDesc} />
+        <AnalyticsTracker orderId={orderData.order_id} />
         <Suspense fallback={<main className="celestial-page"><div style={{ minHeight: "100vh" }} /></main>}>
           <CelestialContent data={weddingData} orderId={orderData.order_id} guestName={guestName} />
         </Suspense>
@@ -122,6 +125,7 @@ export default async function BasicInvitePage({
       <>
         <title>{pageTitle}</title>
         <meta name="description" content={metaDesc} />
+        <AnalyticsTracker orderId={orderData.order_id} />
         <Marwah data={weddingData} guestName={guestName} />
       </>
     );
@@ -132,6 +136,7 @@ export default async function BasicInvitePage({
     <>
       <title>{pageTitle}</title>
       <meta name="description" content={metaDesc} />
+      <AnalyticsTracker orderId={orderData.order_id} />
       <Luna data={weddingData} guestName={guestName} />
     </>
   );

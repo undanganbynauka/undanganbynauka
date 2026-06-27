@@ -226,7 +226,7 @@ export default function DashboardPage() {
         </div>
 
         {activeTab === "detail" && (
-        {/* Status Card */}
+        
         <div style={{ padding: 20, borderRadius: 12, border: `1px solid ${statusInfo.color}33`, background: `${statusInfo.color}0A`, marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div>
             <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 10, color: "rgba(255,255,255,0.4)", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 6px" }}>Status Pesanan</p>

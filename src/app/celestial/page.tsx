@@ -36,9 +36,11 @@ const DEFAULT_DATA: WeddingData = {
 
 interface CelestialContentProps {
   data?: WeddingData;
+  /** Order ID (NAUKA-YYYY-NNN) — dipakai untuk filter RSVP & Wishes per undangan */
+  orderId?: string;
 }
 
-export function CelestialContent({ data }: CelestialContentProps = {}) {
+export function CelestialContent({ data, orderId }: CelestialContentProps = {}) {
   const d: WeddingData = { ...DEFAULT_DATA, ...(data || {}) };
   const [phase, setPhase] = React.useState<Phase>("checking");
   const searchParams = useSearchParams();
@@ -86,8 +88,8 @@ export function CelestialContent({ data }: CelestialContentProps = {}) {
           <CelestialSectionReveal><CelestialBrideGroom groomFullName={d.groomFullName} groomFatherName={d.groomFatherName} groomMotherName={d.groomMotherName} brideFullName={d.brideFullName} brideFatherName={d.brideFatherName} brideMotherName={d.brideMotherName} /></CelestialSectionReveal>
           <CelestialSectionReveal><CelestialEvent akadDate={d.akadDate} akadStartTime={d.akadStartTime} akadEndTime={d.akadEndTime} akadAddress={d.akadAddress} akadCity={d.akadCity} akadMapsLink={d.akadMapsLink} hasResepsi={d.hasResepsi} resepsiDate={d.resepsiDate} resepsiStartTime={d.resepsiStartTime} resepsiEndTime={d.resepsiEndTime} resepsiAddress={d.resepsiAddress} resepsiCity={d.resepsiCity} resepsiMapsLink={d.resepsiMapsLink} /></CelestialSectionReveal>
           <CelestialSectionReveal><CelestialJourney /></CelestialSectionReveal>
-          <CelestialSectionReveal><CelestialRSVP /></CelestialSectionReveal>
-          <CelestialSectionReveal><CelestialWishes /></CelestialSectionReveal>
+          <CelestialSectionReveal><CelestialRSVP orderId={orderId} /></CelestialSectionReveal>
+          <CelestialSectionReveal><CelestialWishes orderId={orderId} /></CelestialSectionReveal>
           <CelestialSectionReveal><CelestialClosing groomName={groomName} brideName={brideName} akadDate={d.akadDate} groomFullName={d.groomFullName} groomBank={d.groomBank} groomRekening={d.groomRekening} brideFullName={d.brideFullName} brideBank={d.brideBank} brideRekening={d.brideRekening} giftRecipientName={d.giftRecipientName} giftAddress={d.giftAddress} /></CelestialSectionReveal>
           <CelestialNav />
         </div>

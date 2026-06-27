@@ -77,7 +77,7 @@ export default function DashboardPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/dashboard?token=${token}`);
+            const res = await fetch(`/api/dashboard?token=${token}`, { cache: 'no-store' });
       const data = await res.json();
       if (!res.ok) {
         setError(data.error || "Gagal memuat data.");

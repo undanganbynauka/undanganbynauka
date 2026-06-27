@@ -4,6 +4,8 @@ import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { DashboardGuests } from "./DashboardGuests";
 import { DashboardAnalytics } from "./DashboardAnalytics";
+import { DashboardWishes } from "./DashboardWishes";
+
 interface OrderData {
   id: number;
   order_id: string;
@@ -53,7 +55,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState<"detail" | "tamu" | "analitik">("detail");
+  const [activeTab, setActiveTab] = useState<"detail" | "tamu" | "ucapan" | "analitik">("detail");
   const [editMode, setEditMode] = useState(false);
   const [editData, setEditData] = useState<any>(null);
   const [saving, setSaving] = useState(false);
@@ -77,7 +79,7 @@ export default function DashboardPage() {
     setLoading(true);
     setError(null);
     try {
-            const res = await fetch(`/api/dashboard?token=${token}`, { cache: 'no-store' });
+      const res = await fetch(`/api/dashboard?token=${token}`, { cache: 'no-store' });
       const data = await res.json();
       if (!res.ok) {
         setError(data.error || "Gagal memuat data.");
@@ -181,6 +183,17 @@ export default function DashboardPage() {
   const wd = order.wedding_data || {};
   const invitationUrl = wd.slug ? `${SITE_BASE_URL}/${wd.slug}` : null;
   const canEdit = order.status === "published";
+  const isFree = order.package === "free";
+  const isPremium = order.package === "premium";
+
+  const tabBtnStyle = (isActive: boolean): React.CSSProperties => ({
+    flex: 1, padding: "10px 16px", borderRadius: 10,
+    border: isActive ? "1px solid rgba(201,169,110,0.35)" : "1px solid rgba(255,255,255,0.08)",
+    background: isActive ? "rgba(201,169,110,0.10)" : "transparent",
+    fontFamily: "var(--font-inter, sans-serif)", fontSize: 12, letterSpacing: "0.1em",
+    color: isActive ? "rgba(201,169,110,0.95)" : "rgba(255,255,255,0.5)",
+    cursor: "pointer", fontWeight: 500,
+  });
 
   return (
     <main style={{ minHeight: "100vh", background: "#0B1120", color: "#fff", padding: "24px 16px" }}>
@@ -188,52 +201,21 @@ export default function DashboardPage() {
         {/* Header */}
         <div style={{ marginBottom: 24 }}>
           <h1 style={{ fontFamily: "var(--font-bodoni, Georgia, serif)", fontSize: 28, fontWeight: 400, margin: 0, color: "rgba(255,255,255,0.92)" }}>Dashboard Nauka</h1>
-                    <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 13, color: "rgba(255,255,255,0.5)", marginTop: 4 }}>Kelola undangan Anda</p>
+          <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 13, color: "rgba(255,255,255,0.5)", marginTop: 4 }}>Kelola undangan Anda</p>
           <button onClick={() => fetchOrder()} style={{ marginTop: 8, padding: "6px 14px", borderRadius: 8, border: "1px solid rgba(201,169,110,0.35)", background: "rgba(201,169,110,0.06)", fontFamily: "var(--font-inter, sans-serif)", fontSize: 11, color: "rgba(201,169,110,0.9)", cursor: "pointer" }}>↻ Refresh Data</button>
         </div>
 
         {/* Tab Navigation */}
         <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-          <button
-            onClick={() => setActiveTab("detail")}
-            style={{
-              flex: 1, padding: "10px 16px", borderRadius: 10,
-              border: activeTab === "detail" ? "1px solid rgba(201,169,110,0.35)" : "1px solid rgba(255,255,255,0.08)",
-              background: activeTab === "detail" ? "rgba(201,169,110,0.10)" : "transparent",
-              fontFamily: "var(--font-inter, sans-serif)", fontSize: 12, letterSpacing: "0.1em",
-              color: activeTab === "detail" ? "rgba(201,169,110,0.95)" : "rgba(255,255,255,0.5)",
-              cursor: "pointer", fontWeight: 500,
-            }}
-          >
-            Detail
-          </button>
-          <button
-            onClick={() => setActiveTab("tamu")}
-            style={{
-              flex: 1, padding: "10px 16px", borderRadius: 10,
-              border: activeTab === "tamu" ? "1px solid rgba(201,169,110,0.35)" : "1px solid rgba(255,255,255,0.08)",
-              background: activeTab === "tamu" ? "rgba(201,169,110,0.10)" : "transparent",
-              fontFamily: "var(--font-inter, sans-serif)", fontSize: 12, letterSpacing: "0.1em",
-              color: activeTab === "tamu" ? "rgba(201,169,110,0.95)" : "rgba(255,255,255,0.5)",
-              cursor: "pointer", fontWeight: 500,
-            }}
-          >
-            Tamu
-          </button>
-                    {order.package === "premium" && (
-            <button
-              onClick={() => setActiveTab("analitik")}
-              style={{
-                flex: 1, padding: "10px 16px", borderRadius: 10,
-                border: activeTab === "analitik" ? "1px solid rgba(201,169,110,0.35)" : "1px solid rgba(255,255,255,0.08)",
-                background: activeTab === "analitik" ? "rgba(201,169,110,0.10)" : "transparent",
-                fontFamily: "var(--font-inter, sans-serif)", fontSize: 12, letterSpacing: "0.1em",
-                color: activeTab === "analitik" ? "rgba(201,169,110,0.95)" : "rgba(255,255,255,0.5)",
-                cursor: "pointer", fontWeight: 500,
-              }}
-            >
-              Analitik
-            </button>
+          <button onClick={() => setActiveTab("detail")} style={tabBtnStyle(activeTab === "detail")}>Detail</button>
+          {!isFree && (
+            <button onClick={() => setActiveTab("tamu")} style={tabBtnStyle(activeTab === "tamu")}>Tamu</button>
+          )}
+          {!isFree && (
+            <button onClick={() => setActiveTab("ucapan")} style={tabBtnStyle(activeTab === "ucapan")}>Ucapan</button>
+          )}
+          {isPremium && (
+            <button onClick={() => setActiveTab("analitik")} style={tabBtnStyle(activeTab === "analitik")}>Analitik</button>
           )}
         </div>
 
@@ -331,14 +313,19 @@ export default function DashboardPage() {
           </>
         )}
 
-        {activeTab === "tamu" && (
+        {activeTab === "tamu" && !isFree && (
           <DashboardGuests
             orderId={order.order_id}
             invitationSlug={wd.slug}
-            isPremium={order.package === "premium"}
+            isPremium={isPremium}
           />
         )}
-                {activeTab === "analitik" && order.package === "premium" && (
+
+        {activeTab === "ucapan" && !isFree && (
+          <DashboardWishes orderId={order.order_id} />
+        )}
+
+        {activeTab === "analitik" && isPremium && (
           <DashboardAnalytics />
         )}
 

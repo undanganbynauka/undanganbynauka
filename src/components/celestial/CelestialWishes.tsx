@@ -46,7 +46,11 @@ function formatRelativeTime(dateStr: string): string {
   return `${diffDay} hari lalu`;
 }
 
-export function CelestialWishes() {
+interface CelestialWishesProps {
+  orderId?: string;
+}
+
+export function CelestialWishes({ orderId }: CelestialWishesProps = {}) {
   const [visible, setVisible] = useState(false);
   const [step, setStep] = useState(-1);
   const [wishes, setWishes] = useState<Wish[]>(DUMMY_WISHES);
@@ -87,7 +91,8 @@ export function CelestialWishes() {
   // Fetch initial wishes from Supabase
   const fetchWishes = useCallback(async () => {
     try {
-      const res = await fetch("/api/wishes");
+      const url = orderId ? `/api/wishes?order_id=${orderId}` : "/api/wishes";
+      const res = await fetch(url);
       if (res.ok) {
         const json = await res.json();
         if (json.data && json.data.length > 0) {
@@ -97,7 +102,7 @@ export function CelestialWishes() {
     } catch {
       // Silently fall back to dummy data
     }
-  }, []);
+  }, [orderId]);
 
   // Subscribe to Supabase Realtime
   useEffect(() => {
@@ -152,7 +157,7 @@ export function CelestialWishes() {
       const res = await fetch("/api/wishes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newWish.name, message: newWish.message }),
+        body: JSON.stringify({ name: newWish.name, message: newWish.message, order_id: orderId }),
       });
       if (res.ok) {
         const savedName = newWish.name.trim();

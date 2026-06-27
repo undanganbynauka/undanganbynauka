@@ -91,6 +91,13 @@ export function CelestialClosing({ groomName = "Ali", brideName = "Lyla", akadDa
       </div>
 
       <div style={{ maxWidth: "20rem", width: "100%", textAlign: "center" }}>
+        {/* Icon bulan sabit kecil dengan efek menyala */}
+        <div style={{ textAlign: "center", marginBottom: "1.75rem", opacity: step >= 1 ? 1 : 0, transform: step >= 1 ? "translateY(0)" : "translateY(15px)", transition: `opacity 1.2s ${ease}, transform 1.2s ${ease}` }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: "inline-block", filter: "drop-shadow(0 0 4px rgba(255,255,255,0.7)) drop-shadow(0 0 8px rgba(201,169,110,0.4))", animation: "celMoonGlow 3s ease-in-out infinite" }}>
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="rgba(255,255,255,0.95)" stroke="rgba(255,255,255,0.95)" strokeWidth="0.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+
         {/* Quote */}
         <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "0.8125rem", fontStyle: "italic", fontWeight: 400, color: "var(--cel-text)", lineHeight: 2, letterSpacing: "0.02em", maxWidth: "18rem", margin: "0 auto 2.5rem", opacity: step >= 1 ? 0.9 : 0, transform: step >= 1 ? "translateY(0)" : "translateY(15px)", transition: `opacity 1.2s ${ease}, transform 1.2s ${ease}` }}>
           Di bawah langit yang sama, semoga setiap langkah yang ditempuh bersama selalu dipenuhi cinta, ketenangan, dan kebahagiaan yang tumbuh sepanjang waktu.
@@ -99,13 +106,6 @@ export function CelestialClosing({ groomName = "Ali", brideName = "Lyla", akadDa
         {/* Divider */}
         <div className="celestial-divider" style={{ justifyContent: "center", margin: "0 auto 2.5rem", opacity: step >= 2 ? 1 : 0, transition: `opacity 1s ${ease}` }}>
           <div className="celestial-divider-line" /><span className="celestial-divider-star">✦</span><div className="celestial-divider-line" />
-        </div>
-
-        {/* Icon bulan sabit putih */}
-        <div style={{ textAlign: "center", marginBottom: "1.5rem", opacity: step >= 3 ? 1 : 0, transform: step >= 3 ? "translateY(0)" : "translateY(20px)", transition: `opacity 1.2s ${ease}, transform 1.2s ${ease}` }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: "inline-block" }}>
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="rgba(255,255,255,0.85)" stroke="rgba(255,255,255,0.85)" strokeWidth="0.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
         </div>
 
         {/* Teks terima kasih */}
@@ -163,6 +163,10 @@ export function CelestialClosing({ groomName = "Ali", brideName = "Lyla", akadDa
 
       <style>{`
         @keyframes celBgParticle { 0%, 100% { opacity: 0; transform: translateY(0) translateX(0); } 20% { opacity: 0.35; } 50% { opacity: 0.15; transform: translateY(-12px) translateX(4px); } 80% { opacity: 0.3; } }
+        @keyframes celMoonGlow {
+          0%, 100% { filter: drop-shadow(0 0 3px rgba(255,255,255,0.5)) drop-shadow(0 0 6px rgba(201,169,110,0.3)); }
+          50% { filter: drop-shadow(0 0 6px rgba(255,255,255,0.9)) drop-shadow(0 0 12px rgba(201,169,110,0.6)); }
+        }
       `}</style>
     </section>
   );

@@ -52,6 +52,11 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [editMode, setEditMode] = useState(false);
+  const [editData, setEditData] = useState<any>(null);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   // Ambil token dari URL
   useEffect(() => {
@@ -61,20 +66,13 @@ export default function DashboardPage() {
       setToken(t);
       localStorage.setItem("nauka_dashboard_token", t);
     } else {
-      // Cek localStorage
       const stored = localStorage.getItem("nauka_dashboard_token");
-      if (stored) {
-        setToken(stored);
-      }
+      if (stored) setToken(stored);
     }
   }, []);
 
-  // Fetch data dari API
   const fetchOrder = useCallback(async () => {
-    if (!token) {
-      setLoading(false);
-      return;
-    }
+    if (!token) { setLoading(false); return; }
     setLoading(true);
     setError(null);
     try {
@@ -93,9 +91,59 @@ export default function DashboardPage() {
     }
   }, [token]);
 
-  useEffect(() => {
-    fetchOrder();
-  }, [fetchOrder]);
+  useEffect(() => { fetchOrder(); }, [fetchOrder]);
+
+  // Mulai edit
+  function startEdit() {
+    if (!order?.wedding_data) return;
+    setEditData(JSON.parse(JSON.stringify(order.wedding_data)));
+    setEditMode(true);
+    setSaveError(null);
+    setSaveSuccess(false);
+  }
+
+  // Batal edit
+  function cancelEdit() {
+    setEditMode(false);
+    setEditData(null);
+    setSaveError(null);
+  }
+
+  // Update field editData
+  function updateField(field: string, value: any) {
+    setEditData((prev: any) => ({ ...prev, [field]: value }));
+  }
+
+  // Simpan perubahan
+  async function saveEdit() {
+    if (!token || !editData) return;
+    setSaving(true);
+    setSaveError(null);
+    setSaveSuccess(false);
+    try {
+      const res = await fetch(`/api/dashboard?token=${token}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ wedding_data: editData }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setSaveError(data.error || "Gagal menyimpan perubahan.");
+        return;
+      }
+      setOrder(data.data);
+      setSaveSuccess(true);
+      setTimeout(() => {
+        setEditMode(false);
+        setEditData(null);
+        setSaveSuccess(false);
+      }, 1500);
+    } catch {
+      setSaveError("Terjadi kesalahan jaringan.");
+    } finally {
+      setSaving(false);
+    }
+  }
 
   // Loading
   if (loading) {
@@ -106,7 +154,6 @@ export default function DashboardPage() {
     );
   }
 
-  // Belum ada token
   if (!token) {
     return (
       <main style={{ minHeight: "100vh", background: "#0B1120", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px" }}>
@@ -121,7 +168,6 @@ export default function DashboardPage() {
     );
   }
 
-  // Error
   if (error || !order) {
     return (
       <main style={{ minHeight: "100vh", background: "#0B1120", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px" }}>
@@ -138,6 +184,7 @@ export default function DashboardPage() {
   const templateName = TEMPLATE_NAMES[order.template] || order.template;
   const wd = order.wedding_data || {};
   const invitationUrl = wd.slug ? `${SITE_BASE_URL}/${wd.slug}` : null;
+  const canEdit = order.status === "published";
 
   return (
     <main style={{ minHeight: "100vh", background: "#0B1120", color: "#fff", padding: "24px 16px" }}>
@@ -189,23 +236,52 @@ export default function DashboardPage() {
           {order.customer_email && <Row label="Email" value={order.customer_email} />}
         </div>
 
-        {/* Wedding Data */}
+        {/* Wedding Data — dengan tombol Edit */}
         {wd.groomFullName && (
           <div style={{ padding: 20, borderRadius: 12, border: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)", marginBottom: 16 }}>
-            <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 10, color: "rgba(201,169,110,0.6)", letterSpacing: "0.2em", textTransform: "uppercase", margin: "0 0 12px" }}>Data Undangan</p>
-            <Row label="Mempelai Pria" value={wd.groomFullName || "-"} />
-            <Row label="Mempelai Wanita" value={wd.brideFullName || "-"} />
-            <Row label="Tanggal Akad" value={wd.akadDate || "-"} />
-            <Row label="Waktu Akad" value={wd.akadStartTime ? `${wd.akadStartTime}${wd.akadEndTime ? ` - ${wd.akadEndTime}` : ""} WIB` : "-"} />
-            <Row label="Lokasi Akad" value={wd.akadAddress || "-"} />
-            {wd.hasResepsi && (
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 10, color: "rgba(201,169,110,0.6)", letterSpacing: "0.2em", textTransform: "uppercase", margin: 0 }}>Data Undangan</p>
+              {canEdit && !editMode && (
+                <button onClick={startEdit} style={{ padding: "6px 14px", borderRadius: 8, border: "1px solid rgba(201,169,110,0.35)", background: "rgba(201,169,110,0.08)", fontFamily: "var(--font-inter, sans-serif)", fontSize: 11, letterSpacing: "0.05em", color: "rgba(201,169,110,0.9)", cursor: "pointer" }}>✎ Edit</button>
+              )}
+            </div>
+
+            {editMode && editData ? (
+              <EditForm
+                editData={editData}
+                updateField={updateField}
+                saving={saving}
+                saveError={saveError}
+                saveSuccess={saveSuccess}
+                onSave={saveEdit}
+                onCancel={cancelEdit}
+              />
+            ) : (
               <>
-                <Row label="Tanggal Resepsi" value={wd.resepsiDate || "-"} />
-                <Row label="Waktu Resepsi" value={wd.resepsiStartTime ? `${wd.resepsiStartTime}${wd.resepsiEndTime ? ` - ${wd.resepsiEndTime}` : ""} WIB` : "-"} />
-                <Row label="Lokasi Resepsi" value={wd.resepsiAddress || "-"} />
+                <Row label="Mempelai Pria" value={wd.groomFullName || "-"} />
+                {wd.groomNickname && <Row label="Panggilan Pria" value={wd.groomNickname} />}
+                <Row label="Mempelai Wanita" value={wd.brideFullName || "-"} />
+                {wd.brideNickname && <Row label="Panggilan Wanita" value={wd.brideNickname} />}
+                <Row label="Tanggal Akad" value={wd.akadDate || "-"} />
+                <Row label="Waktu Akad" value={wd.akadStartTime ? `${wd.akadStartTime}${wd.akadEndTime ? ` - ${wd.akadEndTime}` : ""} WIB` : "-"} />
+                <Row label="Lokasi Akad" value={wd.akadAddress || "-"} />
+                {wd.hasResepsi && (
+                  <>
+                    <Row label="Tanggal Resepsi" value={wd.resepsiDate || "-"} />
+                    <Row label="Waktu Resepsi" value={wd.resepsiStartTime ? `${wd.resepsiStartTime}${wd.resepsiEndTime ? ` - ${wd.resepsiEndTime}` : ""} WIB` : "-"} />
+                    <Row label="Lokasi Resepsi" value={wd.resepsiAddress || "-"} />
+                  </>
+                )}
+                {wd.quote && <Row label="Quote" value={wd.quote} />}
+                <Row label="BGM" value={wd.bgmType === "hening" ? "Hening" : wd.bgmType === "sound_alam" ? "Sound Alam" : wd.bgmType} />
+                <Row label="Slug" value={wd.slug ? `/${wd.slug}` : "-"} />
+                {!canEdit && (
+                  <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 12, fontStyle: "italic" }}>
+                    Edit akan tersedia setelah undangan aktif (published).
+                  </p>
+                )}
               </>
             )}
-            <Row label="Slug" value={wd.slug ? `/${wd.slug}` : "-"} />
           </div>
         )}
 
@@ -225,11 +301,152 @@ export default function DashboardPage() {
   );
 }
 
+// ════════════════════════════════════════════════════════════════
+// Helper: Row untuk display read-only
+// ════════════════════════════════════════════════════════════════
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8, gap: 16 }}>
       <span style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 12, color: "rgba(255,255,255,0.50)", flexShrink: 0 }}>{label}</span>
       <span style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 12, color: "rgba(255,255,255,0.85)", textAlign: "right", wordBreak: "break-word" }}>{value}</span>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════
+// EditForm — form editable untuk wedding_data
+// ════════════════════════════════════════════════════════════════
+function EditForm({
+  editData,
+  updateField,
+  saving,
+  saveError,
+  saveSuccess,
+  onSave,
+  onCancel,
+}: {
+  editData: any;
+  updateField: (field: string, value: any) => void;
+  saving: boolean;
+  saveError: string | null;
+  saveSuccess: boolean;
+  onSave: () => void;
+  onCancel: () => void;
+}) {
+  return (
+    <div>
+      {/* Section: Mempelai Pria */}
+      <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 10, color: "rgba(201,169,110,0.7)", letterSpacing: "0.1em", textTransform: "uppercase", margin: "12px 0 8px" }}>Mempelai Pria</p>
+      <EditInput label="Nama Lengkap" value={editData.groomFullName || ""} onChange={(v) => updateField("groomFullName", v)} placeholder="Muhammad Ali Akbar" />
+      <EditInput label="Nama Panggilan" value={editData.groomNickname || ""} onChange={(v) => updateField("groomNickname", v)} placeholder="Ali" />
+      <EditInput label="Nama Ayah" value={editData.groomFatherName || ""} onChange={(v) => updateField("groomFatherName", v)} placeholder="Ahmad Akbar" />
+      <EditInput label="Nama Ibu" value={editData.groomMotherName || ""} onChange={(v) => updateField("groomMotherName", v)} placeholder="Siti Aminah" />
+
+      {/* Section: Mempelai Wanita */}
+      <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 10, color: "rgba(201,169,110,0.7)", letterSpacing: "0.1em", textTransform: "uppercase", margin: "16px 0 8px" }}>Mempelai Wanita</p>
+      <EditInput label="Nama Lengkap" value={editData.brideFullName || ""} onChange={(v) => updateField("brideFullName", v)} placeholder="Lyla Azzahra" />
+      <EditInput label="Nama Panggilan" value={editData.brideNickname || ""} onChange={(v) => updateField("brideNickname", v)} placeholder="Lyla" />
+      <EditInput label="Nama Ayah" value={editData.brideFatherName || ""} onChange={(v) => updateField("brideFatherName", v)} placeholder="Yusuf Rahman" />
+      <EditInput label="Nama Ibu" value={editData.brideMotherName || ""} onChange={(v) => updateField("brideMotherName", v)} placeholder="Khadijah" />
+
+      {/* Section: Akad */}
+      <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 10, color: "rgba(201,169,110,0.7)", letterSpacing: "0.1em", textTransform: "uppercase", margin: "16px 0 8px" }}>Akad Nikah</p>
+      <EditInput label="Tanggal" type="date" value={editData.akadDate || ""} onChange={(v) => updateField("akadDate", v)} />
+      <EditInput label="Waktu Mulai" type="time" value={editData.akadStartTime || ""} onChange={(v) => updateField("akadStartTime", v)} />
+      <EditInput label="Waktu Selesai" type="time" value={editData.akadEndTime || ""} onChange={(v) => updateField("akadEndTime", v)} placeholder="Opsional" />
+      <EditInput label="Alamat" value={editData.akadAddress || ""} onChange={(v) => updateField("akadAddress", v)} placeholder="Masjid Al-Hidayah, Jakarta" />
+      <EditInput label="Kota" value={editData.akadCity || ""} onChange={(v) => updateField("akadCity", v)} placeholder="Jakarta Selatan" />
+
+      {/* Section: Resepsi */}
+      <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 10, color: "rgba(201,169,110,0.7)", letterSpacing: "0.1em", textTransform: "uppercase", margin: "16px 0 8px" }}>Resepsi</p>
+      <label style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, cursor: "pointer" }}>
+        <input type="checkbox" checked={!!editData.hasResepsi} onChange={(e) => updateField("hasResepsi", e.target.checked)} style={{ cursor: "pointer" }} />
+        <span style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 12, color: "rgba(255,255,255,0.7)" }}>Ada acara resepsi</span>
+      </label>
+      {editData.hasResepsi && (
+        <>
+          <EditInput label="Tanggal" type="date" value={editData.resepsiDate || ""} onChange={(v) => updateField("resepsiDate", v)} />
+          <EditInput label="Waktu Mulai" type="time" value={editData.resepsiStartTime || ""} onChange={(v) => updateField("resepsiStartTime", v)} />
+          <EditInput label="Waktu Selesai" type="time" value={editData.resepsiEndTime || ""} onChange={(v) => updateField("resepsiEndTime", v)} placeholder="Opsional" />
+          <EditInput label="Alamat" value={editData.resepsiAddress || ""} onChange={(v) => updateField("resepsiAddress", v)} placeholder="Gedung Serbaguna, Jakarta" />
+          <EditInput label="Kota" value={editData.resepsiCity || ""} onChange={(v) => updateField("resepsiCity", v)} placeholder="Jakarta Selatan" />
+        </>
+      )}
+
+      {/* Section: Konfigurasi */}
+      <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 10, color: "rgba(201,169,110,0.7)", letterSpacing: "0.1em", textTransform: "uppercase", margin: "16px 0 8px" }}>Konfigurasi</p>
+      <EditInput label="Quote" value={editData.quote || ""} onChange={(v) => updateField("quote", v)} placeholder="Dan di antara jutaan kemungkinan..." />
+      <div style={{ marginBottom: 12 }}>
+        <label style={{ display: "block", fontFamily: "var(--font-inter, sans-serif)", fontSize: 11, color: "rgba(255,255,255,0.5)", marginBottom: 4 }}>BGM (Background Music)</label>
+        <select
+          value={editData.bgmType || "hening"}
+          onChange={(e) => updateField("bgmType", e.target.value)}
+          style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.10)", background: "rgba(255,255,255,0.02)", color: "rgba(255,255,255,0.85)", fontFamily: "var(--font-inter, sans-serif)", fontSize: 12, outline: "none" }}
+        >
+          <option value="hening">Hening (tanpa musik)</option>
+          <option value="sound_alam">Sound Alam</option>
+        </select>
+      </div>
+
+      {/* Error/Success message */}
+      {saveError && (
+        <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 12, color: "rgba(255,100,100,0.9)", textAlign: "center", padding: "10px 14px", background: "rgba(255,100,100,0.08)", border: "1px solid rgba(255,100,100,0.2)", borderRadius: 8, margin: "12px 0" }}>
+          {saveError}
+        </p>
+      )}
+      {saveSuccess && (
+        <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 12, color: "rgba(100,255,150,0.9)", textAlign: "center", padding: "10px 14px", background: "rgba(100,255,150,0.08)", border: "1px solid rgba(100,255,150,0.2)", borderRadius: 8, margin: "12px 0" }}>
+          ✓ Perubahan berhasil disimpan!
+        </p>
+      )}
+
+      {/* Action buttons */}
+      <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
+        <button
+          onClick={onCancel}
+          disabled={saving}
+          style={{ flex: 1, padding: "12px 16px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.10)", background: "transparent", fontFamily: "var(--font-inter, sans-serif)", fontSize: 12, letterSpacing: "0.1em", color: "rgba(255,255,255,0.6)", cursor: saving ? "not-allowed" : "pointer" }}
+        >
+          Batal
+        </button>
+        <button
+          onClick={onSave}
+          disabled={saving}
+          style={{ flex: 2, padding: "12px 16px", borderRadius: 10, border: "1px solid rgba(201,169,110,0.35)", background: saving ? "rgba(201,169,110,0.03)" : "rgba(201,169,110,0.10)", fontFamily: "var(--font-inter, sans-serif)", fontSize: 12, letterSpacing: "0.1em", color: saving ? "rgba(201,169,110,0.4)" : "rgba(201,169,110,0.95)", cursor: saving ? "not-allowed" : "pointer", fontWeight: 500 }}
+        >
+          {saving ? "Menyimpan..." : "Simpan Perubahan"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════
+// EditInput — input field untuk form edit
+// ════════════════════════════════════════════════════════════════
+function EditInput({
+  label,
+  value,
+  onChange,
+  type = "text",
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  type?: string;
+  placeholder?: string;
+}) {
+  return (
+    <div style={{ marginBottom: 10 }}>
+      <label style={{ display: "block", fontFamily: "var(--font-inter, sans-serif)", fontSize: 11, color: "rgba(255,255,255,0.5)", marginBottom: 4 }}>{label}</label>
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.10)", background: "rgba(255,255,255,0.02)", color: "rgba(255,255,255,0.85)", fontFamily: "var(--font-inter, sans-serif)", fontSize: 12, outline: "none", boxSizing: "border-box" }}
+      />
     </div>
   );
 }

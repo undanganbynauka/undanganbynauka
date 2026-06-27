@@ -93,11 +93,14 @@ export function DashboardGuests({ orderId, invitationSlug, isPremium }: Dashboar
     } catch (err) { console.error("[DashboardGuests] delete error:", err); }
   }
 
-  function getGuestLink(guest: Guest): string {
-    if (isPremium && invitationSlug) {
-      return `${SITE_BASE_URL}/${invitationSlug}?to=${encodeURIComponent(guest.guest_name)}`;
+   function getGuestLink(guest: Guest): string {
+    if (!invitationSlug) return SITE_BASE_URL;
+    if (isPremium) {
+      // Premium: personalized slug (/slug/guest_slug)
+      return `${SITE_BASE_URL}/${invitationSlug}/${guest.guest_slug}`;
     }
-    return invitationSlug ? `${SITE_BASE_URL}/${invitationSlug}` : SITE_BASE_URL;
+    // Basic: query param (/slug?to=Nama)
+    return `${SITE_BASE_URL}/${invitationSlug}?to=${encodeURIComponent(guest.guest_name)}`;
   }
 
   async function handleCopyLink(guest: Guest) {
@@ -214,7 +217,7 @@ export function DashboardGuests({ orderId, invitationSlug, isPremium }: Dashboar
                     </div>
                     <button onClick={() => handleDeleteGuest(guest.id)} style={{ background: "transparent", border: "none", color: "rgba(255,100,100,0.7)", cursor: "pointer", fontSize: 16, padding: 4 }} aria-label="Hapus tamu">×</button>
                   </div>
-                  {isPremium && invitationSlug && (
+                                    {invitationSlug && (
                     <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 10, color: "rgba(201,169,110,0.6)", wordBreak: "break-all", margin: "0 0 10px", padding: "6px 8px", background: "rgba(201,169,110,0.04)", borderRadius: 6 }}>{getGuestLink(guest)}</p>
                   )}
                   <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>

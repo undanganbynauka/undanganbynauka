@@ -93,7 +93,7 @@ export function CelestialClosing({ groomName = "Ali", brideName = "Lyla", akadDa
       <div style={{ maxWidth: "20rem", width: "100%", textAlign: "center" }}>
         {/* Quote */}
         <p style={{ fontFamily: "var(--font-cormorant)", fontSize: "0.8125rem", fontStyle: "italic", fontWeight: 400, color: "var(--cel-text)", lineHeight: 2, letterSpacing: "0.02em", maxWidth: "18rem", margin: "0 auto 2.5rem", opacity: step >= 1 ? 0.9 : 0, transform: step >= 1 ? "translateY(0)" : "translateY(15px)", transition: `opacity 1.2s ${ease}, transform 1.2s ${ease}` }}>
-          Setiap langkah dalam hidup membawa cerita, dan pada titik tertentu, dua perjalanan yang berbeda dipertemukan untuk berjalan ke arah yang sama.
+          Di bawah langit yang sama, semoga setiap langkah yang ditempuh bersama selalu dipenuhi cinta, ketenangan, dan kebahagiaan yang tumbuh sepanjang waktu.
         </p>
 
         {/* Divider */}
@@ -101,19 +101,15 @@ export function CelestialClosing({ groomName = "Ali", brideName = "Lyla", akadDa
           <div className="celestial-divider-line" /><span className="celestial-divider-star">✦</span><div className="celestial-divider-line" />
         </div>
 
-        {/* Doa */}
-        <p style={{ fontFamily: "var(--font-amiri)", fontSize: "1.25rem", fontWeight: 400, color: "var(--cel-text)", lineHeight: 2.2, textAlign: "center", direction: "rtl", marginBottom: "1rem", opacity: step >= 3 ? 1 : 0, transform: step >= 3 ? "translateY(0)" : "translateY(20px)", transition: `opacity 1.2s ${ease}, transform 1.2s ${ease}` }}>
-          بَارَكَ اللهُ لَكُمَا وَبَارَكَ عَلَيْكُمَا وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ
-        </p>
-        <p style={{ fontFamily: "var(--font-cormorant)", fontStyle: "italic", fontSize: "0.75rem", fontWeight: 400, color: "var(--cel-text-dim)", lineHeight: 1.9, textAlign: "center", marginBottom: "1rem", opacity: step >= 4 ? 1 : 0, transform: step >= 4 ? "translateY(0)" : "translateY(15px)", transition: `opacity 1s ${ease}, transform 1s ${ease}` }}>
-          Baarakallahu lakuma wa baaraka &lsquo;alaikuma wa jama&lsquo;a bainakuma fii khair
-        </p>
-        <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.625rem", fontWeight: 400, color: "var(--cel-text-muted)", lineHeight: 1.8, textAlign: "center", marginBottom: "2rem", opacity: step >= 5 ? 0.7 : 0, transform: step >= 5 ? "translateY(0)" : "translateY(10px)", transition: `opacity 0.8s ${ease}, transform 0.8s ${ease}` }}>
-          Semoga Allah memberkahimu berdua dan memberkai pernikahanmu, serta menghimpun kalian berdua dalam kebaikan.
-        </p>
+        {/* Icon bulan sabit putih */}
+        <div style={{ textAlign: "center", marginBottom: "1.5rem", opacity: step >= 3 ? 1 : 0, transform: step >= 3 ? "translateY(0)" : "translateY(20px)", transition: `opacity 1.2s ${ease}, transform 1.2s ${ease}` }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: "inline-block" }}>
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="rgba(255,255,255,0.85)" stroke="rgba(255,255,255,0.85)" strokeWidth="0.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
 
-        {/* Ucapan */}
-        <p style={{ fontFamily: "var(--font-inter)", fontSize: "0.6875rem", fontWeight: 400, color: "var(--cel-text-dim)", lineHeight: 1.9, textAlign: "center", maxWidth: "17rem", margin: "0 auto 2.5rem", opacity: step >= 6 ? 0.6 : 0, transform: step >= 6 ? "translateY(0)" : "translateY(10px)", transition: `opacity 1s ${ease}, transform 1s ${ease}` }}>
+        {/* Teks terima kasih */}
+        <p style={{ fontFamily: "var(--font-cormorant)", fontStyle: "italic", fontSize: "0.875rem", fontWeight: 400, color: "var(--cel-text)", lineHeight: 1.9, textAlign: "center", maxWidth: "18rem", margin: "0 auto 2.5rem", opacity: step >= 4 ? 1 : 0, transform: step >= 4 ? "translateY(0)" : "translateY(15px)", transition: `opacity 1.2s ${ease}, transform 1.2s ${ease}` }}>
           Terima kasih telah menjadi bagian dari perjalanan kecil kami menuju kisah baru.
         </p>
 

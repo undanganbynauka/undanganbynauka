@@ -102,7 +102,17 @@ export function WishesSection({ orderId }: WishesSectionProps = {}) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: newWish.name, message: newWish.message, order_id: orderId }),
       });
-      if (res.ok) { setNewWish({ name: "", message: "" }); }
+            if (res.ok) {
+        setNewWish({ name: "", message: "" });
+        // Track analytics: wish_submit
+        if (orderId) {
+          fetch("/api/analytics", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ order_id: orderId, event_type: "wish_submit" }),
+          }).catch(() => {});
+        }
+            }
     } catch {} finally { setSubmitting(false); }
   };
 

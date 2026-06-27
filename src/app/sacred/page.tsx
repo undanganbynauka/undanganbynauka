@@ -42,6 +42,8 @@ interface SacredContentProps {
 }
 
 export function SacredContent({ data, orderId, guestName }: SacredContentProps = {}) {
+
+export function SacredContent({ data, orderId, guestName }: SacredContentProps = {}) {
   const d: WeddingData = { ...DEFAULT_DATA, ...(data || {}) };
   const [phase, setPhase] = useState<Phase>("gate");
   const searchParams = useSearchParams();

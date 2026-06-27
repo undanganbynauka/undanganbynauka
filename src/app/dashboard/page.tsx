@@ -337,6 +337,9 @@ export default function DashboardPage() {
             isPremium={order.package === "premium"}
           />
         )}
+                {activeTab === "analitik" && order.package === "premium" && (
+          <DashboardAnalytics />
+        )}
 
         {/* Help */}
         <div style={{ padding: 16, borderRadius: 10, border: "1px solid rgba(255,255,255,0.05)", background: "rgba(255,255,255,0.015)", marginBottom: 16, textAlign: "center" }}>

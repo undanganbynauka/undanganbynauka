@@ -35,7 +35,7 @@ export default async function BasicInvitePage({
           </p>
         )}
         <p style={{ fontSize: "11px", letterSpacing: "0.25em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: "24px" }}>Undangan Pernikahan</p>
-        <h1 style={{ fontFamily: "var(--font-bodoni), Georgia, serif", fontSize: "48px", fontWeight: 400, lineHeight: 1.2, margin: 0 }}>
+        <h1 style={{ fontFamily: "var(--font-bodoni), Georgia, serif)", fontSize: "48px", fontWeight: 400, lineHeight: 1.2, margin: 0 }}>
           {wedding.groomName}<br />
           <span style={{ fontSize: "14px", letterSpacing: "0.3em", color: "rgba(201,169,110,0.6)", display: "inline-block", margin: "16px 0" }}>&amp;</span><br />
           {wedding.brideName}
@@ -96,7 +96,7 @@ export default async function BasicInvitePage({
         <title>{pageTitle}</title>
         <meta name="description" content={metaDesc} />
         <Suspense fallback={<main style={{ minHeight: "100vh", background: "#FAF7F2" }} />}>
-          <SacredContent data={weddingData} orderId={orderData.order_id} />
+          <SacredContent data={weddingData} orderId={orderData.order_id} guestName={guestName} />
         </Suspense>
       </>
     );
@@ -110,7 +110,7 @@ export default async function BasicInvitePage({
         <title>{pageTitle}</title>
         <meta name="description" content={metaDesc} />
         <Suspense fallback={<main className="celestial-page"><div style={{ minHeight: "100vh" }} /></main>}>
-          <CelestialContent data={weddingData} orderId={orderData.order_id} />
+          <CelestialContent data={weddingData} orderId={orderData.order_id} guestName={guestName} />
         </Suspense>
       </>
     );
@@ -122,7 +122,7 @@ export default async function BasicInvitePage({
       <>
         <title>{pageTitle}</title>
         <meta name="description" content={metaDesc} />
-        <Marwah data={weddingData} />
+        <Marwah data={weddingData} guestName={guestName} />
       </>
     );
   }
@@ -132,7 +132,7 @@ export default async function BasicInvitePage({
     <>
       <title>{pageTitle}</title>
       <meta name="description" content={metaDesc} />
-      <Luna data={weddingData} />
+      <Luna data={weddingData} guestName={guestName} />
     </>
   );
 }

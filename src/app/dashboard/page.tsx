@@ -157,10 +157,11 @@ export default function DashboardPage() {
       <main style={{ minHeight: "100vh", background: "#0B1120", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px" }}>
         <div style={{ textAlign: "center", maxWidth: 380 }}>
           <h1 style={{ fontFamily: "var(--font-bodoni, Georgia, serif)", fontSize: 28, fontWeight: 400, margin: "0 0 16px", color: "rgba(255,255,255,0.92)" }}>Dashboard Nauka</h1>
-          <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.7, margin: "0 0 24px" }}>
+                  <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.7, margin: "0 0 24px" }}>
             Akses dashboard melalui link yang dikirim ke WhatsApp Anda setelah checkout.
           </p>
-          <Link href="/" style={{ display: "inline-block", padding: "12px 24px", borderRadius: 10, border: "1px solid rgba(201,169,110,0.35)", background: "rgba(201,169,110,0.06)", color: "rgba(201,169,110,0.9)", fontFamily: "var(--font-inter, sans-serif)", fontSize: 12, letterSpacing: "0.1em", textDecoration: "none" }}>Kembali ke Beranda</Link>
+          <Link href="/" style={{ display: "inline-block", padding: "12px 24px", borderRadius: 10, border: "1px solid rgba(201,169,110,0.35)", background: "rgba(201,169,110,0.06)", color: "rgba(201,169,110,0.9)", fontFamily: "var(--font-inter, sans-serif)", fontSize: 12, letterSpacing: "0.1em", textDecoration: "none", marginBottom: 12 }}>Kembali ke Beranda</Link>
+          <Link href="/dashboard/recover" style={{ display: "block", fontFamily: "var(--font-inter, sans-serif)", fontSize: 12, color: "rgba(255,255,255,0.4)", textDecoration: "none", marginTop: 8 }}>Lupa akses dashboard? Klik di sini</Link>
         </div>
       </main>
     );

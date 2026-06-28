@@ -314,10 +314,11 @@ export default function DashboardPage() {
         )}
 
         {activeTab === "tamu" && !isFree && (
-          <DashboardGuests
+                    <DashboardGuests
             orderId={order.order_id}
             invitationSlug={wd.slug}
             isPremium={isPremium}
+            template={order.template}
           />
         )}
 

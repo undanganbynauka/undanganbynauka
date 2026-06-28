@@ -701,8 +701,8 @@ export function LunaClaimForm({ templateName = "Luna" }: LunaClaimFormProps = {}
                 <p style={{ fontFamily: "var(--font-inter)", fontSize: "11px", letterSpacing: "0.04em", color: "rgba(255,255,255,0.65)", margin: "0 0 12px 0", lineHeight: 1.6 }}>
                   Simpan link dashboard untuk melihat status &amp; mengelola undangan kamu kapan saja.
                 </p>
-                <a href={dashboardUrl} target="_blank" rel="noopener noreferrer" style={{ display: "block", padding: "12px 20px", borderRadius: "10px", border: "1px solid rgba(201,169,110,0.20)", background: "transparent", fontFamily: "var(--font-inter)", fontSize: "12px", letterSpacing: "0.1em", color: "rgba(201,169,110,0.9)", textDecoration: "none", textAlign: "center", fontWeight: 500, transition: "all 0.3s ease" }}>
-                  Buka Dashboard
+                                <a href={`https://wa.me/?text=${encodeURIComponent("Halo, ini link dashboard undangan saya: " + dashboardUrl)}`} target="_blank" rel="noopener noreferrer" style={{ display: "block", padding: "12px 20px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.10)", background: "transparent", fontFamily: "var(--font-inter)", fontSize: "12px", letterSpacing: "0.1em", color: "rgba(255,255,255,0.6)", textDecoration: "none", textAlign: "center", transition: "all 0.3s ease" }}>
+                  Kirim Link ke WhatsApp
                 </a>
               </div>
             )}

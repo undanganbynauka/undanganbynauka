@@ -12,7 +12,7 @@ const PENDING_STATUSES = ["pending_payment", "pending_whatsapp", "awaiting_confi
 const SITE_BASE_URL = "https://undangan-by-nauka.vercel.app";
 const OG_IMAGES: Record<string, string> = {
   luna: "/nauka/couple-illustration-sage.png",
-  marwah: "/marwah/couple-illustration-marwah.png",
+  marwah: "/og/og-marwah.jpg",
   sacred: "/sacred/arch.png",
   celestial: "/celestial/cover.jpg",
 };
@@ -104,8 +104,7 @@ export default async function BasicInvitePage({
       <meta property="og:description" content={metaDesc} />
       <meta property="og:type" content="website" />
       <meta property="og:url" content={canonicalUrl} />
-    
-      
+      <meta property="og:image" content={`${SITE_BASE_URL}${ogImage}`} />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={pageTitle} />
       <meta name="twitter:description" content={metaDesc} />

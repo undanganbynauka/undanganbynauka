@@ -73,12 +73,7 @@ export const metadata: Metadata = {
     "undangan elegan",
   ],
   authors: [{ name: "Nauka" }],
-  openGraph: {
-    title: "Nauka — Undangan Digital yang Elegan",
-    description:
-      "Undangan pernikahan digital syar'i & universal. Tanpa foto tetap elegan, animasi sinematik, nasyid pilihan.",
-    type: "website",
-  },
+  
 };
 
 export default function RootLayout({

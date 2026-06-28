@@ -73,7 +73,9 @@ export default async function PersonalizedGuestPage({
   const brideDisplay = weddingData.brideNickname?.trim() || weddingData.brideFullName || "Mempelai Wanita";
   const pageTitle = `${groomDisplay} & ${brideDisplay} — Undangan Pernikahan`;
   const metaDesc = `Undangan pernikahan ${weddingData.groomFullName} & ${weddingData.brideFullName}`;
-  const ogImage = OG_IMAGES[orderData.template] || "/nauka-logo.png";
+    const ogImage = orderData.template === "celestial"
+    ? `/api/og?groom=${encodeURIComponent(groomDisplay)}&bride=${encodeURIComponent(brideDisplay)}`
+    : OG_IMAGES[orderData.template] || "/nauka-logo.png";
   const canonicalUrl = `${SITE_BASE_URL}/${slugLower}/${guestSlug}`;
 
   const ogTags = (

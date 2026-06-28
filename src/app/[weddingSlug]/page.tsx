@@ -12,7 +12,7 @@ const PENDING_STATUSES = ["pending_payment", "pending_whatsapp", "awaiting_confi
 const SITE_BASE_URL = "https://undangan-by-nauka.vercel.app";
 const OG_IMAGES: Record<string, string> = {
   luna: "/nauka/couple-illustration-sage.png",
-  marwah: "/og/og-marwah.jpg",
+    marwah: "/og-marwah.jpg",
   sacred: "/sacred/arch.png",
   celestial: "/celestial/cover.jpg",
 };

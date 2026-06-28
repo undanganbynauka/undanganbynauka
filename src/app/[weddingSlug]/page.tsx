@@ -105,8 +105,7 @@ export default async function BasicInvitePage({
       <meta property="og:type" content="website" />
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:image" content={`${SITE_BASE_URL}${ogImage}`} />
-      <meta property="og:image:width" content="1200" />
-      <meta property="og:image:height" content="630" />
+      
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={pageTitle} />
       <meta name="twitter:description" content={metaDesc} />

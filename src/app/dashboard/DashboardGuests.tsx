@@ -24,11 +24,12 @@ interface DashboardGuestsProps {
   orderId: string;
   invitationSlug?: string;
   isPremium: boolean;
+  template?: string;
 }
 
 const SITE_BASE_URL = "https://undangan-by-nauka.vercel.app";
 
-export function DashboardGuests({ orderId, invitationSlug, isPremium }: DashboardGuestsProps) {
+export function DashboardGuests({ orderId, invitationSlug, isPremium, template }: DashboardGuestsProps) {
   const [guests, setGuests] = useState<Guest[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -93,13 +94,11 @@ export function DashboardGuests({ orderId, invitationSlug, isPremium }: Dashboar
     } catch (err) { console.error("[DashboardGuests] delete error:", err); }
   }
 
-   function getGuestLink(guest: Guest): string {
+  function getGuestLink(guest: Guest): string {
     if (!invitationSlug) return SITE_BASE_URL;
     if (isPremium) {
-      // Premium: personalized slug (/slug/guest_slug)
       return `${SITE_BASE_URL}/${invitationSlug}/${guest.guest_slug}`;
     }
-    // Basic: query param (/slug?to=Nama)
     return `${SITE_BASE_URL}/${invitationSlug}?to=${encodeURIComponent(guest.guest_name)}`;
   }
 
@@ -111,38 +110,43 @@ export function DashboardGuests({ orderId, invitationSlug, isPremium }: Dashboar
     } catch { alert("Gagal menyalin link."); }
   }
 
-  function handleShareWA(guest: Guest) {
+  // Template pesan share — bedakan syar'i vs universal
+  function buildShareMessage(guest: Guest): string {
     const link = getGuestLink(guest);
     const guestDisplay = guest.guest_suffix ? `${guest.guest_name} ${guest.guest_suffix}` : guest.guest_name;
-    const message = isPremium
-      ? `Assalamu'alaikum ${guestDisplay},\n\nKami mengundang Anda untuk hadir di acara pernikahan kami.\n\n${link}\n\nMerupakan kehormatan bagi kami apabila Anda berkenan hadir.\n\nTerima kasih 🙏`
-      : `Assalamu'alaikum\n\nKami mengundang Anda untuk hadir di acara pernikahan kami.\n\n${link}\n\nMerupakan kehormatan bagi kami apabila Anda berkenan hadir.\n\nTerima kasih 🙏`;
+    const slugDisplay = invitationSlug
+      ? invitationSlug.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" & ")
+      : "Kami";
+    const isSyari = template === "marwah" || template === "sacred";
+    const greeting = isSyari ? `Assalamu'alaikum ${guestDisplay} ❤️` : `Halo ${guestDisplay} ❤️`;
+    return `${greeting}\n✨ The Wedding of ${slugDisplay} ✨\nKami mengundang Anda untuk hadir di hari bahagia kami.\n❤️ Buka undangan: ${link}\nMerupakan kebahagiaan bagi kami apabila Anda berkenan hadir. 🙏\n#WeddingInvitation #${invitationSlug ? invitationSlug.replace(/-/g, "") : "UndanganDigital"} #Nikah2026`;
+  }
+
+  function handleShareWA(guest: Guest) {
+    const msg = buildShareMessage(guest);
     const waNumber = guest.guest_phone ? guest.guest_phone.replace(/^0/, "62").replace(/\D/g, "") : "";
     const waUrl = waNumber
-      ? `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`
-      : `https://wa.me/?text=${encodeURIComponent(message)}`;
+      ? `https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`
+      : `https://wa.me/?text=${encodeURIComponent(msg)}`;
     window.open(waUrl, "_blank");
   }
 
-  async function handleNativeShare(guest: Guest) {
-    const link = getGuestLink(guest);
-    const guestDisplay = guest.guest_suffix ? `${guest.guest_name} ${guest.guest_suffix}` : guest.guest_name;
-    const shareData = {
-      title: "Undangan Pernikahan",
-      text: `Assalamu'alaikum ${guestDisplay},\n\nKami mengundang Anda untuk hadir di acara pernikahan kami.\n\n${link}\n\nMerupakan kehormatan bagi kami apabila Anda berkenan hadir.\n\nTerima kasih 🙏`,
-      url: link,
-    };
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        // Fallback: salin link ke clipboard
-        await navigator.clipboard.writeText(link);
-        alert("Link tersalin! Buka aplikasi tujuan, paste link.");
-      }
-    } catch (err) {
-      // User cancel share sheet — gak perlu error
-    }
+  function handleShareInstagram(guest: Guest) {
+    if (!isPremium) return;
+    const msg = buildShareMessage(guest);
+    navigator.clipboard.writeText(msg).then(() => {
+      alert("Template IG disalin! Paste di DM/caption Instagram.");
+      window.open("https://www.instagram.com/", "_blank");
+    });
+  }
+
+  function handleShareTikTok(guest: Guest) {
+    if (!isPremium) return;
+    const msg = buildShareMessage(guest);
+    navigator.clipboard.writeText(msg).then(() => {
+      alert("Template TikTok disalin! Paste di DM/caption TikTok.");
+      window.open("https://www.tiktok.com/", "_blank");
+    });
   }
 
   if (loading) {
@@ -222,13 +226,18 @@ export function DashboardGuests({ orderId, invitationSlug, isPremium }: Dashboar
                     </div>
                     <button onClick={() => handleDeleteGuest(guest.id)} style={{ background: "transparent", border: "none", color: "rgba(255,100,100,0.7)", cursor: "pointer", fontSize: 16, padding: 4 }} aria-label="Hapus tamu">×</button>
                   </div>
-                                    {invitationSlug && (
+                  {invitationSlug && (
                     <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 10, color: "rgba(201,169,110,0.6)", wordBreak: "break-all", margin: "0 0 10px", padding: "6px 8px", background: "rgba(201,169,110,0.04)", borderRadius: 6 }}>{getGuestLink(guest)}</p>
                   )}
                   <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                     <button onClick={() => handleShareWA(guest)} style={shareBtnStyle}>WhatsApp</button>
                     <button onClick={() => handleCopyLink(guest)} style={shareBtnStyle}>{copiedSlug === guest.guest_slug ? "✓ Tersalin" : "Salin Link"}</button>
-                                        <button onClick={() => handleNativeShare(guest)} style={shareBtnStyle}>Share</button>
+                    {isPremium && (
+                      <>
+                        <button onClick={() => handleShareInstagram(guest)} style={shareBtnStyle}>Instagram</button>
+                        <button onClick={() => handleShareTikTok(guest)} style={shareBtnStyle}>TikTok</button>
+                      </>
+                    )}
                   </div>
                 </div>
               );

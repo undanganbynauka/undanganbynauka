@@ -7,16 +7,18 @@ import { AnalyticsTracker } from "@/components/AnalyticsTracker";
 import type { WeddingData } from "@/components/nauka/NaukaFormDataUndangan";
 
 const ACTIVE_DAYS: Record<string, number> = { free: 14, basic: 30, premium: 90 };
+const SITE_BASE_URL = "https://undangan-by-nauka.vercel.app";
+const OG_IMAGES: Record<string, string> = {
+  luna: "/nauka/couple-illustration-sage.png",
+  marwah: "/marwah/couple-illustration-marwah.png",
+  sacred: "/sacred/arch.png",
+  celestial: "/celestial/cover.jpg",
+};
 
 interface OrderRow {
   id: number; order_id: string; status: string; template: string; package: string;
   wedding_data: WeddingData | null; created_at: string; updated_at: string;
 }
-
-// ════════════════════════════════════════════════════════════════
-// Personalized Guest Route (Premium only)
-// URL: /{weddingSlug}/{guestSlug}  contoh: /riyan-naysila/budi
-// ════════════════════════════════════════════════════════════════
 
 export default async function PersonalizedGuestPage({
   params,
@@ -29,7 +31,6 @@ export default async function PersonalizedGuestPage({
   const supabase = getSupabaseServer();
   if (!supabase) { notFound(); }
 
-  // Step 1: Cari order published dengan slug yang cocok
   const { data: order, error } = await supabase
     .from("orders")
     .select("id, order_id, status, template, package, wedding_data, created_at, updated_at")
@@ -45,7 +46,6 @@ export default async function PersonalizedGuestPage({
   const weddingData = orderData.wedding_data;
   if (!weddingData) { notFound(); }
 
-  // Step 2: Cek masa aktif
   const activeDays = ACTIVE_DAYS[orderData.package] ?? 14;
   const akadDate = weddingData.akadDate;
   if (akadDate) {
@@ -54,7 +54,6 @@ export default async function PersonalizedGuestPage({
     if (Date.now() > expiryTime) { notFound(); }
   }
 
-  // Step 3: Cari guest berdasarkan order_id + guest_slug
   const { data: guest } = await supabase
     .from("guests")
     .select("guest_name, guest_suffix, guest_slug")
@@ -63,7 +62,6 @@ export default async function PersonalizedGuestPage({
     .limit(1)
     .maybeSingle();
 
-  // Step 4: Dapat guestName (kalau guest ketemu) atau null
   let guestName: string | null = null;
   if (guest) {
     guestName = guest.guest_suffix
@@ -71,19 +69,36 @@ export default async function PersonalizedGuestPage({
       : guest.guest_name;
   }
 
-  // Step 5: Render template
   const groomDisplay = weddingData.groomNickname?.trim() || weddingData.groomFullName || "Mempelai Pria";
   const brideDisplay = weddingData.brideNickname?.trim() || weddingData.brideFullName || "Mempelai Wanita";
   const pageTitle = `${groomDisplay} & ${brideDisplay} — Undangan Pernikahan`;
   const metaDesc = `Undangan pernikahan ${weddingData.groomFullName} & ${weddingData.brideFullName}`;
+  const ogImage = OG_IMAGES[orderData.template] || "/nauka-logo.png";
+  const canonicalUrl = `${SITE_BASE_URL}/${slugLower}/${guestSlug}`;
 
-  // ── Render Sacred ──
+  const ogTags = (
+    <>
+      <meta property="og:title" content={pageTitle} />
+      <meta property="og:description" content={metaDesc} />
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content={canonicalUrl} />
+      <meta property="og:image" content={`${SITE_BASE_URL}${ogImage}`} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={pageTitle} />
+      <meta name="twitter:description" content={metaDesc} />
+      <meta name="twitter:image" content={`${SITE_BASE_URL}${ogImage}`} />
+    </>
+  );
+
   if (orderData.template === "sacred") {
     const { SacredContent } = await import("@/app/sacred/page");
     return (
       <>
         <title>{pageTitle}</title>
         <meta name="description" content={metaDesc} />
+        {ogTags}
         <AnalyticsTracker orderId={orderData.order_id} />
         <Suspense fallback={<main style={{ minHeight: "100vh", background: "#FAF7F2" }} />}>
           <SacredContent data={weddingData} orderId={orderData.order_id} guestName={guestName} />
@@ -92,13 +107,13 @@ export default async function PersonalizedGuestPage({
     );
   }
 
-  // ── Render Celestial ──
   if (orderData.template === "celestial") {
     const { CelestialContent } = await import("@/app/celestial/page");
     return (
       <>
         <title>{pageTitle}</title>
         <meta name="description" content={metaDesc} />
+        {ogTags}
         <AnalyticsTracker orderId={orderData.order_id} />
         <Suspense fallback={<main className="celestial-page"><div style={{ minHeight: "100vh" }} /></main>}>
           <CelestialContent data={weddingData} orderId={orderData.order_id} guestName={guestName} />
@@ -107,23 +122,23 @@ export default async function PersonalizedGuestPage({
     );
   }
 
-  // ── Render Marwah ──
   if (orderData.template === "marwah") {
     return (
       <>
         <title>{pageTitle}</title>
         <meta name="description" content={metaDesc} />
+        {ogTags}
         <AnalyticsTracker orderId={orderData.order_id} />
         <Marwah data={weddingData} guestName={guestName} />
       </>
     );
   }
 
-  // ── Render Luna (default) ──
   return (
     <>
       <title>{pageTitle}</title>
       <meta name="description" content={metaDesc} />
+      {ogTags}
       <AnalyticsTracker orderId={orderData.order_id} />
       <Luna data={weddingData} guestName={guestName} />
     </>

@@ -9,6 +9,13 @@ import type { WeddingData } from "@/components/nauka/NaukaFormDataUndangan";
 
 const ACTIVE_DAYS: Record<string, number> = { free: 14, basic: 30, premium: 90 };
 const PENDING_STATUSES = ["pending_payment", "pending_whatsapp", "awaiting_confirmation", "paid", "in_production"];
+const SITE_BASE_URL = "https://undangan-by-nauka.vercel.app";
+const OG_IMAGES: Record<string, string> = {
+  luna: "/nauka/couple-illustration-sage.png",
+  marwah: "/marwah/couple-illustration-marwah.png",
+  sacred: "/sacred/arch.png",
+  celestial: "/celestial/cover.jpg",
+};
 
 interface OrderRow {
   id: number; order_id: string; status: string; template: string; package: string;
@@ -88,19 +95,32 @@ export default async function BasicInvitePage({
   const brideDisplay = weddingData.brideNickname?.trim() || weddingData.brideFullName || "Mempelai Wanita";
   const pageTitle = `${groomDisplay} & ${brideDisplay} — Undangan Pernikahan`;
   const metaDesc = `Undangan pernikahan ${weddingData.groomFullName} & ${weddingData.brideFullName}`;
+  const ogImage = OG_IMAGES[orderData.template] || "/nauka-logo.png";
+  const canonicalUrl = `${SITE_BASE_URL}/${weddingSlug}`;
 
-  // ── Render Sacred ──
+  const ogTags = (
+    <>
+      <meta property="og:title" content={pageTitle} />
+      <meta property="og:description" content={metaDesc} />
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content={canonicalUrl} />
+      <meta property="og:image" content={`${SITE_BASE_URL}${ogImage}`} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={pageTitle} />
+      <meta name="twitter:description" content={metaDesc} />
+      <meta name="twitter:image" content={`${SITE_BASE_URL}${ogImage}`} />
+    </>
+  );
+
   if (orderData.template === "sacred") {
     const { SacredContent } = await import("@/app/sacred/page");
     return (
       <>
-                <title>{pageTitle}</title>
+        <title>{pageTitle}</title>
         <meta name="description" content={metaDesc} />
-        <meta property="og:title" content={pageTitle} />
-        <meta property="og:description" content={metaDesc} />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content={`${SITE_BASE_URL}/${wd.slug}`} />
-        <meta property="og:image" content={`${SITE_BASE_URL}/nauka-og.png`} />
+        {ogTags}
         <AnalyticsTracker orderId={orderData.order_id} />
         <Suspense fallback={<main style={{ minHeight: "100vh", background: "#FAF7F2" }} />}>
           <SacredContent data={weddingData} orderId={orderData.order_id} guestName={guestName} />
@@ -109,18 +129,13 @@ export default async function BasicInvitePage({
     );
   }
 
-  // ── Render Celestial ──
   if (orderData.template === "celestial") {
     const { CelestialContent } = await import("@/app/celestial/page");
     return (
       <>
-                <title>{pageTitle}</title>
+        <title>{pageTitle}</title>
         <meta name="description" content={metaDesc} />
-        <meta property="og:title" content={pageTitle} />
-        <meta property="og:description" content={metaDesc} />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content={`${SITE_BASE_URL}/${wd.slug}`} />
-        <meta property="og:image" content={`${SITE_BASE_URL}/nauka-og.png`} />
+        {ogTags}
         <AnalyticsTracker orderId={orderData.order_id} />
         <Suspense fallback={<main className="celestial-page"><div style={{ minHeight: "100vh" }} /></main>}>
           <CelestialContent data={weddingData} orderId={orderData.order_id} guestName={guestName} />
@@ -129,34 +144,24 @@ export default async function BasicInvitePage({
     );
   }
 
-  // ── Render Marwah ──
   if (orderData.template === "marwah") {
     return (
       <>
-                <title>{pageTitle}</title>
+        <title>{pageTitle}</title>
         <meta name="description" content={metaDesc} />
-        <meta property="og:title" content={pageTitle} />
-        <meta property="og:description" content={metaDesc} />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content={`${SITE_BASE_URL}/${wd.slug}`} />
-        <meta property="og:image" content={`${SITE_BASE_URL}/nauka-og.png`} />
+        {ogTags}
         <AnalyticsTracker orderId={orderData.order_id} />
         <Marwah data={weddingData} guestName={guestName} />
       </>
     );
   }
 
-  // ── Render Luna (default) ──
   return (
     <>
-              <title>{pageTitle}</title>
-        <meta name="description" content={metaDesc} />
-        <meta property="og:title" content={pageTitle} />
-        <meta property="og:description" content={metaDesc} />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content={`${SITE_BASE_URL}/${wd.slug}`} />
-        <meta property="og:image" content={`${SITE_BASE_URL}/nauka-og.png`} />
-        <AnalyticsTracker orderId={orderData.order_id} />
+      <title>{pageTitle}</title>
+      <meta name="description" content={metaDesc} />
+      {ogTags}
+      <AnalyticsTracker orderId={orderData.order_id} />
       <Luna data={weddingData} guestName={guestName} />
     </>
   );

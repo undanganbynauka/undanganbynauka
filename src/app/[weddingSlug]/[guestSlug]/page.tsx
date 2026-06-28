@@ -10,7 +10,7 @@ const ACTIVE_DAYS: Record<string, number> = { free: 14, basic: 30, premium: 90 }
 const SITE_BASE_URL = "https://undangan-by-nauka.vercel.app";
 const OG_IMAGES: Record<string, string> = {
   luna: "/nauka/couple-illustration-sage.png",
-  marwah: "/marwah/couple-illustration-marwah.png",
+    marwah: "/og-marwah.jpg",
   sacred: "/sacred/arch.png",
   celestial: "/celestial/cover.jpg",
 };

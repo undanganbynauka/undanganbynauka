@@ -3,7 +3,12 @@ import { ImageResponse } from "next/og";
 export const runtime = "edge";
 export const dynamic = "force-static";
 
-export async function GET() {
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+
+  const groom = searchParams.get("groom") || "A";
+  const bride = searchParams.get("bride") || "L";
+
   return new ImageResponse(
     (
       <div
@@ -34,7 +39,7 @@ export async function GET() {
             marginTop: 20,
           }}
         >
-          A &amp; L
+          {groom} &amp; {bride}
         </div>
       </div>
     ),

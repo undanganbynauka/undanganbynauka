@@ -4,7 +4,8 @@ export const runtime = "edge";
 export const dynamic = "force-static";
 
 export async function GET() {
-  const text = "Angga";
+  const groomName = "Angga";
+  const brideName = "Rini";
 
   return new ImageResponse(
     (
@@ -35,7 +36,7 @@ export async function GET() {
             marginBottom: 16,
           }}
         >
-          {text}
+          {groomName} &amp; {brideName}
         </div>
 
         <div

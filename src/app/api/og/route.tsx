@@ -7,6 +7,8 @@ export async function GET(req: Request) {
   const url = new URL(req.url);
   const params = url.searchParams;
 
+  const groom = params.get("groom") || "A";
+
   return new ImageResponse(
     (
       <div

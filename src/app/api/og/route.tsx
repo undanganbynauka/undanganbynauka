@@ -32,9 +32,19 @@ export async function GET() {
         <div
           style={{
             fontSize: 80,
+            marginBottom: 16,
           }}
         >
           {text}
+        </div>
+
+        <div
+          style={{
+            fontSize: 24,
+            color: "#D4AF37",
+          }}
+        >
+          12 Desember 2026
         </div>
       </div>
     ),

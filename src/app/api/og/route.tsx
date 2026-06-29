@@ -5,7 +5,6 @@ export const dynamic = "force-static";
 
 export async function GET() {
   const groomName = "Angga";
-  const brideName = "Rini";
 
   return new ImageResponse(
     (
@@ -32,11 +31,11 @@ export async function GET() {
 
         <div
           style={{
-            fontSize: 80,
+            fontSize: 48,
             marginBottom: 16,
           }}
         >
-          {groomName}
+          {groomName} Rini
         </div>
 
         <div

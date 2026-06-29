@@ -11,9 +11,9 @@ const ACTIVE_DAYS: Record<string, number> = { free: 14, basic: 30, premium: 90 }
 const PENDING_STATUSES = ["pending_payment", "pending_whatsapp", "awaiting_confirmation", "paid", "in_production"];
 const SITE_BASE_URL = "https://undangan-by-nauka.vercel.app";
 const OG_IMAGES: Record<string, string> = {
-  luna: "/nauka/couple-illustration-sage.png",
-    marwah: "/og-marwah.jpg",
-  sacred: "/sacred/arch.png",
+  luna: "/og-luna.jpg",
+  marwah: "/og-marwah.jpg",
+  sacred: "/og-sacred.jpg",
   celestial: "/celestial/cover.jpg",
 };
 
@@ -95,7 +95,7 @@ export default async function BasicInvitePage({
   const brideDisplay = weddingData.brideNickname?.trim() || weddingData.brideFullName || "Mempelai Wanita";
   const pageTitle = `${groomDisplay} & ${brideDisplay} — Undangan Pernikahan`;
   const metaDesc = `Undangan pernikahan ${weddingData.groomFullName} & ${weddingData.brideFullName}`;
-    const ogImage = orderData.template === "celestial"
+  const ogImage = orderData.template === "celestial"
     ? `/api/og?groom=${encodeURIComponent(groomDisplay)}&bride=${encodeURIComponent(brideDisplay)}`
     : OG_IMAGES[orderData.template] || "/nauka-logo.png";
   const canonicalUrl = `${SITE_BASE_URL}/${weddingSlug}`;
@@ -172,7 +172,7 @@ function PendingView() {
     <main style={{ minHeight: "100vh", background: "#0B1120", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px" }}>
       <div style={{ textAlign: "center", maxWidth: 400 }}>
         <p style={{ fontFamily: "var(--font-bodoni, Georgia, serif)", fontSize: 24, color: "rgba(201,169,110,0.85)", margin: "0 0 16px" }}>Sedang Disiapkan</p>
-        <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.7, margin: 0 }}>Undangan ini sedang dalam proses penyiapan. Silakan kembali lagi nanti.</p>
+        <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.7, margin: 0 }>Undangan ini sedang dalam proses penyiapan. Silakan kembali lagi nanti.</p>
       </div>
     </main>
   );

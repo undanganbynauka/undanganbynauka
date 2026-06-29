@@ -1,13 +1,9 @@
 import { ImageResponse } from "next/og";
-import { NextRequest } from "next/server";
 
 export const runtime = "edge";
 export const dynamic = "force-static";
 
-export async function GET(request: NextRequest) {
-  const groom = request.nextUrl.searchParams.get("groom") ?? "A";
-  const bride = request.nextUrl.searchParams.get("bride") ?? "L";
-
+export async function GET() {
   return new ImageResponse(
     (
       <div
@@ -15,14 +11,55 @@ export async function GET(request: NextRequest) {
           width: "100%",
           height: "100%",
           display: "flex",
+          flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
-          backgroundColor: "#1b2333",
-          color: "#e7c97f",
-          fontSize: 52,
+          backgroundColor: "#0F172A",
+          color: "#FFFFFF",
+          position: "relative",
         }}
       >
-        {groom} &amp; {bride}
+        <div
+          style={{
+            color: "#D4AF37",
+            fontSize: 26,
+            letterSpacing: 6,
+            marginBottom: 24,
+          }}
+        >
+          THE WEDDING OF
+        </div>
+
+        <div
+          style={{
+            color: "#F8E7A1",
+            fontSize: 110,
+            fontWeight: 700,
+            lineHeight: 1,
+          }}
+        >
+          A &amp; R
+        </div>
+
+        <div
+          style={{
+            color: "#F8F8F8",
+            fontSize: 38,
+            marginTop: 22,
+          }}
+        >
+          Angga &amp; Rini
+        </div>
+
+        <div
+          style={{
+            color: "#C9A227",
+            fontSize: 24,
+            marginTop: 18,
+          }}
+        >
+          12 Desember 2026
+        </div>
       </div>
     ),
     {

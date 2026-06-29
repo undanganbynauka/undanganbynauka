@@ -5,6 +5,7 @@ export const dynamic = "force-static";
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
+  const params = url.searchParams;
 
   return new ImageResponse(
     (

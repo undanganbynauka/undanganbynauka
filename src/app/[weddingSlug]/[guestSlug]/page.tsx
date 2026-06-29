@@ -9,9 +9,9 @@ import type { WeddingData } from "@/components/nauka/NaukaFormDataUndangan";
 const ACTIVE_DAYS: Record<string, number> = { free: 14, basic: 30, premium: 90 };
 const SITE_BASE_URL = "https://undangan-by-nauka.vercel.app";
 const OG_IMAGES: Record<string, string> = {
-  luna: "/nauka/couple-illustration-sage.png",
-    marwah: "/og-marwah.jpg",
-  sacred: "/sacred/arch.png",
+  luna: "/og-luna.jpg",
+  marwah: "/og-marwah.jpg",
+  sacred: "/og-sacred.jpg",
   celestial: "/celestial/cover.jpg",
 };
 
@@ -73,7 +73,7 @@ export default async function PersonalizedGuestPage({
   const brideDisplay = weddingData.brideNickname?.trim() || weddingData.brideFullName || "Mempelai Wanita";
   const pageTitle = `${groomDisplay} & ${brideDisplay} — Undangan Pernikahan`;
   const metaDesc = `Undangan pernikahan ${weddingData.groomFullName} & ${weddingData.brideFullName}`;
-    const ogImage = orderData.template === "celestial"
+  const ogImage = orderData.template === "celestial"
     ? `/api/og?groom=${encodeURIComponent(groomDisplay)}&bride=${encodeURIComponent(brideDisplay)}`
     : OG_IMAGES[orderData.template] || "/nauka-logo.png";
   const canonicalUrl = `${SITE_BASE_URL}/${slugLower}/${guestSlug}`;
@@ -84,8 +84,7 @@ export default async function PersonalizedGuestPage({
       <meta property="og:description" content={metaDesc} />
       <meta property="og:type" content="website" />
       <meta property="og:url" content={canonicalUrl} />
-  
-      
+      <meta property="og:image" content={`${SITE_BASE_URL}${ogImage}`} />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={pageTitle} />
       <meta name="twitter:description" content={metaDesc} />

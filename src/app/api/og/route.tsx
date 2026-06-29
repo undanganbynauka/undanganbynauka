@@ -24,35 +24,85 @@ export async function GET() {
       >
         <div
           style={{
-            width: "1000px",
-            height: "500px",
+            width: 1040,
+            height: 500,
             display: "flex",
-            flexDirection: "column",
             justifyContent: "center",
             alignItems: "center",
+            flexDirection: "column",
             border: "2px solid #C8A95A",
-            borderRadius: "24px",
-            color: "#FFFFFF",
+            borderRadius: 28,
             position: "relative",
+            color: "#FFFFFF",
           }}
         >
+          {/* Corner Decoration */}
           <div
             style={{
               position: "absolute",
-              top: "30px",
-              fontSize: "18px",
-              color: "#C8A95A",
+              top: 24,
+              left: 24,
+              width: 18,
+              height: 18,
+              borderTop: "2px solid #C8A95A",
+              borderLeft: "2px solid #C8A95A",
             }}
-          >
-            ✦
-          </div>
+          />
 
           <div
             style={{
-              fontSize: "24px",
+              position: "absolute",
+              top: 24,
+              right: 24,
+              width: 18,
+              height: 18,
+              borderTop: "2px solid #C8A95A",
+              borderRight: "2px solid #C8A95A",
+            }}
+          />
+
+          <div
+            style={{
+              position: "absolute",
+              bottom: 24,
+              left: 24,
+              width: 18,
+              height: 18,
+              borderBottom: "2px solid #C8A95A",
+              borderLeft: "2px solid #C8A95A",
+            }}
+          />
+
+          <div
+            style={{
+              position: "absolute",
+              bottom: 24,
+              right: 24,
+              width: 18,
+              height: 18,
+              borderBottom: "2px solid #C8A95A",
+              borderRight: "2px solid #C8A95A",
+            }}
+          />
+
+          {/* Moon Halo */}
+          <div
+            style={{
+              position: "absolute",
+              top: 125,
+              width: 150,
+              height: 150,
+              border: "2px solid rgba(200,169,90,0.35)",
+              borderRadius: "50%",
+            }}
+          />
+
+          <div
+            style={{
+              fontSize: 24,
               color: "#C8A95A",
-              letterSpacing: "6px",
-              marginBottom: "24px",
+              letterSpacing: 8,
+              marginBottom: 30,
             }}
           >
             THE WEDDING OF
@@ -60,9 +110,10 @@ export async function GET() {
 
           <div
             style={{
-              fontSize: "110px",
-              color: "#F8E7A1",
-              marginBottom: "16px",
+              fontSize: 110,
+              color: "#F4D98B",
+              lineHeight: 1,
+              marginBottom: 22,
             }}
           >
             {initials}
@@ -70,9 +121,17 @@ export async function GET() {
 
           <div
             style={{
-              fontSize: "42px",
-              color: "#FFFFFF",
-              marginBottom: "18px",
+              width: 120,
+              height: 1,
+              backgroundColor: "#C8A95A",
+              marginBottom: 22,
+            }}
+          />
+
+          <div
+            style={{
+              fontSize: 42,
+              marginBottom: 18,
             }}
           >
             {coupleName}
@@ -80,7 +139,7 @@ export async function GET() {
 
           <div
             style={{
-              fontSize: "22px",
+              fontSize: 22,
               color: "#C8A95A",
             }}
           >
@@ -90,15 +149,16 @@ export async function GET() {
           <div
             style={{
               position: "absolute",
-              bottom: "28px",
-              fontSize: "18px",
+              bottom: 36,
+              fontSize: 16,
               color: "#C8A95A",
+              letterSpacing: 10,
             }}
           >
-            ✦ By Nauka ✦
+            N A U K A
           </div>
         </div>
-      </div>,
+      </div>
     ),
     {
       width: 1200,

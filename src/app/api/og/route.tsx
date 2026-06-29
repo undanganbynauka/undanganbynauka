@@ -28,14 +28,6 @@ export async function GET(req: NextRequest) {
           fontFamily: "serif",
         }}
       >
-        <div style={{ position: "absolute", top: "15%", left: "20%", width: 2, height: 2, borderRadius: "50%", background: "rgba(255,255,255,0.4)" }} />
-        <div style={{ position: "absolute", top: "25%", left: "70%", width: 2, height: 2, borderRadius: "50%", background: "rgba(201,169,110,0.5)" }} />
-        <div style={{ position: "absolute", top: "40%", left: "15%", width: 1, height: 1, borderRadius: "50%", background: "rgba(255,255,255,0.3)" }} />
-        <div style={{ position: "absolute", top: "60%", left: "85%", width: 2, height: 2, borderRadius: "50%", background: "rgba(255,255,255,0.4)" }} />
-        <div style={{ position: "absolute", top: "75%", left: "30%", width: 1, height: 1, borderRadius: "50%", background: "rgba(201,169,110,0.4)" }} />
-        <div style={{ position: "absolute", top: "20%", left: "50%", width: 1, height: 1, borderRadius: "50%", background: "rgba(255,255,255,0.3)" }} />
-        <div style={{ position: "absolute", top: "70%", left: "60%", width: 2, height: 2, borderRadius: "50%", background: "rgba(201,169,110,0.5)" }} />
-
         <div style={{ fontSize: 28, color: "rgba(201,169,110,0.7)", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: 30 }}>
           The Wedding Of
         </div>

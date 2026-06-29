@@ -36,7 +36,7 @@ export async function GET() {
             marginBottom: 16,
           }}
         >
-          {groomName} &amp; {brideName}
+          {groomName}
         </div>
 
         <div

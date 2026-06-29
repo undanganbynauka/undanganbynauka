@@ -4,7 +4,7 @@ export const runtime = "edge";
 export const dynamic = "force-static";
 
 export async function GET(req: Request) {
-  console.log(req.url);
+  const url = new URL(req.url);
 
   return new ImageResponse(
     (

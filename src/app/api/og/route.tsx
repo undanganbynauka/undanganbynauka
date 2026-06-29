@@ -48,7 +48,7 @@ export async function GET() {
             marginTop: 22,
           }}
         >
-          Angga &amp; Rini
+          {groomName} &amp; Rini
         </div>
 
         <div

@@ -23,7 +23,7 @@ export async function GET(req: Request) {
           fontSize: 52,
         }}
       >
-        TEST
+        {groom}
       </div>
     ),
     {

@@ -71,7 +71,7 @@ export default async function PersonalizedGuestPage({
 
   const groomDisplay = weddingData.groomNickname?.trim() || weddingData.groomFullName || "Mempelai Pria";
   const brideDisplay = weddingData.brideNickname?.trim() || weddingData.brideFullName || "Mempelai Wanita";
-  const pageTitle = `${groomDisplay} & ${brideDisplay} — Undangan Pernikahan`;
+  const pageTitle = `${groomDisplay} & ${brideDisplay} - Undangan Pernikahan`;
   const metaDesc = `Undangan pernikahan ${weddingData.groomFullName} & ${weddingData.brideFullName}`;
   const ogImage = orderData.template === "celestial"
     ? `/api/og?groom=${encodeURIComponent(groomDisplay)}&bride=${encodeURIComponent(brideDisplay)}`

@@ -14,6 +14,7 @@ interface OrderInfo {
   bride: string;
   created_at?: string;
   dashboard_url: string;
+  customer_name?: string;
 }
 
 export default function RecoverPage() {
@@ -42,21 +43,56 @@ export default function RecoverPage() {
         body: JSON.stringify({ phone: phone.trim() }),
       });
       const data = await res.json();
+      console.log("[recover UI] response:", data);
 
-      if (!data.ok) {
-        setError(data.error || "Gagal mencari order.");
+      // Format BARU: cek data.ok terlebih dahulu
+      if (data && data.ok === true) {
+        if (data.single) {
+          const order: OrderInfo = {
+            order_id: data.order_id || data.order?.order_id || "",
+            status: data.status || data.order?.status || "",
+            template: data.template || data.order?.template || "",
+            package: data.package || data.order?.package || "",
+            slug: data.slug || data.order?.slug || "",
+            groom: data.groom || data.order?.groom || "",
+            bride: data.bride || data.order?.bride || "",
+            customer_name: data.customer_name || data.order?.customer_name || "",
+            dashboard_url: data.dashboard_url || data.order?.dashboard_url || "",
+          };
+          setSingleOrder(order);
+          setTimeout(() => {
+            router.push(order.dashboard_url);
+          }, 1500);
+        } else {
+          setOrders(data.orders || []);
+        }
         return;
       }
 
-      if (data.single) {
-        setSingleOrder(data.order);
+      // Format LAMA (backward compat): cek data.dashboard_url langsung
+      if (data && data.dashboard_url) {
+        const order: OrderInfo = {
+          order_id: data.order_id || "",
+          status: data.status || "",
+          template: data.template || "",
+          package: "",
+          slug: "",
+          groom: "",
+          bride: "",
+          customer_name: data.customer_name || "",
+          dashboard_url: data.dashboard_url,
+        };
+        setSingleOrder(order);
         setTimeout(() => {
-          router.push(data.order.dashboard_url);
-        }, 1200);
-      } else {
-        setOrders(data.orders || []);
+          router.push(order.dashboard_url);
+        }, 1500);
+        return;
       }
-    } catch {
+
+      // Gagal
+      setError(data?.error || "Gagal mencari order.");
+    } catch (err) {
+      console.error("[recover UI] error:", err);
       setError("Terjadi kesalahan jaringan. Coba lagi.");
     } finally {
       setLoading(false);
@@ -84,6 +120,7 @@ export default function RecoverPage() {
             placeholder="08xxxxxxxxxx"
             style={{ width: "100%", padding: "12px 14px", background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "#fff", fontSize: 14, fontFamily: "var(--font-inter, sans-serif)" }}
             disabled={loading}
+            autoComplete="tel"
           />
 
           {error && (
@@ -103,10 +140,10 @@ export default function RecoverPage() {
           <div style={{ marginTop: 24, padding: 20, background: "rgba(201,169,110,0.08)", borderRadius: 12, border: "1px solid rgba(201,169,110,0.2)", textAlign: "center" }}>
             <p style={{ fontSize: 12, color: "rgba(201,169,110,0.85)", marginBottom: 8, letterSpacing: "0.05em" }}>DITEMUKAN</p>
             <p style={{ fontFamily: "var(--font-bodoni, Georgia, serif)", fontSize: 20, margin: "0 0 4px" }}>
-              {singleOrder.groom} & {singleOrder.bride}
+              {singleOrder.groom || singleOrder.customer_name ? `${singleOrder.groom || singleOrder.customer_name}${singleOrder.bride ? ` & ${singleOrder.bride}` : ""}` : "Order"}
             </p>
             <p style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", marginBottom: 16 }}>
-              Paket {singleOrder.package} - Template {singleOrder.template}
+              Paket {singleOrder.package || "-"} - Template {singleOrder.template || "-"}
             </p>
             <p style={{ fontSize: 12, color: "rgba(255,255,255,0.6)" }}>Mengalihkan ke dashboard...</p>
           </div>

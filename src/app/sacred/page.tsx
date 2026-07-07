@@ -1,270 +1,274 @@
-"use client";
-
-import React, { Suspense, useState, useCallback, useEffect, Component, ErrorInfo } from "react";
-import dynamicImport from "next/dynamic";
-import { useSearchParams } from "next/navigation";
-import { SoundToggle } from "@/components/mood/SoundToggle";
-import { SacredHero } from "@/components/sacred/SacredHero";
-import { CountdownSection } from "@/components/template/CountdownSection";
-import { BismillahSection } from "@/components/template/BismillahSection";
-import { BrideGroomSection } from "@/components/template/BrideGroomSection";
-import { EventSection } from "@/components/template/EventSection";
-import { OurJourneySection } from "@/components/template/OurJourneySection";
-import { RsvpSection } from "@/components/template/RsvpSection";
-import { WishesSection } from "@/components/template/WishesSection";
-import { AmplopDigitalSection } from "@/components/template/AmplopDigitalSection";
-import { ClosingSection } from "@/components/template/ClosingSection";
-import { FloatingNav } from "@/components/template/FloatingNav";
-import { SaveTheDateCard } from "@/components/template/SaveTheDateCard";
-import { IntroSection } from "@/components/template/IntroSection";
+import { db } from "@/lib/db";
+import { notFound } from "next/navigation";
+import { Suspense } from "react";
+import { getSupabaseServer } from "@/lib/supabase-server";
+import { Luna } from "@/components/nauka/Luna";
+import { Marwah } from "@/components/nauka/Marwah";
+import { AnalyticsTracker } from "@/components/AnalyticsTracker";
 import type { WeddingData } from "@/components/nauka/NaukaFormDataUndangan";
 
-type Phase = "checking" | "gate" | "opening" | "inside";
-
-const STORAGE_KEY = "nauka-sacred-opened";
-
-const DEFAULT_DATA: WeddingData = {
-  groomFullName: "Ali Rahman", groomNickname: "Ali", groomFatherName: "Hendri", groomMotherName: "Ningsih", groomBirthOrder: "",
-  brideFullName: "Lyla Azzahra", brideNickname: "Lyla", brideFatherName: "Yusuf", brideMotherName: "Rahayu", brideBirthOrder: "",
-  akadDate: "2026-12-05", akadStartTime: "08:00", akadEndTime: "10:00", akadAddress: "Gedung Auditorium Koni", akadMapsLink: "", akadCity: "Jakarta Pusat",
-  hasResepsi: true, resepsiDate: "2026-12-05", resepsiStartTime: "11:00", resepsiEndTime: "14:00", resepsiAddress: "Gedung Auditorium Koni", resepsiMapsLink: "", resepsiCity: "Jakarta Pusat",
-  slug: "ali-lyla", quote: "", openingMessage: "", bgmType: "hening", bgmVocalOnlyNote: "",
-  journey: [], timelineEvents: [], adminNote: "", additionalRequest: "",
-  groomBank: "", groomRekening: "", groomAn: "", brideBank: "", brideRekening: "", brideAn: "",
-  giftRecipientName: "", giftAddress: "",
+const ACTIVE_DAYS: Record<string, number> = { free: 14, basic: 30, premium: 90 };
+const PENDING_STATUSES = ["pending_payment", "pending_whatsapp", "awaiting_confirmation", "paid", "in_production"];
+const SITE_BASE_URL = "https://undangan-by-nauka.vercel.app";
+const OG_IMAGES: Record<string, string> = {
+  luna: "/og-luna.jpg",
+  marwah: "/og-marwah.jpg",
+  sacred: "/og-sacred.jpg",
+  celestial: "/celestial/cover.jpg",
 };
 
-class SectionBoundary extends Component<
-  { name: string; children: React.ReactNode },
-  { hasError: boolean; error: Error | null }
-> {
-  constructor(props: { name: string; children: React.ReactNode }) {
-    super(props);
-    this.state = { hasError: false, error: null };
-  }
-
-  static getDerivedStateFromError(error: Error) {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error(`[SacredContent] Section "${this.props.name}" crash:`, error.message, info.componentStack);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return null;
-    }
-    return this.props.children;
-  }
+interface OrderRow {
+  id: number; order_id: string; status: string; template: string; package: string;
+  wedding_data: WeddingData | null; created_at: string; updated_at: string;
 }
 
-function normalizeData(input?: WeddingData | null): WeddingData {
-  if (!input || typeof input !== "object") return DEFAULT_DATA;
+export const dynamic = "force-dynamic";
 
-  const s = (v: unknown, fallback = ""): string => {
-    if (typeof v === "string") return v.trim();
-    if (v === null || v === undefined) return fallback;
-    return String(v).trim();
-  };
+export default async function BasicInvitePage({
+  params, searchParams,
+}: {
+  params: Promise<{ weddingSlug: string }>;
+  searchParams: Promise<{ to?: string }>;
+}) {
+  try {
+    const { weddingSlug } = await params;
+    const { to } = await searchParams;
+    const guestName = to ? decodeURIComponent(to) : null;
 
-  const safeArr = <T,>(v: unknown): T[] => {
-    if (Array.isArray(v)) return v as T[];
-    return [];
-  };
+    console.log("[weddingSlug] route hit:", weddingSlug, "guest:", guestName);
 
-  return {
-    ...DEFAULT_DATA,
-    ...input,
-    groomFullName: s(input.groomFullName, "Mempelai Pria"),
-    groomNickname: s(input.groomNickname),
-    groomFatherName: s(input.groomFatherName, "Bapak"),
-    groomMotherName: s(input.groomMotherName, "Ibu"),
-    groomBirthOrder: s(input.groomBirthOrder),
-    brideFullName: s(input.brideFullName, "Mempelai Wanita"),
-    brideNickname: s(input.brideNickname),
-    brideFatherName: s(input.brideFatherName, "Bapak"),
-    brideMotherName: s(input.brideMotherName, "Ibu"),
-    brideBirthOrder: s(input.brideBirthOrder),
-    akadDate: s(input.akadDate, DEFAULT_DATA.akadDate),
-    akadStartTime: s(input.akadStartTime, "08:00"),
-    akadEndTime: s(input.akadEndTime, "10:00"),
-    akadAddress: s(input.akadAddress),
-    akadCity: s(input.akadCity),
-    akadMapsLink: s(input.akadMapsLink),
-    hasResepsi: typeof input.hasResepsi === "boolean" ? input.hasResepsi : true,
-    resepsiDate: s(input.resepsiDate, input.akadDate || DEFAULT_DATA.resepsiDate),
-    resepsiStartTime: s(input.resepsiStartTime, "11:00"),
-    resepsiEndTime: s(input.resepsiEndTime, "14:00"),
-    resepsiAddress: s(input.resepsiAddress),
-    resepsiCity: s(input.resepsiCity),
-    resepsiMapsLink: s(input.resepsiMapsLink),
-    groomBank: s(input.groomBank),
-    groomRekening: s(input.groomRekening),
-    groomAn: s(input.groomAn, s(input.groomFullName)),
-    brideBank: s(input.brideBank),
-    brideRekening: s(input.brideRekening),
-    brideAn: s(input.brideAn, s(input.brideFullName)),
-    giftRecipientName: s(input.giftRecipientName),
-    giftAddress: s(input.giftAddress),
-    journey: safeArr(input.journey),
-    timelineEvents: safeArr(input.timelineEvents),
-    quote: s(input.quote),
-    openingMessage: s(input.openingMessage),
-    bgmType: s(input.bgmType, "hening"),
-    bgmVocalOnlyNote: s(input.bgmVocalOnlyNote),
-  };
-}
-
-interface SacredContentProps {
-  data?: WeddingData;
-  orderId?: string;
-  guestName?: string | null;
-}
-
-export function SacredContent({ data, orderId, guestName }: SacredContentProps = {}) {
-  const d: WeddingData = normalizeData(data);
-  const [phase, setPhase] = useState<Phase>("gate");
-  const [mounted, setMounted] = useState(false);
-  const searchParams = useSearchParams();
-  const isPreview = searchParams.get("preview") === "true";
-
-  const groomName = d.groomNickname.trim() || d.groomFullName.split(/\s+/)[0] || "Mempelai Pria";
-  const brideName = d.brideNickname.trim() || d.brideFullName.split(/\s+/)[0] || "Mempelai Wanita";
-
-  // SKIP SSR - render hanya di client.
-  // Ini menghindari semua server-side exception dari komponen template.
-  useEffect(() => {
-    setMounted(true);
+    let wedding: unknown = null;
     try {
-      if (isPreview) { setPhase("gate"); }
-      else if (localStorage.getItem(STORAGE_KEY) === "true") { setPhase("inside"); }
-      else { setPhase("gate"); }
+      wedding = await db.wedding.findUnique({ where: { slug: weddingSlug } });
+    } catch (e) {
+      console.error("[weddingSlug] Prisma findUnique error:", e);
+      wedding = null;
+    }
+
+    if (wedding) {
+      console.log("[weddingSlug] found in Prisma, returning basic view");
+      const w = wedding as { groomName?: string; brideName?: string; package?: string };
+      return (
+        <main style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#0B1120", color: "rgba(255,255,255,0.85)", fontFamily: "var(--font-inter), system-ui, sans-serif", padding: "32px", textAlign: "center" }}>
+          {guestName && (
+            <p style={{ fontSize: "13px", letterSpacing: "0.1em", color: "rgba(255,255,255,0.45)", marginBottom: "32px" }}>
+              Kepada Yth.<br /><span style={{ color: "rgba(201,169,110,0.85)", fontSize: "16px" }}>{guestName}</span>
+            </p>
+          )}
+          <p style={{ fontSize: "11px", letterSpacing: "0.25em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: "24px" }}>Undangan Pernikahan</p>
+          <h1 style={{ fontFamily: "var(--font-bodoni), Georgia, serif", fontSize: "48px", fontWeight: 400, lineHeight: 1.2, margin: 0 }}>
+            {w.groomName || "Mempelai Pria"}<br />
+            <span style={{ fontSize: "14px", letterSpacing: "0.3em", color: "rgba(201,169,110,0.6)", display: "inline-block", margin: "16px 0" }}>&amp;</span><br />
+            {w.brideName || "Mempelai Wanita"}
+          </h1>
+          <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.25)", marginTop: "40px" }}>Paket {w.package || "free"}</p>
+        </main>
+      );
+    }
+
+    let supabase: ReturnType<typeof getSupabaseServer> = null;
+    try {
+      supabase = getSupabaseServer();
+    } catch (e) {
+      console.error("[weddingSlug] getSupabaseServer threw:", e);
+    }
+    if (!supabase) {
+      console.error("[weddingSlug] supabase not initialized, calling notFound");
+      notFound();
+    }
+
+    const slugLower = weddingSlug.toLowerCase();
+    console.log("[weddingSlug] querying Supabase for slug:", slugLower);
+
+    let order: OrderRow | null = null;
+    let queryError: unknown = null;
+    try {
+      const { data, error } = await supabase!
+        .from("orders").select("id, order_id, status, template, package, wedding_data, created_at, updated_at")
+        .eq("status", "published").filter("wedding_data->>slug", "eq", slugLower)
+        .order("created_at", { ascending: false }).limit(1).maybeSingle();
+      if (error) { queryError = error; console.error("[weddingSlug] supabase query error:", error); }
+      else { order = (data as OrderRow) || null; }
+    } catch (e) {
+      console.error("[weddingSlug] supabase query threw:", e);
+      queryError = e;
+    }
+
+    if (queryError || !order) {
+      console.log("[weddingSlug] no published order, checking pending...");
+      let pendingOrder: { status: string; id: number; template: string; package: string; wedding_data: WeddingData | null; created_at: string } | null = null;
+      try {
+        const { data: pending } = await supabase!
+          .from("orders").select("id, status, template, package, wedding_data, created_at")
+          .filter("wedding_data->>slug", "eq", slugLower)
+          .order("created_at", { ascending: false }).limit(1).maybeSingle();
+        pendingOrder = (pending as typeof pendingOrder) || null;
+      } catch (e) {
+        console.error("[weddingSlug] pending query threw:", e);
+      }
+
+      if (pendingOrder) {
+        if (PENDING_STATUSES.includes(pendingOrder.status)) { return <PendingView />; }
+        if (pendingOrder.status === "cancelled") { return <CancelledView />; }
+      }
+      notFound();
+    }
+
+    const orderData = order as OrderRow;
+    console.log("[weddingSlug] found order:", orderData.order_id, "template:", orderData.template, "package:", orderData.package);
+
+    const weddingData = orderData.wedding_data;
+    if (!weddingData) {
+      console.error("[weddingSlug] wedding_data is null for order:", orderData.order_id);
+      return <ErrorView msg="Data undangan tidak ditemukan." />;
+    }
+
+    const activeDays = ACTIVE_DAYS[orderData.package] ?? 14;
+    const akadDate = weddingData.akadDate;
+    if (akadDate) {
+      try {
+        const akadDateTime = new Date(`${akadDate}T23:59:59+07:00`).getTime();
+        if (!isNaN(akadDateTime)) {
+          const expiryTime = akadDateTime + activeDays * 24 * 60 * 60 * 1000;
+          if (Date.now() > expiryTime) {
+            console.log("[weddingSlug] order expired, returning ExpiredView");
+            return <ExpiredView pkg={orderData.package} activeDays={activeDays} />;
+          }
+        }
+      } catch (e) {
+        console.error("[weddingSlug] date parsing error:", e);
+      }
+    }
+
+    const groomDisplay = weddingData.groomNickname?.trim() || weddingData.groomFullName || "Mempelai Pria";
+    const brideDisplay = weddingData.brideNickname?.trim() || weddingData.brideFullName || "Mempelai Wanita";
+    const pageTitle = `${groomDisplay} & ${brideDisplay} - Undangan Pernikahan`;
+    const metaDesc = `Undangan pernikahan ${weddingData.groomFullName || groomDisplay} & ${weddingData.brideFullName || brideDisplay}`;
+    let ogImage: string;
+    try {
+      ogImage = orderData.template === "celestial"
+        ? `/api/og?groom=${encodeURIComponent(groomDisplay)}&bride=${encodeURIComponent(brideDisplay)}`
+        : OG_IMAGES[orderData.template] || "/nauka-logo.png";
     } catch {
-      setPhase("gate");
+      ogImage = "/nauka-logo.png";
     }
-  }, [isPreview]);
+    const canonicalUrl = `${SITE_BASE_URL}/${weddingSlug}`;
 
-  const handleOpen = useCallback(() => {
-    try {
-      if (!isPreview) { localStorage.setItem(STORAGE_KEY, "true"); }
-    } catch { /* ignore */ }
-    setPhase("opening");
-    setTimeout(() => setPhase("inside"), 2200);
-  }, [isPreview]);
+    const ogTags = (
+      <>
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={metaDesc} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content={`${SITE_BASE_URL}${ogImage}`} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={metaDesc} />
+        <meta name="twitter:image" content={`${SITE_BASE_URL}${ogImage}`} />
+      </>
+    );
 
-  // SSR / pre-mount: render skeleton kosong. Tidak ada komponen template yang dipanggil.
-  if (!mounted) {
-    return <main className="sacred-page" style={{ minHeight: "100vh", background: "#0B1120" }} />;
+    if (orderData.template === "sacred") {
+      console.log("[weddingSlug] rendering Sacred template");
+      const { SacredContent } = await import("@/app/sacred/page");
+      return (
+        <>
+          <title>{pageTitle}</title>
+          <meta name="description" content={metaDesc} />
+          {ogTags}
+          <AnalyticsTracker orderId={orderData.order_id} />
+          <Suspense fallback={<main style={{ minHeight: "100vh", background: "#FAF7F2" }} />}>
+            <SacredContent data={weddingData} orderId={orderData.order_id} guestName={guestName} />
+          </Suspense>
+        </>
+      );
+    }
+
+    if (orderData.template === "celestial") {
+      console.log("[weddingSlug] rendering Celestial template");
+      const { CelestialContent } = await import("@/app/celestial/page");
+      return (
+        <>
+          <title>{pageTitle}</title>
+          <meta name="description" content={metaDesc} />
+          {ogTags}
+          <AnalyticsTracker orderId={orderData.order_id} />
+          <Suspense fallback={<main className="celestial-page"><div style={{ minHeight: "100vh" }} /></main>}>
+            <CelestialContent data={weddingData} orderId={orderData.order_id} guestName={guestName} />
+          </Suspense>
+        </>
+      );
+    }
+
+    if (orderData.template === "marwah") {
+      console.log("[weddingSlug] rendering Marwah template");
+      return (
+        <>
+          <title>{pageTitle}</title>
+          <meta name="description" content={metaDesc} />
+          {ogTags}
+          <AnalyticsTracker orderId={orderData.order_id} />
+          <Marwah data={weddingData} guestName={guestName} />
+        </>
+      );
+    }
+
+    console.log("[weddingSlug] rendering Luna template (default)");
+    return (
+      <>
+        <title>{pageTitle}</title>
+        <meta name="description" content={metaDesc} />
+        {ogTags}
+        <AnalyticsTracker orderId={orderData.order_id} />
+        <Luna data={weddingData} guestName={guestName} />
+      </>
+    );
+  } catch (err) {
+    console.error("[weddingSlug] FATAL error in route:", err);
+    return <ErrorView msg="Terjadi kesalahan saat memuat undangan." />;
   }
+}
 
-  if (phase === "checking") { return <main className="sacred-page" />; }
-
+function PendingView() {
   return (
-    <main className="sacred-page">
-      {(phase === "gate" || phase === "opening") && (
-        <div style={{ position: "fixed", inset: 0, zIndex: 50, pointerEvents: phase === "gate" ? "auto" : "none", opacity: phase === "gate" ? 1 : 0, transition: "opacity 2s cubic-bezier(0.4, 0, 0.2, 1)" }}>
-          <SectionBoundary name="SacredHero">
-            <SacredHero onOpen={phase === "gate" ? handleOpen : undefined} groomName={groomName} brideName={brideName} akadDate={d.akadDate} guestName={guestName} />
-          </SectionBoundary>
-        </div>
-      )}
-
-      {phase !== "gate" && (
-        <div style={{ opacity: phase === "opening" ? 0 : 1, transition: "opacity 1.8s cubic-bezier(0.4, 0, 0.2, 1) 0.6s" }}>
-          <SectionBoundary name="CountdownSection">
-            <CountdownSection groomName={groomName} brideName={brideName} akadDate={d.akadDate} akadStartTime={d.akadStartTime} />
-          </SectionBoundary>
-
-          <SectionBoundary name="SaveTheDateCard">
-            <SaveTheDateCard groomName={groomName} brideName={brideName} akadDate={d.akadDate} akadStartTime={d.akadStartTime} resepsiEndTime={d.resepsiEndTime} akadAddress={`${d.akadAddress}, ${d.akadCity}`.trim()} />
-          </SectionBoundary>
-
-          <SectionBoundary name="BismillahSection">
-            <BismillahSection />
-          </SectionBoundary>
-
-          <SectionBoundary name="IntroSection">
-            <IntroSection />
-          </SectionBoundary>
-
-          <SectionBoundary name="BrideGroomSection">
-            <BrideGroomSection
-              groomFullName={d.groomFullName}
-              groomFatherName={d.groomFatherName}
-              groomMotherName={d.groomMotherName}
-              brideFullName={d.brideFullName}
-              brideFatherName={d.brideFatherName}
-              brideMotherName={d.brideMotherName}
-            />
-          </SectionBoundary>
-
-          <SectionBoundary name="EventSection">
-            <EventSection
-              akadDate={d.akadDate}
-              akadStartTime={d.akadStartTime}
-              akadEndTime={d.akadEndTime}
-              akadAddress={d.akadAddress}
-              akadCity={d.akadCity}
-              akadMapsLink={d.akadMapsLink}
-              hasResepsi={d.hasResepsi}
-              resepsiDate={d.resepsiDate}
-              resepsiStartTime={d.resepsiStartTime}
-              resepsiEndTime={d.resepsiEndTime}
-              resepsiAddress={d.resepsiAddress}
-              resepsiCity={d.resepsiCity}
-              resepsiMapsLink={d.resepsiMapsLink}
-            />
-          </SectionBoundary>
-
-          <SectionBoundary name="OurJourneySection">
-            <OurJourneySection journey={d.journey?.length > 0 ? d.journey : undefined} />
-          </SectionBoundary>
-
-          <SectionBoundary name="RsvpSection">
-            <RsvpSection orderId={orderId} />
-          </SectionBoundary>
-
-          <SectionBoundary name="WishesSection">
-            <WishesSection orderId={orderId} />
-          </SectionBoundary>
-
-          <SectionBoundary name="AmplopDigitalSection">
-            <AmplopDigitalSection
-              groomFullName={d.groomFullName}
-              groomBank={d.groomBank}
-              groomRekening={d.groomRekening}
-              groomAn={d.groomAn}
-              brideFullName={d.brideFullName}
-              brideBank={d.brideBank}
-              brideRekening={d.brideRekening}
-              brideAn={d.brideAn}
-              giftRecipientName={d.giftRecipientName}
-              giftAddress={d.giftAddress}
-            />
-          </SectionBoundary>
-
-          <SectionBoundary name="ClosingSection">
-            <ClosingSection groomName={groomName} brideName={brideName} akadDate={d.akadDate} />
-          </SectionBoundary>
-
-          <SectionBoundary name="FloatingNav">
-            <FloatingNav />
-          </SectionBoundary>
-
-          <SectionBoundary name="SoundToggle">
-            <SoundToggle />
-          </SectionBoundary>
-        </div>
-      )}
+    <main style={{ minHeight: "100vh", background: "#0B1120", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px" }}>
+      <div style={{ textAlign: "center", maxWidth: 400 }}>
+        <p style={{ fontFamily: "var(--font-bodoni, Georgia, serif)", fontSize: 24, color: "rgba(201,169,110,0.85)", margin: "0 0 16px" }}>Sedang Disiapkan</p>
+        <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.7, margin: 0 }}>Undangan ini sedang dalam proses penyiapan. Silakan kembali lagi nanti.</p>
+      </div>
     </main>
   );
 }
 
-export default function SacredPage() {
+function CancelledView() {
   return (
-    <Suspense fallback={<main className="sacred-page" />}>
-      <SacredContent />
-    </Suspense>
+    <main style={{ minHeight: "100vh", background: "#0B1120", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px" }}>
+      <div style={{ textAlign: "center", maxWidth: 400 }}>
+        <p style={{ fontFamily: "var(--font-bodoni, Georgia, serif)", fontSize: 24, color: "rgba(255,150,150,0.85)", margin: "0 0 16px" }}>Undangan Tidak Tersedia</p>
+        <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.7, margin: 0 }}>Undangan ini sudah tidak aktif.</p>
+      </div>
+    </main>
+  );
+}
+
+function ExpiredView({ pkg, activeDays }: { pkg: string; activeDays: number }) {
+  return (
+    <main style={{ minHeight: "100vh", background: "#0B1120", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px" }}>
+      <div style={{ textAlign: "center", maxWidth: 400 }}>
+        <p style={{ fontFamily: "var(--font-bodoni, Georgia, serif)", fontSize: 24, color: "rgba(201,169,110,0.85)", margin: "0 0 16px" }}>Undangan Telah Berakhir</p>
+        <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.7, margin: 0 }}>Masa aktif undangan ini ({activeDays} hari setelah acara) telah habis.<br />Paket {pkg} - terima kasih sudah menggunakan Nauka.</p>
+      </div>
+    </main>
+  );
+}
+
+function ErrorView({ msg }: { msg: string }) {
+  return (
+    <main style={{ minHeight: "100vh", background: "#0B1120", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px" }}>
+      <div style={{ textAlign: "center", maxWidth: 400 }}>
+        <p style={{ fontFamily: "var(--font-bodoni, Georgia, serif)", fontSize: 24, color: "rgba(201,169,110,0.85)", margin: "0 0 16px" }}>Maaf</p>
+        <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.7, margin: 0 }}>{msg}</p>
+      </div>
+    </main>
   );
 }

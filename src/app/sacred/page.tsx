@@ -1,6 +1,7 @@
 "use client";
 
 import React, { Suspense, useState, useCallback, useEffect, Component, ErrorInfo } from "react";
+import dynamicImport from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import { SoundToggle } from "@/components/mood/SoundToggle";
 import { SacredHero } from "@/components/sacred/SacredHero";
@@ -124,13 +125,17 @@ interface SacredContentProps {
 export function SacredContent({ data, orderId, guestName }: SacredContentProps = {}) {
   const d: WeddingData = normalizeData(data);
   const [phase, setPhase] = useState<Phase>("gate");
+  const [mounted, setMounted] = useState(false);
   const searchParams = useSearchParams();
   const isPreview = searchParams.get("preview") === "true";
 
   const groomName = d.groomNickname.trim() || d.groomFullName.split(/\s+/)[0] || "Mempelai Pria";
   const brideName = d.brideNickname.trim() || d.brideFullName.split(/\s+/)[0] || "Mempelai Wanita";
 
+  // SKIP SSR - render hanya di client.
+  // Ini menghindari semua server-side exception dari komponen template.
   useEffect(() => {
+    setMounted(true);
     try {
       if (isPreview) { setPhase("gate"); }
       else if (localStorage.getItem(STORAGE_KEY) === "true") { setPhase("inside"); }
@@ -147,6 +152,11 @@ export function SacredContent({ data, orderId, guestName }: SacredContentProps =
     setPhase("opening");
     setTimeout(() => setPhase("inside"), 2200);
   }, [isPreview]);
+
+  // SSR / pre-mount: render skeleton kosong. Tidak ada komponen template yang dipanggil.
+  if (!mounted) {
+    return <main className="sacred-page" style={{ minHeight: "100vh", background: "#0B1120" }} />;
+  }
 
   if (phase === "checking") { return <main className="sacred-page" />; }
 

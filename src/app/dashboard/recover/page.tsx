@@ -1,118 +1,124 @@
-"use client";
+import { NextRequest, NextResponse } from "next/server";
+import { getSupabaseServer } from "@/lib/supabase-server";
 
-import React, { useState } from "react";
-import Link from "next/link";
+function normalizePhone(raw: string): string[] {
+  let p = (raw || "").replace(/[^\d]/g, "");
+  if (p.startsWith("0")) p = "62" + p.slice(1);
+  if (!p.startsWith("62")) p = "62" + p;
+  return [
+    p,
+    "+" + p,
+    "0" + p.slice(2),
+    p.slice(2),
+  ];
+}
 
-export default function RecoverPage() {
-  const [phone, setPhone] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<{
-    dashboard_url: string;
-    order_id: string;
-    customer_name: string;
-    template: string;
-    status: string;
-  } | null>(null);
+const PKG_PRIORITY: Record<string, number> = { premium: 0, basic: 1, free: 2 };
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    setResult(null);
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json().catch(() => ({}));
+    const phoneRaw: string = (body && typeof body === "object" && "phone" in body)
+      ? String((body as { phone: unknown }).phone || "")
+      : "";
 
-    if (!phone.trim()) {
-      setError("Nomor WhatsApp wajib diisi.");
-      return;
+    if (!phoneRaw || phoneRaw.replace(/[^\d]/g, "").length < 8) {
+      return NextResponse.json({ ok: false, error: "Nomor WhatsApp tidak valid." }, { status: 400 });
     }
 
-    setLoading(true);
-    try {
-      const res = await fetch("/api/dashboard/recover", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: phone.trim() }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || "Gagal mencari pesanan.");
-        return;
+    const variants = normalizePhone(phoneRaw);
+    const supabase = getSupabaseServer();
+    if (!supabase) {
+      return NextResponse.json({ ok: false, error: "Database belum siap." }, { status: 500 });
+    }
+
+    const seen = new Set<string>();
+    let orders: Array<{
+      order_id: string;
+      status: string;
+      template: string;
+      package: string;
+      wedding_data: { slug?: string; groomNickname?: string; brideNickname?: string; groomFullName?: string; brideFullName?: string } | null;
+      created_at: string;
+      dashboard_token: string | null;
+    }> = [];
+
+    for (const v of variants) {
+      const { data, error } = await supabase
+        .from("orders")
+        .select("order_id, status, template, package, wedding_data, created_at, dashboard_token")
+        .or(`customer_phone.eq.${encodeURIComponent(v)}`)
+        .order("created_at", { ascending: false });
+
+      if (error) continue;
+      if (data && data.length > 0) {
+        for (const o of data) {
+          if (o && !seen.has(o.order_id)) {
+            seen.add(o.order_id);
+            orders.push(o as typeof orders[number]);
+          }
+        }
       }
-      setResult(data);
-    } catch {
-      setError("Terjadi kesalahan jaringan.");
-    } finally {
-      setLoading(false);
     }
+
+    if (orders.length === 0) {
+      return NextResponse.json({
+        ok: false,
+        error: "Belum ada order dengan nomor WhatsApp ini.",
+      }, { status: 404 });
+    }
+
+    const withToken = orders.filter((o) => o.dashboard_token);
+    if (withToken.length === 0) {
+      return NextResponse.json({
+        ok: false,
+        error: "Order ditemukan, tapi belum punya akses dashboard. Hubungi admin.",
+      }, { status: 404 });
+    }
+
+    withToken.sort((a, b) => {
+      const pa = PKG_PRIORITY[a.package] ?? 99;
+      const pb = PKG_PRIORITY[b.package] ?? 99;
+      if (pa !== pb) return pa - pb;
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
+
+    if (withToken.length === 1) {
+      const o = withToken[0];
+      const slug = o.wedding_data?.slug || "";
+      return NextResponse.json({
+        ok: true,
+        single: true,
+        order: {
+          order_id: o.order_id,
+          status: o.status,
+          template: o.template,
+          package: o.package,
+          slug,
+          groom: o.wedding_data?.groomNickname || o.wedding_data?.groomFullName || "",
+          bride: o.wedding_data?.brideNickname || o.wedding_data?.brideFullName || "",
+          dashboard_url: `/dashboard?token=${o.dashboard_token}`,
+        },
+      });
+    }
+
+    return NextResponse.json({
+      ok: true,
+      single: false,
+      orders: withToken.map((o) => ({
+        order_id: o.order_id,
+        status: o.status,
+        template: o.template,
+        package: o.package,
+        slug: o.wedding_data?.slug || "",
+        groom: o.wedding_data?.groomNickname || o.wedding_data?.groomFullName || "",
+        bride: o.wedding_data?.brideNickname || o.wedding_data?.brideFullName || "",
+        created_at: o.created_at,
+        dashboard_url: `/dashboard?token=${o.dashboard_token}`,
+      })),
+    });
+  } catch (err) {
+    console.error("[recover] error:", err);
+    return NextResponse.json({ ok: false, error: "Terjadi kesalahan. Coba lagi." }, { status: 500 });
   }
-
-  return (
-    <main style={{ minHeight: "100vh", background: "#0B1120", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px" }}>
-      <div style={{ maxWidth: 400, width: "100%" }}>
-        <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <h1 style={{ fontFamily: "var(--font-bodoni, Georgia, serif)", fontSize: 28, fontWeight: 400, margin: "0 0 8px", color: "rgba(255,255,255,0.92)" }}>Lupa Akses Dashboard?</h1>
-          <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.7, margin: 0 }}>
-            Masukkan nomor WhatsApp yang Anda pakai saat checkout. Kami akan mencari link dashboard Anda.
-          </p>
-        </div>
-
-        {!result ? (
-          <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ display: "block", fontFamily: "var(--font-inter, sans-serif)", fontSize: 11, color: "rgba(255,255,255,0.5)", marginBottom: 6 }}>Nomor WhatsApp *</label>
-              <input
-                type="tel"
-                required
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="08xxxxxxxxxx"
-                style={{ width: "100%", padding: "14px 16px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.10)", background: "rgba(255,255,255,0.02)", color: "#fff", fontFamily: "var(--font-inter, sans-serif)", fontSize: 14, outline: "none", boxSizing: "border-box" }}
-              />
-            </div>
-
-            {error && (
-              <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 12, color: "rgba(255,180,180,0.9)", padding: "10px 14px", background: "rgba(255,100,100,0.08)", border: "1px solid rgba(255,100,100,0.2)", borderRadius: 8, margin: "0 0 16px", lineHeight: 1.6 }}>
-                {error}
-              </p>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading}
-              style={{ width: "100%", padding: "14px 24px", borderRadius: 10, border: "1px solid rgba(201,169,110,0.35)", background: loading ? "rgba(201,169,110,0.03)" : "rgba(201,169,110,0.10)", fontFamily: "var(--font-inter, sans-serif)", fontSize: 13, letterSpacing: "0.1em", color: loading ? "rgba(201,169,110,0.4)" : "rgba(201,169,110,0.95)", cursor: loading ? "not-allowed" : "pointer", fontWeight: 500, transition: "all 0.3s ease" }}
-            >
-              {loading ? "Mencari..." : "Cari Dashboard Saya"}
-            </button>
-          </form>
-        ) : (
-          <div style={{ padding: 24, borderRadius: 12, border: "1px solid rgba(201,169,110,0.20)", background: "rgba(201,169,110,0.04)", textAlign: "center" }}>
-            <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 11, color: "rgba(201,169,110,0.6)", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 8px" }}>Dashboard Ditemukan!</p>
-            <p style={{ fontFamily: "var(--font-bodoni, Georgia, serif)", fontSize: 18, color: "rgba(255,255,255,0.92)", margin: "0 0 4px" }}>{result.customer_name}</p>
-            <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 12, color: "rgba(255,255,255,0.5)", margin: "0 0 20px" }}>{result.order_id} • {result.template}</p>
-
-            <a
-              href={result.dashboard_url}
-              style={{ display: "block", padding: "14px 24px", borderRadius: 10, border: "1px solid rgba(201,169,110,0.35)", background: "rgba(201,169,110,0.10)", fontFamily: "var(--font-inter, sans-serif)", fontSize: 13, letterSpacing: "0.1em", color: "rgba(201,169,110,0.95)", textDecoration: "none", textAlign: "center", fontWeight: 500, marginBottom: 12 }}
-            >
-              Buka Dashboard
-            </a>
-
-            <button
-              onClick={() => { navigator.clipboard.writeText(result.dashboard_url).then(() => alert("Link tersalin!")); }}
-              style={{ width: "100%", padding: "12px 16px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.10)", background: "transparent", fontFamily: "var(--font-inter, sans-serif)", fontSize: 12, letterSpacing: "0.1em", color: "rgba(255,255,255,0.6)", cursor: "pointer" }}
-            >
-              Salin Link
-            </button>
-
-            <p style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 16, lineHeight: 1.6 }}>
-              💡 Simpan link ini di catatan atau bookmark agar tidak hilang lagi.
-            </p>
-          </div>
-        )}
-
-        <div style={{ textAlign: "center", marginTop: 24 }}>
-          <Link href="/" style={{ fontFamily: "var(--font-inter, sans-serif)", fontSize: 12, color: "rgba(255,255,255,0.4)", textDecoration: "none" }}>← Kembali ke Beranda</Link>
-        </div>
-      </div>
-    </main>
-  );
 }

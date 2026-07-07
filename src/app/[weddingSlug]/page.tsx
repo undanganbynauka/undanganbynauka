@@ -13,7 +13,7 @@ const SITE_BASE_URL = "https://undangan-by-nauka.vercel.app";
 const OG_IMAGES: Record<string, string> = {
   luna: "/og-luna.jpg",
   marwah: "/og-marwah.jpg",
-  sacred: "/og-sacred.jpg",
+  sacred: "/og-sacred-small.jpg",
   celestial: "/celestial/cover.jpg",
 };
 
